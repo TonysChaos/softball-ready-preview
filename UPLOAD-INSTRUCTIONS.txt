@@ -1,0 +1,17 @@
+SOFTBALL READY PREVIEW — VERIFIED PACKAGE
+
+Upload EVERYTHING INSIDE this folder to the GitHub repository named:
+softball-ready-preview
+
+Important:
+- Upload the contents, not the outer folder and not the ZIP file.
+- index.html must appear at the top level of the GitHub repository.
+- This is a public-site preview. The forms, login, payments, search, messaging,
+  and database are demonstrations until Phase 2 is connected.
+
+Verification completed:
+- All 12 HTML pages open successfully.
+- All internal page links point to existing pages or valid page sections.
+- Both supplied photographs load from the assets folder.
+- Shared CSS and JavaScript files load.
+- Desktop and mobile layouts render successfully.
