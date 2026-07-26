@@ -133,3 +133,5 @@ textarea{min-height:120px;resize:vertical}
 @media(max-width:900px){.growth-head{align-items:start;flex-direction:column}.growth-grid{grid-template-columns:1fr 1fr}.promise-preview,.launch-grid{grid-template-columns:1fr}}@media(max-width:620px){.growth-grid{grid-template-columns:1fr}.promise-preview blockquote{padding:30px}}
 
 .story-image img{object-position:center bottom;}
+.story-image{height:auto!important;overflow:visible!important}
+>story-image img{width:100%!important;height:auto!important;object-fit:contain!important;display:block!important}
