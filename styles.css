@@ -40,7 +40,7 @@ img{max-width:100%;display:block}
 .btn-white{background:#fff;color:var(--navy);border:1px solid var(--border)}
 .menu-btn{display:none;border:0;background:none;font-size:1.55rem;color:var(--navy)}
 .hero{min-height:650px;position:relative;display:grid;align-items:center;overflow:hidden;background:var(--navy)}
-.hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(90deg,rgba(2,13,40,.93) 0%,rgba(2,13,40,.72) 34%,rgba(2,13,40,.15) 68%,rgba(2,13,40,.05)),url('assets/hero-original.jpeg');background-size:cover;background-position:center 57%}
+.hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(90deg,rgba(2,13,40,.93) 0%,rgba(2,13,40,.72) 34%,rgba(2,13,40,.15) 68%,rgba(2,13,40,.05)),url('home-original.jpeg');background-size:cover;background-position:center 57%}
 .hero-content{position:relative;z-index:2;color:#fff;padding:64px 0;max-width:650px}
 .hero h1{font-size:clamp(4rem,8vw,7.6rem);line-height:.8;margin:0 0 22px;text-transform:uppercase;letter-spacing:-.07em;font-weight:1000;text-shadow:0 8px 32px rgba(0,0,0,.25)}
 .hero h1 span{display:block;color:var(--pink)}
