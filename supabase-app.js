@@ -37,7 +37,7 @@ if (signupForm) {
       });
       if (error) throw error;
       signupForm.reset();
-      setStatus(status, "Account created. Check your email and tap the confirmation link, then return here to log in.");
+      setStatus(status, "Account created. Check your email, confirm your account, then return here to log in.");
     } catch (error) {
       setStatus(status, error.message || "We could not create the account.", true);
     } finally {
@@ -67,7 +67,81 @@ if (loginForm) {
         window.location.href = "players.html#create-profile";
       }, 600);
     } catch (error) {
-      setStatus(status, error.message || "We could not log you in.", true);
+      setStatus(status, "The email or password is incorrect. Use Forgot Your Password below if needed.", true);
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
+
+const forgotPasswordForm = document.querySelector("#forgot-password-form");
+if (forgotPasswordForm) {
+  forgotPasswordForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const status = forgotPasswordForm.querySelector("[data-form-status]");
+    const button = forgotPasswordForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    setStatus(status, "Sending your reset link...");
+
+    const formData = new FormData(forgotPasswordForm);
+    const email = String(formData.get("email") || "").trim();
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password.html`
+      });
+      if (error) throw error;
+      forgotPasswordForm.reset();
+      setStatus(status, "Check your email. Tap the reset link to choose a new password.");
+    } catch (error) {
+      setStatus(status, error.message || "We could not send the reset email.", true);
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
+
+const resetPasswordForm = document.querySelector("#reset-password-form");
+if (resetPasswordForm) {
+  const status = resetPasswordForm.querySelector("[data-form-status]");
+
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === "PASSWORD_RECOVERY") {
+      setStatus(status, "Reset link accepted. Choose your new password.");
+    }
+  });
+
+  resetPasswordForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = resetPasswordForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+
+    const formData = new FormData(resetPasswordForm);
+    const password = String(formData.get("password") || "");
+    const confirmPassword = String(formData.get("confirm_password") || "");
+
+    if (password.length < 8) {
+      setStatus(status, "Your password must be at least eight characters.", true);
+      button.disabled = false;
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setStatus(status, "The two passwords do not match.", true);
+      button.disabled = false;
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) throw error;
+      resetPasswordForm.reset();
+      setStatus(status, "Your password has been updated. Returning to Log In...");
+      window.setTimeout(() => {
+        window.location.href = "login.html";
+      }, 900);
+    } catch (error) {
+      setStatus(status, error.message || "We could not update your password.", true);
     } finally {
       button.disabled = false;
     }
@@ -98,13 +172,9 @@ if (playerForm) {
   getSession()
     .then((session) => {
       if (session) {
-        if (accountNotice) {
-          accountNotice.innerHTML = "You are logged in and may save a player profile.";
-        }
-      } else {
-        if (accountNotice) {
-          accountNotice.innerHTML = 'Please <a href="login.html"><strong>create an account or log in</strong></a> before saving a player profile.';
-        }
+        if (accountNotice) accountNotice.textContent = "You are logged in and may save a player profile.";
+      } else if (accountNotice) {
+        accountNotice.innerHTML = 'Please <a href="login.html"><strong>create an account or log in</strong></a> before saving a player profile.';
       }
     })
     .catch((error) => setStatus(status, error.message, true));
@@ -117,9 +187,7 @@ if (playerForm) {
 
     try {
       const session = await getSession();
-      if (!session) {
-        throw new Error("Please create an account or log in before saving a player profile.");
-      }
+      if (!session) throw new Error("Please create an account or log in before saving a player profile.");
 
       const formData = new FormData(playerForm);
       const player = {
