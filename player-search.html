@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Player Search | Softball Ready</title>
+  <meta name="description" content="Search eligible Softball Ready player profiles.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="header"><div class="container nav">
+  <a class="brand" href="index.html" aria-label="Softball Ready home">
+    <div class="logo-mark">S<span>R</span></div>
+    <div class="brand-copy"><strong>SOFTBALL <span style="color:var(--pink)">READY</span></strong><small>The National Travel Softball Connection.</small></div>
+  </a>
+  <button class="menu-btn" aria-expanded="false" aria-label="Open navigation">☰</button>
+  <nav class="nav-links">
+    <a href="index.html">Home</a><a href="players.html">Players</a><a href="teams.html">Teams</a>
+    <a href="coach-dashboard.html">Coach Dashboard</a><a href="player-search.html" aria-current="page">Player Search</a>
+    <a href="membership.html">Membership</a>
+  </nav>
+  <button class="btn btn-outline" type="button" data-logout>Log Out</button>
+</div></header>
+
+<main>
+<section class="page-hero"><div class="container">
+  <div class="eyebrow" style="color:#ff72a7">Coach recruiting</div>
+  <h1>Search for Players</h1>
+  <p>Search eligible profiles by age division, state, graduation year, and position.</p>
+</div></section>
+
+<section class="section"><div class="container">
+  <div class="notice" data-search-access-status>Checking coach and membership access...</div>
+
+  <form class="form-panel" id="player-search-form" style="margin-top:24px">
+    <div class="form-grid">
+      <div class="field"><label>Age division</label><select name="age_division"><option value="">All divisions</option><option>8U</option><option>10U</option><option>12U</option><option>14U</option><option>16U</option><option>18U</option><option>College</option></select></div>
+      <div class="field"><label>State</label><input name="state" maxlength="2" placeholder="GA"></div>
+      <div class="field"><label>Primary position</label><input name="primary_position" placeholder="Pitcher"></div>
+      <div class="field"><label>Graduation year</label><input name="graduation_year" type="number"></div>
+      <div class="field"><label>Available immediately</label><select name="available_immediately"><option value="">Either</option><option value="true">Yes</option><option value="false">No</option></select></div>
+    </div>
+    <button class="btn btn-pink" type="submit" style="margin-top:24px">Search Players</button>
+    <p data-form-status style="font-weight:800;color:var(--navy)"></p>
+  </form>
+
+  <div style="margin-top:28px">
+    <div class="eyebrow">Search results</div>
+    <h2 class="section-title">Eligible Player Profiles</h2>
+    <div class="listing-grid" data-player-search-results>
+      <p>Use the search form above.</p>
+    </div>
+  </div>
+</div></section>
+</main>
+
+<footer class="footer"><div class="container"><div class="footer-bottom">
+  <div class="footer-motto">Where Opportunity Meets Preparation.</div><div>© 2026 Softball Ready. All rights reserved.</div>
+</div></div></footer>
+<script src="script.js"></script><script type="module" src="supabase-app.js"></script>
+</body></html>

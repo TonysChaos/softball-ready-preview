@@ -11,3 +11,273 @@ const pf=document.querySelector("#create-profile");if(pf)pf.addEventListener("su
 const df=document.querySelector("#player-dashboard-form");if(df){const ps=document.querySelector("[data-dashboard-status]"),fs=df.querySelector("[data-form-status]"),btn=df.querySelector('button[type="submit"]');
 async function load(){try{const ses=await getSession();if(!ses)return location.href="login.html";const {data:p,error}=await supabase.from("players").select("*").eq("owner_id",ses.user.id).limit(1).maybeSingle();if(error)throw error;if(!p){df.elements.parent_email.value=ses.user.email||"";return setStatus(ps,"No profile exists yet. Complete the required fields and save.");}df.elements.player_id.value=p.id;for(const [k,v] of Object.entries(p)){const el=df.elements[k];if(!el)continue;el.value=typeof v==="boolean"?String(v):(v??"");}setStatus(ps,"Your saved profile is loaded. Update anything and click Save Profile Changes.");}catch(x){setStatus(ps,x.message,true)}}
 df.addEventListener("submit",async e=>{e.preventDefault();btn.disabled=true;const f=new FormData(df);try{const ses=await getSession();if(!ses)throw Error("Please log in again.");const id=n2n(f.get("player_id"));const row={owner_id:ses.user.id,parent_guardian_name:String(f.get("parent_guardian_name")).trim(),parent_email:String(f.get("parent_email")).trim(),email:String(f.get("parent_email")).trim(),parent_phone:e2n(f.get("parent_phone")),first_name:String(f.get("first_name")).trim(),last_name:String(f.get("last_name")).trim(),age_division:String(f.get("age_division")).trim(),city:String(f.get("city")).trim(),state:String(f.get("state")).trim().toUpperCase(),zip_code:e2n(f.get("zip_code")),primary_position:String(f.get("primary_position")).trim(),secondary_position:e2n(f.get("secondary_position")),birth_year:n2n(f.get("birth_year")),graduation_year:n2n(f.get("graduation_year")),height_text:e2n(f.get("height_text")),bats:e2n(f.get("bats")),throws:e2n(f.get("throws")),jersey_number:e2n(f.get("jersey_number")),current_team:e2n(f.get("current_team")),current_coach:e2n(f.get("current_coach")),gpa:n2n(f.get("gpa")),recruiting_status:e2n(f.get("recruiting_status")),travel_willingness:e2n(f.get("travel_willingness")),max_travel_miles:n2n(f.get("max_travel_miles")),available_immediately:f.get("available_immediately")==="true",looking_for_team:f.get("looking_for_team")==="true",highlight_video_url:e2n(f.get("highlight_video_url")),photo_url:e2n(f.get("photo_url")),coach_notes:e2n(f.get("coach_notes")),bat_speed_mph:n2n(f.get("bat_speed_mph")),exit_velocity_mph:n2n(f.get("exit_velocity_mph")),throwing_velocity_mph:n2n(f.get("throwing_velocity_mph")),pitching_velocity_mph:n2n(f.get("pitching_velocity_mph")),pop_time_seconds:n2n(f.get("pop_time_seconds")),home_to_first_seconds:n2n(f.get("home_to_first_seconds"))};const r=id?await supabase.from("players").update(row).eq("id",id).eq("owner_id",ses.user.id).select("id").single():await supabase.from("players").insert(row).select("id").single();if(r.error)throw r.error;df.elements.player_id.value=r.data.id;setStatus(fs,"Profile changes saved successfully.");setStatus(ps,"Your player profile is current.");}catch(x){setStatus(fs,x.message,true)}finally{btn.disabled=false}});load();}
+
+function textOrNull(value) {
+  const text = String(value ?? "").trim();
+  return text === "" ? null : text;
+}
+
+async function ensureCoachProfile(session) {
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", session.user.id)
+    .single();
+  if (error) throw error;
+
+  if (profile.account_type !== "coach" && profile.account_type !== "admin") {
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ account_type: "coach" })
+      .eq("id", session.user.id);
+    if (updateError) throw updateError;
+    profile.account_type = "coach";
+  }
+  return profile;
+}
+
+const coachProfileForm = document.querySelector("#coach-profile-form");
+if (coachProfileForm) {
+  const pageStatus = document.querySelector("[data-coach-status]");
+  const formStatus = coachProfileForm.querySelector("[data-form-status]");
+  const needsForm = document.querySelector("#team-need-form");
+  const needsList = document.querySelector("[data-team-needs-list]");
+
+  let currentSession = null;
+  let currentTeam = null;
+
+  async function loadNeeds() {
+    if (!currentSession || !needsList) return;
+    const { data, error } = await supabase
+      .from("team_needs")
+      .select("*")
+      .eq("owner_id", currentSession.user.id)
+      .order("created_at", { ascending: false });
+    if (error) {
+      needsList.innerHTML = `<p>${error.message}</p>`;
+      return;
+    }
+    if (!data.length) {
+      needsList.innerHTML = "<p>No roster openings have been posted yet.</p>";
+      return;
+    }
+    needsList.innerHTML = data.map((need) => `
+      <article class="listing-card">
+        <span class="badge">${need.age_division || "Division not entered"} • ${need.active ? "Active" : "Inactive"}</span>
+        <h3>${need.title}</h3>
+        <p>${need.details || "No additional details."}</p>
+        <div class="listing-meta">${(need.positions_needed || []).join(", ") || "Positions not entered"}</div>
+      </article>
+    `).join("");
+  }
+
+  async function loadCoachDashboard() {
+    try {
+      currentSession = await getSession();
+      if (!currentSession) {
+        window.location.href = "login.html";
+        return;
+      }
+      const profile = await ensureCoachProfile(currentSession);
+
+      const { data: team, error } = await supabase
+        .from("teams")
+        .select("*")
+        .eq("owner_id", currentSession.user.id)
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+
+      if (team) {
+        currentTeam = team;
+        coachProfileForm.elements.team_id.value = team.id;
+        for (const name of ["coach_name","email","coach_phone","team_name","organization_name","age_division","team_level","city","state","zip_code","travel_schedule","website_url","description"]) {
+          if (coachProfileForm.elements[name]) coachProfileForm.elements[name].value = team[name] ?? "";
+        }
+        setStatus(pageStatus, profile.membership_active
+          ? "Your coach account and team profile are ready. Player Search is unlocked."
+          : "Your team profile is loaded. Player Search will unlock after membership activation.");
+      } else {
+        coachProfileForm.elements.email.value = currentSession.user.email || "";
+        setStatus(pageStatus, "Create your team profile. Player Search will unlock after membership activation.");
+      }
+      await loadNeeds();
+    } catch (error) {
+      setStatus(pageStatus, error.message || "We could not load the coach dashboard.", true);
+    }
+  }
+
+  coachProfileForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = coachProfileForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    setStatus(formStatus, "Saving team profile...");
+    try {
+      if (!currentSession) currentSession = await getSession();
+      if (!currentSession) throw new Error("Please log in again.");
+      await ensureCoachProfile(currentSession);
+      const form = new FormData(coachProfileForm);
+      const team = {
+        owner_id: currentSession.user.id,
+        coach_name: String(form.get("coach_name") || "").trim(),
+        email: String(form.get("email") || "").trim(),
+        coach_phone: textOrNull(form.get("coach_phone")),
+        team_name: String(form.get("team_name") || "").trim(),
+        organization_name: textOrNull(form.get("organization_name")),
+        age_division: String(form.get("age_division") || "").trim(),
+        team_level: textOrNull(form.get("team_level")),
+        city: String(form.get("city") || "").trim(),
+        state: String(form.get("state") || "").trim().toUpperCase(),
+        zip_code: textOrNull(form.get("zip_code")),
+        travel_schedule: textOrNull(form.get("travel_schedule")),
+        website_url: textOrNull(form.get("website_url")),
+        description: textOrNull(form.get("description")),
+        active: true
+      };
+
+      let response;
+      if (currentTeam?.id) {
+        response = await supabase.from("teams").update(team).eq("id", currentTeam.id).eq("owner_id", currentSession.user.id).select("*").single();
+      } else {
+        response = await supabase.from("teams").insert(team).select("*").single();
+      }
+      if (response.error) throw response.error;
+      currentTeam = response.data;
+      coachProfileForm.elements.team_id.value = currentTeam.id;
+      setStatus(formStatus, "Team profile saved successfully.");
+    } catch (error) {
+      setStatus(formStatus, error.message || "We could not save the team profile.", true);
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  needsForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = needsForm.querySelector('button[type="submit"]');
+    const status = needsForm.querySelector("[data-form-status]");
+    button.disabled = true;
+    setStatus(status, "Saving roster need...");
+    try {
+      if (!currentSession) currentSession = await getSession();
+      if (!currentTeam?.id) throw new Error("Save the Team Profile first.");
+      const form = new FormData(needsForm);
+      const positions = String(form.get("positions_needed_text") || "")
+        .split(",").map((value) => value.trim()).filter(Boolean);
+      const need = {
+        team_id: currentTeam.id,
+        owner_id: currentSession.user.id,
+        title: String(form.get("title") || "").trim(),
+        age_division: textOrNull(form.get("age_division")) || currentTeam.age_division,
+        positions_needed: positions,
+        city: currentTeam.city,
+        state: currentTeam.state,
+        start_date: textOrNull(form.get("start_date")),
+        details: textOrNull(form.get("details")),
+        active: form.get("active") === "true"
+      };
+      const { error } = await supabase.from("team_needs").insert(need);
+      if (error) throw error;
+      needsForm.reset();
+      setStatus(status, "Roster need saved successfully.");
+      await loadNeeds();
+    } catch (error) {
+      setStatus(status, error.message || "We could not save the roster need.", true);
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  loadCoachDashboard();
+}
+
+const playerSearchForm = document.querySelector("#player-search-form");
+if (playerSearchForm) {
+  const accessStatus = document.querySelector("[data-search-access-status]");
+  const formStatus = playerSearchForm.querySelector("[data-form-status]");
+  const results = document.querySelector("[data-player-search-results]");
+  let accessAllowed = false;
+
+  async function checkSearchAccess() {
+    try {
+      const session = await getSession();
+      if (!session) {
+        window.location.href = "login.html";
+        return;
+      }
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("account_type,membership_active")
+        .eq("id", session.user.id)
+        .single();
+      if (error) throw error;
+
+      accessAllowed = ["coach", "admin"].includes(profile.account_type) && profile.membership_active === true;
+      if (accessAllowed) {
+        setStatus(accessStatus, "Player Search is unlocked for this coach account.");
+      } else {
+        setStatus(accessStatus, "Player Search is locked until this account is a coach account with an active membership.", true);
+        playerSearchForm.querySelector('button[type="submit"]').disabled = true;
+      }
+    } catch (error) {
+      setStatus(accessStatus, error.message || "We could not verify search access.", true);
+    }
+  }
+
+  playerSearchForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!accessAllowed) return;
+    const button = playerSearchForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    setStatus(formStatus, "Searching eligible profiles...");
+    try {
+      const form = new FormData(playerSearchForm);
+      let query = supabase
+        .from("players")
+        .select("id,first_name,last_name,age_division,state,city,primary_position,secondary_position,graduation_year,current_team,available_immediately,coach_notes,photo_url")
+        .eq("looking_for_team", true)
+        .eq("searchable_by_coaches", true)
+        .eq("membership_active", true)
+        .order("updated_at", { ascending: false })
+        .limit(50);
+
+      const age = textOrNull(form.get("age_division"));
+      const state = textOrNull(form.get("state"));
+      const position = textOrNull(form.get("primary_position"));
+      const grad = textOrNull(form.get("graduation_year"));
+      const available = textOrNull(form.get("available_immediately"));
+
+      if (age) query = query.eq("age_division", age);
+      if (state) query = query.eq("state", state.toUpperCase());
+      if (position) query = query.ilike("primary_position", `%${position}%`);
+      if (grad) query = query.eq("graduation_year", Number(grad));
+      if (available) query = query.eq("available_immediately", available === "true");
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      if (!data.length) {
+        results.innerHTML = "<p>No eligible player profiles matched those filters.</p>";
+      } else {
+        results.innerHTML = data.map((player) => `
+          <article class="listing-card">
+            <span class="badge">${player.age_division || "Division not entered"} • ${player.state || "State not entered"}</span>
+            <h3>${player.first_name} ${player.last_name}</h3>
+            <p><strong>${player.primary_position || "Position not entered"}</strong>${player.secondary_position ? ` • ${player.secondary_position}` : ""}</p>
+            <p>${player.city || ""}${player.graduation_year ? ` • Class of ${player.graduation_year}` : ""}</p>
+            <p>${player.coach_notes || "No additional profile summary."}</p>
+            <div class="listing-meta">${player.available_immediately ? "Available immediately" : "Availability not immediate"}</div>
+          </article>
+        `).join("");
+      }
+      setStatus(formStatus, `${data.length} eligible profile${data.length === 1 ? "" : "s"} found.`);
+    } catch (error) {
+      setStatus(formStatus, error.message || "The search could not be completed.", true);
+      results.innerHTML = "<p>Search unavailable.</p>";
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  checkSearchAccess();
+}
