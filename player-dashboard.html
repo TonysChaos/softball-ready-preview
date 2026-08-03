@@ -18,6 +18,43 @@
 <div class="field"><label>GPA</label><input name="gpa" type="number" step="0.01"></div><div class="field"><label>Recruiting status</label><select name="recruiting_status"><option value="">Not entered</option><option>Open to opportunities</option><option>Actively looking</option><option>Committed</option><option>Not currently recruiting</option></select></div>
 <div class="field"><label>Travel willingness</label><select name="travel_willingness"><option value="">Not entered</option><option>Local only</option><option>Regional</option><option>National</option></select></div><div class="field"><label>Maximum travel distance</label><input name="max_travel_miles" type="number"></div>
 <div class="field"><label>Available immediately?</label><select name="available_immediately"><option value="false">No</option><option value="true">Yes</option></select></div><div class="field"><label>Looking for a team?</label><select name="looking_for_team"><option value="true">Yes</option><option value="false">No</option></select></div><div class="field full"><label>Experience, strengths, goals, awards, and what coaches should know</label><textarea name="coach_notes" rows="7"></textarea></div></div>
+
+<hr style="margin:34px 0;border:0;border-top:1px solid #ddd">
+<div class="eyebrow">Optional recruiting profile</div>
+<h2 style="color:var(--navy)">Academics, Achievements, Media, and References</h2>
+<p>Complete only what you know. Every field below is optional and can be updated later.</p>
+
+<div class="form-grid">
+  <div class="field"><label>Academic interests</label><input name="academic_interests"></div>
+  <div class="field"><label>Intended college major</label><input name="intended_major"></div>
+  <div class="field full"><label>Awards and honors</label><textarea name="awards_honors" rows="4"></textarea></div>
+  <div class="field full"><label>Skills summary</label><textarea name="skills_summary" rows="4"></textarea></div>
+  <div class="field full"><label>Tournament schedule</label><textarea name="tournament_schedule" rows="5"></textarea></div>
+  <div class="field"><label>Social media link 1</label><input name="social_link_1" type="url"></div>
+  <div class="field"><label>Social media link 2</label><input name="social_link_2" type="url"></div>
+  <div class="field full"><label>Coach reference 1</label><input name="coach_reference_1"></div>
+  <div class="field full"><label>Coach reference 2</label><input name="coach_reference_2"></div>
+</div>
+
+<h3 style="color:var(--navy);margin-top:30px">Player Photos</h3>
+<p>Up to five optional public photo links. Direct uploads will be added later.</p>
+<div class="form-grid">
+  <div class="field full"><label>Photo 1</label><input name="photo_url" type="url"></div>
+  <div class="field full"><label>Photo 2</label><input name="photo_url_2" type="url"></div>
+  <div class="field full"><label>Photo 3</label><input name="photo_url_3" type="url"></div>
+  <div class="field full"><label>Photo 4</label><input name="photo_url_4" type="url"></div>
+  <div class="field full"><label>Photo 5</label><input name="photo_url_5" type="url"></div>
+</div>
+
+<h3 style="color:var(--navy);margin-top:30px">Highlight Videos</h3>
+<p>Up to five optional public video links.</p>
+<div class="form-grid">
+  <div class="field full"><label>Video 1</label><input name="highlight_video_url" type="url"></div>
+  <div class="field full"><label>Video 2</label><input name="highlight_video_url_2" type="url"></div>
+  <div class="field full"><label>Video 3</label><input name="highlight_video_url_3" type="url"></div>
+  <div class="field full"><label>Video 4</label><input name="highlight_video_url_4" type="url"></div>
+  <div class="field full"><label>Video 5</label><input name="highlight_video_url_5" type="url"></div>
+</div>
 <hr style="margin:34px 0;border:0;border-top:1px solid #ddd"><div class="eyebrow">Optional measurements</div><h2 style="color:var(--navy)">Performance Measurements</h2><div class="notice" style="margin-bottom:22px">Optional — enter only if known. These measurements are family-supplied and are not verified by Softball Ready.</div>
 <div class="form-grid"><div class="field"><label>Bat speed (mph)</label><input name="bat_speed_mph" type="number" step="0.1"></div><div class="field"><label>Exit velocity (mph)</label><input name="exit_velocity_mph" type="number" step="0.1"></div><div class="field"><label>Throwing velocity (mph)</label><input name="throwing_velocity_mph" type="number" step="0.1"></div><div class="field"><label>Pitching velocity (mph)</label><input name="pitching_velocity_mph" type="number" step="0.1"></div><div class="field"><label>Catcher pop time (seconds)</label><input name="pop_time_seconds" type="number" step="0.01"></div><div class="field"><label>Home-to-first time (seconds)</label><input name="home_to_first_seconds" type="number" step="0.01"></div></div>
 <button class="btn btn-pink" type="submit" style="margin-top:28px">Save Profile Changes</button><p data-form-status style="font-weight:800"></p></form></div></section></main><script src="script.js"></script><script type="module" src="supabase-app.js"></script></body></html>
