@@ -289,7 +289,7 @@ if (playerSearchForm) {
       } else {
         results.innerHTML = data.map((player) => `
           <article class="listing-card">
-            ${player.photo_url ? `<img src="${player.photo_url}" alt="Player profile" style="width:100%;height:210px;object-fit:cover;border-radius:14px;margin-bottom:14px">` : ""}
+            ${player.photo_url ? `<img src="${player.photo_url}" alt="Player profile" style="width:100%;height:210px;object-fit:contain;background:#f3f5f8;border-radius:14px;margin-bottom:14px">` : ""}
             <span class="badge">${player.age_division || "Division not entered"} • ${player.state || "State not entered"}</span>
             <h3>${player.first_name} ${player.last_name}</h3>
             <p><strong>${player.primary_position || "Position not entered"}</strong>${player.secondary_position ? ` • ${player.secondary_position}` : ""}</p>
@@ -365,7 +365,7 @@ if (playerProfileView) {
       const socials = [player.social_link_1, player.social_link_2].filter(Boolean);
 
       playerProfileView.innerHTML = `
-        ${photos.length ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">${photos.map((url) => `<img src="${url}" alt="Player" style="width:100%;height:230px;object-fit:cover;border-radius:14px">`).join("")}</div>` : ""}
+        ${photos.length ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">${photos.map((url) => `<img src="${url}" alt="Player" style="width:100%;height:230px;object-fit:contain;background:#f3f5f8;border-radius:14px">`).join("")}</div>` : ""}
         ${section("Player Information", `
           <div class="listing-grid">
             <article class="listing-card"><h3>Softball</h3><p>Primary: ${player.primary_position || "Not entered"}</p><p>Secondary: ${player.secondary_position || "Not entered"}</p><p>Bats: ${player.bats || "Not entered"} • Throws: ${player.throws || "Not entered"}</p><p>Current team: ${player.current_team || "Not entered"}</p></article>
