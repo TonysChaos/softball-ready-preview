@@ -2,18 +2,27 @@ import { supabase } from "./supabase-config.js";
 
 const pageStatus = document.querySelector("[data-messages-page-status]");
 const conversationList = document.querySelector("[data-conversation-list]");
+const conversationSearch = document.querySelector("[data-conversation-search]");
 const threadTitle = document.querySelector("[data-thread-title]");
 const threadSubtitle = document.querySelector("[data-thread-subtitle]");
+const threadAvatar = document.querySelector("[data-thread-avatar]");
 const threadBody = document.querySelector("[data-thread-body]");
 const messageForm = document.querySelector("[data-message-form]");
 const messageInput = messageForm?.elements.body;
 const sendButton = messageForm?.querySelector('button[type="submit"]');
 const messageStatus = document.querySelector("[data-message-status]");
+const characterCount = document.querySelector("[data-character-count]");
 const logoutButton = document.querySelector("[data-message-logout]");
+const messagesShell = document.querySelector("[data-messages-shell]");
+const mobileBack = document.querySelector("[data-mobile-back]");
+const summaryTotal = document.querySelector("[data-summary-total]");
+const summaryUnread = document.querySelector("[data-summary-unread]");
+const summaryActive = document.querySelector("[data-summary-active]");
 
 let currentUser = null;
 let activeConversationId = null;
 let conversations = [];
+let filteredConversations = [];
 let realtimeChannel = null;
 
 function setPageStatus(message, error = false) {
@@ -45,6 +54,11 @@ function displayDate(value, includeTime = true) {
     : date.toLocaleDateString();
 }
 
+function initials(value) {
+  const words = String(value || "Softball Ready").trim().split(/\s+/).filter(Boolean);
+  return words.slice(0, 2).map((word) => word[0]?.toUpperCase()).join("") || "SR";
+}
+
 async function requireSession() {
   const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
@@ -56,29 +70,62 @@ async function requireSession() {
   return data.session;
 }
 
+function updateSummary() {
+  const unread = conversations.reduce((sum, conversation) => sum + Number(conversation.unread_count || 0), 0);
+  if (summaryTotal) summaryTotal.textContent = String(conversations.length);
+  if (summaryUnread) summaryUnread.textContent = String(unread);
+  if (summaryActive) {
+    const active = conversations.find((conversation) => conversation.id === activeConversationId);
+    summaryActive.textContent = active ? (active.player_name || "Open") : "—";
+  }
+}
+
+function filterConversationList() {
+  const query = conversationSearch?.value.trim().toLowerCase() || "";
+  filteredConversations = query
+    ? conversations.filter((conversation) => {
+        const haystack = [
+          conversation.subject,
+          conversation.player_name,
+          conversation.last_message
+        ].filter(Boolean).join(" ").toLowerCase();
+        return haystack.includes(query);
+      })
+    : [...conversations];
+
+  renderConversationList();
+}
+
 function renderConversationList() {
   if (!conversationList) return;
 
-  if (!conversations.length) {
+  if (!filteredConversations.length) {
     conversationList.innerHTML = `
       <div class="empty-state">
         <div>
-          <h3 style="color:#17345f">No messages yet</h3>
-          <p>Coaches can begin a private conversation from an eligible player profile.</p>
+          <div class="empty-icon">💬</div>
+          <h3 style="color:#17345f">${conversations.length ? "No conversations match" : "No messages yet"}</h3>
+          <p>${conversations.length ? "Try a different search." : "Coaches can begin a private conversation from an eligible player profile."}</p>
         </div>
       </div>`;
+    updateSummary();
     return;
   }
 
-  conversationList.innerHTML = conversations.map((conversation) => `
+  conversationList.innerHTML = filteredConversations.map((conversation) => `
     <button type="button"
       class="conversation-item ${conversation.id === activeConversationId ? "active" : ""}"
       data-conversation-id="${conversation.id}">
-      <div class="conversation-title">${escapeHtml(conversation.subject || "Softball Ready Conversation")}</div>
-      <div class="conversation-preview">${escapeHtml(conversation.last_message || "Conversation started")}</div>
-      <div class="conversation-meta">
-        <span>${displayDate(conversation.last_message_at || conversation.created_at)}</span>
+      <div class="conversation-line">
+        <div style="min-width:0;flex:1">
+          <div class="conversation-title">${escapeHtml(conversation.subject || "Softball Ready Conversation")}</div>
+          <div class="conversation-preview">${escapeHtml(conversation.last_message || "Conversation started")}</div>
+        </div>
         ${Number(conversation.unread_count || 0) > 0 ? `<span class="unread-badge">${conversation.unread_count}</span>` : ""}
+      </div>
+      <div class="conversation-meta">
+        <span>${escapeHtml(conversation.player_name || "Private conversation")}</span>
+        <span>${displayDate(conversation.last_message_at || conversation.created_at)}</span>
       </div>
     </button>
   `).join("");
@@ -86,6 +133,8 @@ function renderConversationList() {
   conversationList.querySelectorAll("[data-conversation-id]").forEach((button) => {
     button.addEventListener("click", () => openConversation(button.dataset.conversationId));
   });
+
+  updateSummary();
 }
 
 async function loadConversations(preferredConversation = null) {
@@ -93,7 +142,7 @@ async function loadConversations(preferredConversation = null) {
   if (error) throw error;
 
   conversations = data || [];
-  renderConversationList();
+  filterConversationList();
 
   const selected = preferredConversation ||
     activeConversationId ||
@@ -137,13 +186,14 @@ async function loadMessages(conversationId) {
   if (error) throw error;
 
   if (!data.length) {
-    threadBody.innerHTML = '<div class="empty-state">No messages have been sent yet.</div>';
+    threadBody.innerHTML = '<div class="empty-state"><div><div class="empty-icon">💬</div><p>No messages have been sent yet.</p></div></div>';
   } else {
     threadBody.innerHTML = data.map((message) => {
       const mine = message.sender_id === currentUser.id;
       return `
         <div class="message-row ${mine ? "mine" : ""}">
           <div class="message-bubble">
+            <span class="message-author">${mine ? "You" : "Other participant"}</span>
             ${escapeHtml(message.body)}
             <span class="message-time">${displayDate(message.created_at)}</span>
           </div>
@@ -163,12 +213,14 @@ async function openConversation(conversationId) {
   threadSubtitle.textContent = conversation?.player_name
     ? `Private conversation about ${conversation.player_name}`
     : "Private Softball Ready conversation";
+  if (threadAvatar) threadAvatar.textContent = initials(conversation?.player_name || conversation?.subject);
 
   messageInput.disabled = false;
   sendButton.disabled = false;
   setMessageStatus("");
+  messagesShell?.classList.add("thread-open");
 
-  renderConversationList();
+  filterConversationList();
   await loadMessages(conversationId);
   subscribeToConversation(conversationId);
 
@@ -176,6 +228,16 @@ async function openConversation(conversationId) {
   url.searchParams.set("conversation", conversationId);
   window.history.replaceState({}, "", url);
 }
+
+messageInput?.addEventListener("input", () => {
+  if (characterCount) characterCount.textContent = `${messageInput.value.length} / 5000`;
+});
+
+conversationSearch?.addEventListener("input", filterConversationList);
+
+mobileBack?.addEventListener("click", () => {
+  messagesShell?.classList.remove("thread-open");
+});
 
 messageForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -199,6 +261,7 @@ messageForm?.addEventListener("submit", async (event) => {
     if (error) throw error;
 
     messageInput.value = "";
+    if (characterCount) characterCount.textContent = "0 / 5000";
     setMessageStatus("Message sent.");
     await loadMessages(activeConversationId);
     await loadConversations(activeConversationId);
