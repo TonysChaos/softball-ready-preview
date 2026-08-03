@@ -36,14 +36,72 @@
   <div class="field full"><label>Coach reference 2</label><input name="coach_reference_2"></div>
 </div>
 
+
 <h3 style="color:var(--navy);margin-top:30px">Player Photos</h3>
-<p>Up to five optional public photo links. Direct uploads will be added later.</p>
+<p>Select photos directly from a phone or computer. Each image is optional. Maximum file size: 5 MB.</p>
+<div class="notice" style="margin-bottom:20px">
+  Photos are stored securely in the player's account. Parents may replace or remove them later.
+</div>
 <div class="form-grid">
-  <div class="field full"><label>Photo 1</label><input name="photo_url" type="url"></div>
-  <div class="field full"><label>Photo 2</label><input name="photo_url_2" type="url"></div>
-  <div class="field full"><label>Photo 3</label><input name="photo_url_3" type="url"></div>
-  <div class="field full"><label>Photo 4</label><input name="photo_url_4" type="url"></div>
-  <div class="field full"><label>Photo 5</label><input name="photo_url_5" type="url"></div>
+  <div class="field full photo-upload-card" data-photo-slot="1">
+    <label>Photo 1</label>
+    <input name="photo_url" type="hidden">
+    <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" data-photo-file="1">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn btn-outline" type="button" data-photo-upload="1">Upload Photo 1</button>
+      <button class="btn btn-outline" type="button" data-photo-remove="1">Remove</button>
+    </div>
+    <img data-photo-preview="1" alt="Photo 1 preview" hidden style="max-width:320px;width:100%;height:220px;object-fit:cover;border-radius:14px;margin-top:14px">
+    <p data-photo-status="1" style="font-weight:800"></p>
+  </div>
+
+  <div class="field full photo-upload-card" data-photo-slot="2">
+    <label>Photo 2</label>
+    <input name="photo_url_2" type="hidden">
+    <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" data-photo-file="2">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn btn-outline" type="button" data-photo-upload="2">Upload Photo 2</button>
+      <button class="btn btn-outline" type="button" data-photo-remove="2">Remove</button>
+    </div>
+    <img data-photo-preview="2" alt="Photo 2 preview" hidden style="max-width:320px;width:100%;height:220px;object-fit:cover;border-radius:14px;margin-top:14px">
+    <p data-photo-status="2" style="font-weight:800"></p>
+  </div>
+
+  <div class="field full photo-upload-card" data-photo-slot="3">
+    <label>Photo 3</label>
+    <input name="photo_url_3" type="hidden">
+    <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" data-photo-file="3">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn btn-outline" type="button" data-photo-upload="3">Upload Photo 3</button>
+      <button class="btn btn-outline" type="button" data-photo-remove="3">Remove</button>
+    </div>
+    <img data-photo-preview="3" alt="Photo 3 preview" hidden style="max-width:320px;width:100%;height:220px;object-fit:cover;border-radius:14px;margin-top:14px">
+    <p data-photo-status="3" style="font-weight:800"></p>
+  </div>
+
+  <div class="field full photo-upload-card" data-photo-slot="4">
+    <label>Photo 4</label>
+    <input name="photo_url_4" type="hidden">
+    <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" data-photo-file="4">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn btn-outline" type="button" data-photo-upload="4">Upload Photo 4</button>
+      <button class="btn btn-outline" type="button" data-photo-remove="4">Remove</button>
+    </div>
+    <img data-photo-preview="4" alt="Photo 4 preview" hidden style="max-width:320px;width:100%;height:220px;object-fit:cover;border-radius:14px;margin-top:14px">
+    <p data-photo-status="4" style="font-weight:800"></p>
+  </div>
+
+  <div class="field full photo-upload-card" data-photo-slot="5">
+    <label>Photo 5</label>
+    <input name="photo_url_5" type="hidden">
+    <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" data-photo-file="5">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn btn-outline" type="button" data-photo-upload="5">Upload Photo 5</button>
+      <button class="btn btn-outline" type="button" data-photo-remove="5">Remove</button>
+    </div>
+    <img data-photo-preview="5" alt="Photo 5 preview" hidden style="max-width:320px;width:100%;height:220px;object-fit:cover;border-radius:14px;margin-top:14px">
+    <p data-photo-status="5" style="font-weight:800"></p>
+  </div>
 </div>
 
 <h3 style="color:var(--navy);margin-top:30px">Highlight Videos</h3>

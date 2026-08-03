@@ -401,3 +401,193 @@ if (playerProfileView) {
 
   loadFullPlayerProfile();
 }
+
+const photoDashboardForm = document.querySelector("#player-dashboard-form");
+if (photoDashboardForm && document.querySelector("[data-photo-upload]")) {
+  const PHOTO_BUCKET = "player-photos";
+  const photoColumns = {
+    1: "photo_url",
+    2: "photo_url_2",
+    3: "photo_url_3",
+    4: "photo_url_4",
+    5: "photo_url_5"
+  };
+
+  function photoStatus(slot, message, isError = false) {
+    const element = document.querySelector(`[data-photo-status="${slot}"]`);
+    if (!element) return;
+    element.textContent = message;
+    element.style.color = isError ? "#b42318" : "var(--navy)";
+  }
+
+  async function createPhotoPreview(path, slot) {
+    const preview = document.querySelector(`[data-photo-preview="${slot}"]`);
+    if (!preview) return;
+
+    if (!path) {
+      preview.removeAttribute("src");
+      preview.hidden = true;
+      return;
+    }
+
+    if (/^https?:\/\//i.test(path)) {
+      preview.src = path;
+      preview.hidden = false;
+      return;
+    }
+
+    const { data, error } = await supabase.storage
+      .from(PHOTO_BUCKET)
+      .createSignedUrl(path, 60 * 60);
+
+    if (error) {
+      photoStatus(slot, "The saved photo could not be previewed.", true);
+      return;
+    }
+
+    preview.src = data.signedUrl;
+    preview.hidden = false;
+  }
+
+  async function waitForSavedProfile() {
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      const playerId = photoDashboardForm.elements.player_id?.value;
+      if (playerId) return playerId;
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+    return null;
+  }
+
+  async function loadSavedPhotoPreviews() {
+    await waitForSavedProfile();
+    for (let slot = 1; slot <= 5; slot += 1) {
+      const field = photoDashboardForm.elements[photoColumns[slot]];
+      if (field?.value) await createPhotoPreview(field.value, slot);
+    }
+  }
+
+  document.querySelectorAll("[data-photo-upload]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const slot = Number(button.dataset.photoUpload);
+      const fileInput = document.querySelector(`[data-photo-file="${slot}"]`);
+      const hiddenInput = photoDashboardForm.elements[photoColumns[slot]];
+      const file = fileInput?.files?.[0];
+
+      if (!file) {
+        photoStatus(slot, "Choose a photo first.", true);
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        photoStatus(slot, "Please choose an image file.", true);
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        photoStatus(slot, "The photo is larger than 5 MB. Choose a smaller image.", true);
+        return;
+      }
+
+      button.disabled = true;
+      photoStatus(slot, "Uploading photo...");
+
+      try {
+        const session = await getSession();
+        if (!session) throw new Error("Please log in again.");
+
+        const playerId = photoDashboardForm.elements.player_id?.value;
+        if (!playerId) {
+          throw new Error("Save the required player information before uploading photos.");
+        }
+
+        const extension = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const path = `${session.user.id}/${playerId}/photo-${slot}-${Date.now()}.${extension || "jpg"}`;
+        const oldPath = hiddenInput.value;
+
+        const { error: uploadError } = await supabase.storage
+          .from(PHOTO_BUCKET)
+          .upload(path, file, {
+            cacheControl: "3600",
+            contentType: file.type,
+            upsert: false
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { error: updateError } = await supabase
+          .from("players")
+          .update({ [photoColumns[slot]]: path })
+          .eq("id", Number(playerId))
+          .eq("owner_id", session.user.id);
+
+        if (updateError) {
+          await supabase.storage.from(PHOTO_BUCKET).remove([path]);
+          throw updateError;
+        }
+
+        hiddenInput.value = path;
+        await createPhotoPreview(path, slot);
+
+        if (oldPath && !/^https?:\/\//i.test(oldPath)) {
+          await supabase.storage.from(PHOTO_BUCKET).remove([oldPath]);
+        }
+
+        fileInput.value = "";
+        photoStatus(slot, `Photo ${slot} uploaded successfully.`);
+      } catch (error) {
+        photoStatus(slot, error.message || "The photo could not be uploaded.", true);
+      } finally {
+        button.disabled = false;
+      }
+    });
+  });
+
+  document.querySelectorAll("[data-photo-remove]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const slot = Number(button.dataset.photoRemove);
+      const hiddenInput = photoDashboardForm.elements[photoColumns[slot]];
+      const oldPath = hiddenInput.value;
+
+      if (!oldPath) {
+        photoStatus(slot, "There is no saved photo in this spot.");
+        return;
+      }
+
+      button.disabled = true;
+      photoStatus(slot, "Removing photo...");
+
+      try {
+        const session = await getSession();
+        if (!session) throw new Error("Please log in again.");
+
+        const playerId = photoDashboardForm.elements.player_id?.value;
+        if (!playerId) throw new Error("Player profile not found.");
+
+        const { error: updateError } = await supabase
+          .from("players")
+          .update({ [photoColumns[slot]]: null })
+          .eq("id", Number(playerId))
+          .eq("owner_id", session.user.id);
+
+        if (updateError) throw updateError;
+
+        if (!/^https?:\/\//i.test(oldPath)) {
+          const { error: removeError } = await supabase.storage
+            .from(PHOTO_BUCKET)
+            .remove([oldPath]);
+          if (removeError) throw removeError;
+        }
+
+        hiddenInput.value = "";
+        await createPhotoPreview(null, slot);
+        photoStatus(slot, `Photo ${slot} removed.`);
+      } catch (error) {
+        photoStatus(slot, error.message || "The photo could not be removed.", true);
+      } finally {
+        button.disabled = false;
+      }
+    });
+  });
+
+  loadSavedPhotoPreviews();
+}
