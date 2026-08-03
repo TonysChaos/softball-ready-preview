@@ -6,6 +6,24 @@
   <title>Player Search | Softball Ready</title>
   <meta name="description" content="Search eligible Softball Ready player profiles.">
   <link rel="stylesheet" href="styles.css">
+
+<style>
+  .search-toolbar{background:#fff;border:1px solid #e7eaf0;border-radius:22px;padding:24px;box-shadow:0 10px 26px rgba(23,52,95,.07)}
+  .player-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px}
+  .player-card{background:#fff;border:1px solid #e7eaf0;border-radius:22px;overflow:hidden;box-shadow:0 12px 30px rgba(23,52,95,.08);transition:transform .2s ease,box-shadow .2s ease}
+  .player-card:hover{transform:translateY(-3px);box-shadow:0 16px 38px rgba(23,52,95,.14)}
+  .player-card img{width:100%;height:240px;object-fit:contain;background:#f3f5f8}
+  .player-card-body{padding:22px}
+  .player-card-name{font-size:28px;margin:8px 0;color:#17345f}
+  .player-card-meta{color:#6b7280;margin:6px 0}
+  .player-card-badges{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  .mini-badge{display:inline-flex;padding:7px 10px;border-radius:999px;background:#edf3fb;color:#17345f;font-size:13px;font-weight:900}
+  .mini-badge.pink{background:#fff0f6;color:#c63772}
+  .profile-meter{margin-top:14px}
+  .profile-meter-track{height:8px;border-radius:999px;background:#e8edf5;overflow:hidden}
+  .profile-meter-track div{height:100%;background:linear-gradient(90deg,#ef5d95,#4f86d9)}
+</style>
+
 </head>
 <body>
 <header class="header"><div class="container nav">
@@ -32,7 +50,7 @@
 <section class="section"><div class="container">
   <div class="notice" data-search-access-status>Checking coach and membership access...</div>
 
-  <form class="form-panel" id="player-search-form" style="margin-top:24px">
+  <form class="search-toolbar" id="player-search-form" style="margin-top:24px">
     <div class="form-grid">
       <div class="field"><label>Age division</label><select name="age_division"><option value="">All divisions</option><option>8U</option><option>10U</option><option>12U</option><option>14U</option><option>16U</option><option>18U</option><option>College</option></select></div>
       <div class="field"><label>State</label><input name="state" maxlength="2" placeholder="GA"></div>
@@ -52,7 +70,7 @@
   <div style="margin-top:28px">
     <div class="eyebrow">Search results</div>
     <h2 class="section-title">Eligible Player Profiles</h2>
-    <div class="listing-grid" data-player-search-results>
+    <div class="player-card-grid" data-player-search-results>
       <p>Use the search form above.</p>
     </div>
   </div>
