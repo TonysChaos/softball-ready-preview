@@ -234,7 +234,7 @@ if (playerSearchForm) {
       const form = new FormData(playerSearchForm);
       let query = supabase
         .from("players")
-        .select("id,first_name,last_name,age_division,state,city,primary_position,secondary_position,graduation_year,current_team,available_immediately,coach_notes,photo_url")
+        .select("id,first_name,last_name,age_division,state,city,primary_position,secondary_position,graduation_year,current_team,available_immediately,coach_notes,photo_url,bats,throws,gpa,highlight_video_url,recruiting_status")
         .eq("looking_for_team", true)
         .eq("searchable_by_coaches", true)
         .eq("membership_active", true)
@@ -244,13 +244,24 @@ if (playerSearchForm) {
       const age = textOrNull(form.get("age_division"));
       const state = textOrNull(form.get("state"));
       const position = textOrNull(form.get("primary_position"));
+      const city = textOrNull(form.get("city"));
       const grad = textOrNull(form.get("graduation_year"));
+      const bats = textOrNull(form.get("bats"));
+      const throwsHand = textOrNull(form.get("throws"));
+      const minimumGpa = textOrNull(form.get("minimum_gpa"));
+      const hasVideo = textOrNull(form.get("has_video"));
       const available = textOrNull(form.get("available_immediately"));
 
       if (age) query = query.eq("age_division", age);
       if (state) query = query.eq("state", state.toUpperCase());
       if (position) query = query.ilike("primary_position", `%${position}%`);
+      if (city) query = query.ilike("city", `%${city}%`);
       if (grad) query = query.eq("graduation_year", Number(grad));
+      if (bats) query = query.eq("bats", bats);
+      if (throwsHand) query = query.eq("throws", throwsHand);
+      if (minimumGpa) query = query.gte("gpa", Number(minimumGpa));
+      if (hasVideo === "true") query = query.not("highlight_video_url", "is", null);
+      if (hasVideo === "false") query = query.is("highlight_video_url", null);
       if (available) query = query.eq("available_immediately", available === "true");
 
       const { data, error } = await query;
@@ -261,12 +272,15 @@ if (playerSearchForm) {
       } else {
         results.innerHTML = data.map((player) => `
           <article class="listing-card">
+            ${player.photo_url ? `<img src="${player.photo_url}" alt="Player profile" style="width:100%;height:210px;object-fit:cover;border-radius:14px;margin-bottom:14px">` : ""}
             <span class="badge">${player.age_division || "Division not entered"} • ${player.state || "State not entered"}</span>
             <h3>${player.first_name} ${player.last_name}</h3>
             <p><strong>${player.primary_position || "Position not entered"}</strong>${player.secondary_position ? ` • ${player.secondary_position}` : ""}</p>
             <p>${player.city || ""}${player.graduation_year ? ` • Class of ${player.graduation_year}` : ""}</p>
+            <p>${player.bats ? `Bats ${player.bats}` : ""}${player.throws ? ` • Throws ${player.throws}` : ""}${player.gpa ? ` • GPA ${player.gpa}` : ""}</p>
             <p>${player.coach_notes || "No additional profile summary."}</p>
-            <div class="listing-meta">${player.available_immediately ? "Available immediately" : "Availability not immediate"}</div>
+            <div class="listing-meta">${player.available_immediately ? "Available immediately" : "Availability not immediate"}${player.highlight_video_url ? " • Video available" : ""}</div>
+            <a class="btn btn-outline" style="margin-top:14px" href="player-profile.html?id=${player.id}">View Full Profile</a>
           </article>
         `).join("");
       }
@@ -280,4 +294,93 @@ if (playerSearchForm) {
   });
 
   checkSearchAccess();
+}
+
+const playerProfileView = document.querySelector("[data-player-profile-view]");
+if (playerProfileView) {
+  const accessStatus = document.querySelector("[data-profile-access-status]");
+  const nameHeading = document.querySelector("[data-profile-name]");
+  const summary = document.querySelector("[data-profile-summary]");
+
+  const safeLink = (url, label) => url
+    ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`
+    : "";
+
+  const section = (title, content) => content
+    ? `<section style="margin-top:26px"><h2 style="color:var(--navy)">${title}</h2>${content}</section>`
+    : "";
+
+  async function loadFullPlayerProfile() {
+    try {
+      const session = await getSession();
+      if (!session) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("account_type,membership_active")
+        .eq("id", session.user.id)
+        .single();
+      if (profileError) throw profileError;
+
+      if (!["coach","admin"].includes(profile.account_type) || !profile.membership_active) {
+        throw new Error("A coach membership is required to view complete player profiles.");
+      }
+
+      const id = new URLSearchParams(window.location.search).get("id");
+      if (!id) throw new Error("No player profile was selected.");
+
+      const { data: player, error } = await supabase
+        .from("players")
+        .select("*")
+        .eq("id", id)
+        .single();
+      if (error) throw error;
+
+      nameHeading.textContent = `${player.first_name} ${player.last_name}`;
+      summary.textContent = `${player.age_division || ""} ${player.primary_position || ""} • ${player.city || ""}, ${player.state || ""}`;
+      setStatus(accessStatus, "Complete eligible player profile loaded.");
+
+      const photos = [player.photo_url, player.photo_url_2, player.photo_url_3, player.photo_url_4, player.photo_url_5].filter(Boolean);
+      const videos = [player.highlight_video_url, player.highlight_video_url_2, player.highlight_video_url_3, player.highlight_video_url_4, player.highlight_video_url_5].filter(Boolean);
+      const socials = [player.social_link_1, player.social_link_2].filter(Boolean);
+
+      playerProfileView.innerHTML = `
+        ${photos.length ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">${photos.map((url) => `<img src="${url}" alt="Player" style="width:100%;height:230px;object-fit:cover;border-radius:14px">`).join("")}</div>` : ""}
+        ${section("Player Information", `
+          <div class="listing-grid">
+            <article class="listing-card"><h3>Softball</h3><p>Primary: ${player.primary_position || "Not entered"}</p><p>Secondary: ${player.secondary_position || "Not entered"}</p><p>Bats: ${player.bats || "Not entered"} • Throws: ${player.throws || "Not entered"}</p><p>Current team: ${player.current_team || "Not entered"}</p></article>
+            <article class="listing-card"><h3>Academics</h3><p>Graduation year: ${player.graduation_year || "Not entered"}</p><p>GPA: ${player.gpa || "Not entered"}</p><p>Academic interests: ${player.academic_interests || "Not entered"}</p><p>Intended major: ${player.intended_major || "Not entered"}</p></article>
+            <article class="listing-card"><h3>Status</h3><p>${player.looking_for_team ? "Looking for a team" : "Not currently looking"}</p><p>${player.available_immediately ? "Available immediately" : "Not immediately available"}</p><p>${player.recruiting_status || "Recruiting status not entered"}</p><p>Travel: ${player.travel_willingness || "Not entered"}</p></article>
+          </div>
+        `)}
+        ${section("Skills Summary", player.skills_summary ? `<p>${player.skills_summary}</p>` : "")}
+        ${section("Experience, Strengths, and Goals", player.coach_notes ? `<p>${player.coach_notes}</p>` : "")}
+        ${section("Awards and Honors", player.awards_honors ? `<p>${player.awards_honors}</p>` : "")}
+        ${section("Tournament Schedule", player.tournament_schedule ? `<p style="white-space:pre-wrap">${player.tournament_schedule}</p>` : "")}
+        ${section("Performance Measurements", `
+          <div class="listing-grid">
+            <article class="listing-card"><h3>Hitting</h3><p>Bat speed: ${player.bat_speed_mph ?? "Not entered"} mph</p><p>Exit velocity: ${player.exit_velocity_mph ?? "Not entered"} mph</p></article>
+            <article class="listing-card"><h3>Throwing</h3><p>Throwing velocity: ${player.throwing_velocity_mph ?? "Not entered"} mph</p><p>Pitching velocity: ${player.pitching_velocity_mph ?? "Not entered"} mph</p></article>
+            <article class="listing-card"><h3>Timing</h3><p>Pop time: ${player.pop_time_seconds ?? "Not entered"} sec</p><p>Home to first: ${player.home_to_first_seconds ?? "Not entered"} sec</p></article>
+          </div>
+          <p><em>Measurements are family supplied and are not verified by Softball Ready.</em></p>
+        `)}
+        ${section("Videos", videos.length ? `<div style="display:flex;gap:12px;flex-wrap:wrap">${videos.map((url, index) => safeLink(url, `Watch Video ${index + 1}`)).join("")}</div>` : "")}
+        ${section("Social Links", socials.length ? `<div style="display:flex;gap:12px;flex-wrap:wrap">${socials.map((url, index) => safeLink(url, `Social Link ${index + 1}`)).join("")}</div>` : "")}
+        ${section("Coach References", [player.coach_reference_1, player.coach_reference_2].filter(Boolean).map((ref) => `<p>${ref}</p>`).join(""))}
+        <section style="margin-top:30px">
+          <h2 style="color:var(--navy)">Contact</h2>
+          <div class="notice">Private coach-to-family messaging will be added in the messaging build. Family email is not displayed publicly.</div>
+        </section>
+      `;
+    } catch (error) {
+      setStatus(accessStatus, error.message || "We could not load this player profile.", true);
+      playerProfileView.innerHTML = "<p>This profile is unavailable.</p>";
+    }
+  }
+
+  loadFullPlayerProfile();
 }
