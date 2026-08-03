@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Messages | Softball Ready</title>
+  <meta name="description" content="Private conversations between Softball Ready coaches and player families.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .messages-shell{display:grid;grid-template-columns:350px minmax(0,1fr);min-height:650px;background:#fff;border:1px solid #e5eaf1;border-radius:26px;overflow:hidden;box-shadow:0 16px 42px rgba(23,52,95,.10)}
+    .messages-sidebar{border-right:1px solid #e5eaf1;background:#f8fafc}
+    .messages-sidebar-head{padding:24px;border-bottom:1px solid #e5eaf1}
+    .messages-list{max-height:590px;overflow:auto}
+    .conversation-item{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid #e5eaf1;background:transparent;padding:18px 20px;cursor:pointer}
+    .conversation-item:hover,.conversation-item.active{background:#eef4fc}
+    .conversation-title{font-weight:950;color:#17345f;margin-bottom:5px}
+    .conversation-preview{font-size:14px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .conversation-meta{display:flex;justify-content:space-between;gap:10px;margin-top:8px;font-size:12px;color:#64748b}
+    .unread-badge{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:#ef5d95;color:#fff;font-weight:900}
+    .messages-main{display:grid;grid-template-rows:auto 1fr auto;min-width:0}
+    .thread-head{padding:22px 26px;border-bottom:1px solid #e5eaf1}
+    .thread-head h2{margin:0;color:#17345f}
+    .thread-subtitle{margin:5px 0 0;color:#64748b}
+    .thread-body{padding:24px;overflow:auto;background:linear-gradient(180deg,#fff,#f8fafc);max-height:500px}
+    .message-row{display:flex;margin:12px 0}
+    .message-row.mine{justify-content:flex-end}
+    .message-bubble{max-width:min(650px,82%);padding:13px 16px;border-radius:18px;background:#edf3fb;color:#17345f;white-space:pre-wrap;overflow-wrap:anywhere}
+    .message-row.mine .message-bubble{background:#17345f;color:#fff}
+    .message-time{display:block;font-size:11px;margin-top:7px;opacity:.72}
+    .composer{padding:18px;border-top:1px solid #e5eaf1;background:#fff}
+    .composer-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end}
+    .composer textarea{width:100%;min-height:92px;resize:vertical}
+    .empty-state{display:grid;place-items:center;text-align:center;padding:60px 24px;color:#64748b}
+    .message-notice{padding:12px 16px;font-weight:800}
+    @media(max-width:820px){
+      .messages-shell{grid-template-columns:1fr;min-height:0}
+      .messages-sidebar{border-right:0;border-bottom:1px solid #e5eaf1}
+      .messages-list{max-height:260px}
+      .thread-body{max-height:460px}
+      .composer-row{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<header class="header"><div class="container nav">
+  <a class="brand" href="index.html" aria-label="Softball Ready home"><div class="logo-mark">S<span>R</span></div><div class="brand-copy"><strong>SOFTBALL <span style="color:var(--pink)">READY</span></strong><small>The National Travel Softball Connection.</small></div></a>
+  <button class="menu-btn" aria-expanded="false" aria-label="Open navigation">☰</button>
+  <nav class="nav-links">
+    <a href="index.html">Home</a><a href="players.html">Players</a><a href="teams.html">Teams</a>
+    <a href="coach-dashboard.html">Coach Dashboard</a><a href="player-search.html">Player Search</a>
+    <a href="messages.html" aria-current="page">Messages</a><a href="membership.html">Membership</a>
+  </nav>
+  <button class="btn btn-outline" type="button" data-message-logout>Log Out</button>
+</div></header>
+
+<main>
+<section class="page-hero"><div class="container">
+  <div class="eyebrow" style="color:#ff72a7">Private connection</div>
+  <h1>Messages</h1>
+  <p>Coaches and player families can communicate without publishing personal email addresses or phone numbers.</p>
+</div></section>
+
+<section class="section"><div class="container">
+  <div class="notice" data-messages-page-status>Loading your private conversations...</div>
+  <div class="messages-shell" style="margin-top:24px">
+    <aside class="messages-sidebar">
+      <div class="messages-sidebar-head">
+        <div class="eyebrow">Inbox</div>
+        <h2 style="margin:5px 0 0;color:#17345f">Conversations</h2>
+      </div>
+      <div class="messages-list" data-conversation-list>
+        <div class="empty-state">Loading conversations...</div>
+      </div>
+    </aside>
+
+    <section class="messages-main">
+      <div class="thread-head">
+        <h2 data-thread-title>Select a conversation</h2>
+        <p class="thread-subtitle" data-thread-subtitle>Your private message thread will appear here.</p>
+      </div>
+      <div class="thread-body" data-thread-body>
+        <div class="empty-state">
+          <div>
+            <h3 style="color:#17345f">No conversation selected</h3>
+            <p>Open a conversation from your inbox, or use Contact Family on an eligible player profile.</p>
+          </div>
+        </div>
+      </div>
+      <form class="composer" data-message-form>
+        <div class="composer-row">
+          <textarea name="body" maxlength="5000" placeholder="Write a private message..." disabled required></textarea>
+          <button class="btn btn-pink" type="submit" disabled>Send Message</button>
+        </div>
+        <div class="message-notice" data-message-status></div>
+      </form>
+    </section>
+  </div>
+</div></section>
+</main>
+
+<footer class="footer"><div class="container"><div class="footer-bottom"><div class="footer-motto">Where Opportunity Meets Preparation.</div><div>© 2026 Softball Ready. All rights reserved.</div></div></div></footer>
+<script src="script.js"></script>
+<script type="module" src="message-app.js"></script>
+</body>
+</html>

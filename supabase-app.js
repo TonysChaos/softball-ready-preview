@@ -557,7 +557,13 @@ if (playerProfileView) {
               <div class="eyebrow">Coach connection</div>
               <h2>Interested in this athlete?</h2>
               <p>Send a private message through Softball Ready without exposing the family’s email address.</p>
-              <button class="btn btn-pink" type="button" disabled style="width:100%">Contact Family — Coming Next</button>
+              <button class="btn btn-pink" type="button"
+                data-contact-family
+                data-player-id="${player.id}"
+                data-player-owner="${player.owner_id}"
+                data-player-name="${player.first_name} ${player.last_name}"
+                style="width:100%">Contact Family</button>
+              <p data-contact-status style="font-weight:800;margin-top:12px"></p>
             </section>
 
             <section class="pro-card">
@@ -573,6 +579,46 @@ if (playerProfileView) {
 
       playerProfileView.querySelectorAll("[data-gallery-photo]").forEach((button) => {
         button.addEventListener("click", () => openLightbox(button.dataset.galleryPhoto));
+      });
+
+      const contactButton = playerProfileView.querySelector("[data-contact-family]");
+      const contactStatus = playerProfileView.querySelector("[data-contact-status]");
+      contactButton?.addEventListener("click", async () => {
+        contactButton.disabled = true;
+        if (contactStatus) {
+          contactStatus.textContent = "Opening a private conversation...";
+          contactStatus.style.color = "var(--navy)";
+        }
+
+        try {
+          const initialMessage = window.prompt(
+            `Write your first private message about ${contactButton.dataset.playerName}:`,
+            "Hello, I am interested in learning more about your player."
+          );
+
+          if (initialMessage === null) {
+            if (contactStatus) contactStatus.textContent = "";
+            return;
+          }
+
+          const body = initialMessage.trim();
+          if (!body) throw new Error("Please enter a message before continuing.");
+
+          const { data, error } = await supabase.rpc("start_player_conversation", {
+            target_player_id: Number(contactButton.dataset.playerId),
+            initial_message: body
+          });
+
+          if (error) throw error;
+          window.location.href = `messages.html?conversation=${encodeURIComponent(data)}`;
+        } catch (error) {
+          if (contactStatus) {
+            contactStatus.textContent = error.message || "The conversation could not be started.";
+            contactStatus.style.color = "#b42318";
+          }
+        } finally {
+          contactButton.disabled = false;
+        }
       });
     } catch (error) {
       setStatus(accessStatus, error.message || "We could not load this player profile.", true);
