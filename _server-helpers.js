@@ -1,0 +1,5 @@
+import { createClient } from "@supabase/supabase-js";
+export function admin(){const u=process.env.SUPABASE_URL,k=process.env.SUPABASE_SECRET_KEY;if(!u||!k)throw new Error("Supabase server variables are missing.");return createClient(u,k,{auth:{autoRefreshToken:false,persistSession:false}})}
+export async function user(req,s){const h=req.headers.authorization||"";if(!h.startsWith("Bearer "))throw new Error("Authentication required.");const{data,error}=await s.auth.getUser(h.slice(7));if(error||!data.user)throw new Error("Invalid login session.");return data.user}
+export function origin(req){return process.env.SITE_URL?.replace(/\/$/,"")||`${req.headers["x-forwarded-proto"]||"https"}://${req.headers["x-forwarded-host"]||req.headers.host}`}
+export function periodEnd(sub){const a=sub?.items?.data?.map(i=>i.current_period_end).filter(Boolean)||[];return a.length?new Date(Math.max(...a)*1000).toISOString():null}
