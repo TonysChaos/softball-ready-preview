@@ -81,15 +81,6 @@
   }
 </style>
 
-
-<style>
-  .contact-modal{position:fixed;inset:0;background:rgba(5,15,32,.72);z-index:10000;display:none;align-items:center;justify-content:center;padding:20px}
-  .contact-modal.open{display:flex}
-  .contact-modal-card{width:min(620px,100%);background:#fff;border-radius:24px;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.28)}
-  .contact-modal-card h2{color:#17345f;margin:0}
-  .contact-modal-card textarea{width:100%;min-height:160px;margin-top:18px;border-radius:16px;padding:14px}
-  .contact-modal-actions{display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
-</style>
 </head>
 <body>
 <header class="header"><div class="container nav">
@@ -118,18 +109,4 @@
 
 <footer class="footer"><div class="container"><div class="footer-bottom"><div class="footer-motto">Where Opportunity Meets Preparation.</div><div>© 2026 Softball Ready. All rights reserved.</div></div></div></footer>
 <script src="script.js"></script><script type="module" src="supabase-app.js"></script>
-
-<div class="contact-modal" data-contact-modal aria-hidden="true">
-  <div class="contact-modal-card" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
-    <div class="eyebrow">Private message</div>
-    <h2 id="contact-modal-title" data-contact-modal-title>Contact Family</h2>
-    <p data-contact-modal-subtitle>Your message will stay inside Softball Ready.</p>
-    <textarea data-contact-modal-message maxlength="5000">Hello, I am interested in learning more about your player.</textarea>
-    <p data-contact-modal-status style="font-weight:800"></p>
-    <div class="contact-modal-actions">
-      <button class="btn btn-outline" type="button" data-contact-modal-cancel>Cancel</button>
-      <button class="btn btn-pink" type="button" data-contact-modal-send>Send Message</button>
-    </div>
-  </div>
-</div>
 </body></html>

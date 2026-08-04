@@ -583,67 +583,31 @@ if (playerProfileView) {
 
       const contactButton = playerProfileView.querySelector("[data-contact-family]");
       const contactStatus = playerProfileView.querySelector("[data-contact-status]");
-      const contactModal = document.querySelector("[data-contact-modal]");
-      const contactModalTitle = document.querySelector("[data-contact-modal-title]");
-      const contactModalSubtitle = document.querySelector("[data-contact-modal-subtitle]");
-      const contactModalMessage = document.querySelector("[data-contact-modal-message]");
-      const contactModalStatus = document.querySelector("[data-contact-modal-status]");
-      const contactModalCancel = document.querySelector("[data-contact-modal-cancel]");
-      const contactModalSend = document.querySelector("[data-contact-modal-send]");
-
-      function closeContactModal() {
-        contactModal?.classList.remove("open");
-        contactModal?.setAttribute("aria-hidden", "true");
-        if (contactModalStatus) contactModalStatus.textContent = "";
-      }
-
-      contactButton?.addEventListener("click", () => {
-        if (contactModalTitle) contactModalTitle.textContent = `Contact ${contactButton.dataset.playerName}'s Family`;
-        if (contactModalSubtitle) contactModalSubtitle.textContent = "Your email address and the family's email address will remain private.";
-        if (contactModalMessage) {
-          contactModalMessage.value = `Hello, I am interested in learning more about ${contactButton.dataset.playerName}.`;
-          contactModalMessage.focus();
-        }
-        contactModal?.classList.add("open");
-        contactModal?.setAttribute("aria-hidden", "false");
-      });
-
-      contactModalCancel?.addEventListener("click", closeContactModal);
-      contactModal?.addEventListener("click", (event) => {
-        if (event.target === contactModal) closeContactModal();
-      });
-
-      contactModalSend?.addEventListener("click", async () => {
-        contactModalSend.disabled = true;
-        if (contactModalStatus) {
-          contactModalStatus.textContent = "Starting your private conversation...";
-          contactModalStatus.style.color = "var(--navy)";
+      contactButton?.addEventListener("click", async () => {
+        contactButton.disabled = true;
+        if (contactStatus) {
+          contactStatus.textContent = "Opening a private conversation...";
+          contactStatus.style.color = "var(--navy)";
         }
 
         try {
-          const body = contactModalMessage?.value.trim() || "";
+          const initialMessage = window.prompt(
+            `Write your first private message about ${contactButton.dataset.playerName}:`,
+            "Hello, I am interested in learning more about your player."
+          );
+
+          if (initialMessage === null) {
+            if (contactStatus) contactStatus.textContent = "";
+            return;
+          }
+
+          const body = initialMessage.trim();
           if (!body) throw new Error("Please enter a message before continuing.");
 
           const { data, error } = await supabase.rpc("start_player_conversation", {
             target_player_id: Number(contactButton.dataset.playerId),
             initial_message: body
           });
-
-          if (error) throw error;
-          window.location.href = `messages.html?conversation=${encodeURIComponent(data)}`;
-        } catch (error) {
-          if (contactModalStatus) {
-            contactModalStatus.textContent = error.message || "The conversation could not be started.";
-            contactModalStatus.style.color = "#b42318";
-          }
-          if (contactStatus) {
-            contactStatus.textContent = error.message || "The conversation could not be started.";
-            contactStatus.style.color = "#b42318";
-          }
-        } finally {
-          contactModalSend.disabled = false;
-        }
-      });
 
           if (error) throw error;
           window.location.href = `messages.html?conversation=${encodeURIComponent(data)}`;
