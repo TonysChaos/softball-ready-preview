@@ -1,0 +1,10 @@
+{
+  "name": "softball-ready",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "latest",
+    "raw-body": "latest",
+    "stripe": "latest"
+  }
+}
