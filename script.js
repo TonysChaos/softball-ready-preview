@@ -11,7 +11,7 @@ document.querySelectorAll('form[data-demo-form]').forEach((form) => {
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const status = form.querySelector('[data-form-status]');
-    if (status) status.textContent = 'Your information has been saved in this demonstration. Account and database connection comes next.';
+    if (status) status.textContent = 'Success! Your team need has been saved. You can update or edit this information anytime from your Coach Dashboard.';
     form.reset();
   });
 });
