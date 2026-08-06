@@ -34,6 +34,22 @@ function textOrNull(value) {
   return text === "" ? null : text;
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatOpportunityDate(value) {
+  if (!value) return "";
+  const date = new Date(`${value}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return escapeHtml(value);
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
+
 async function ensureCoachProfile(session) {
   const { data: profile, error } = await supabase
     .from("profiles")
@@ -78,14 +94,28 @@ if (coachProfileForm) {
       needsList.innerHTML = "<p>No roster openings have been posted yet.</p>";
       return;
     }
-    needsList.innerHTML = data.map((need) => `
-      <article class="listing-card">
-        <span class="badge">${need.age_division || "Division not entered"} • ${need.active ? "Active" : "Inactive"}</span>
-        <h3>${need.title}</h3>
-        <p>${need.details || "No additional details."}</p>
-        <div class="listing-meta">${(need.positions_needed || []).join(", ") || "Positions not entered"}</div>
-      </article>
-    `).join("");
+    needsList.innerHTML = data.map((need) => {
+      const isPickup = need.need_type === "pickup_tournament";
+      const dateRange = isPickup && need.tournament_start_date
+        ? `${formatOpportunityDate(need.tournament_start_date)}${need.tournament_end_date ? ` – ${formatOpportunityDate(need.tournament_end_date)}` : ""}`
+        : null;
+      const tournamentLocation = [need.tournament_city, need.tournament_state].filter(Boolean).join(", ");
+
+      return `
+        <article class="listing-card">
+          <span class="badge">${isPickup ? "Pickup Player" : "Season Roster"} • ${need.age_division || "Division not entered"} • ${need.active ? "Active" : "Inactive"}</span>
+          <h3>${escapeHtml(need.title || "Player opportunity")}</h3>
+          ${isPickup ? `
+            <div class="listing-meta"><strong>Tournament:</strong> ${escapeHtml(need.tournament_name || "Not entered")}</div>
+            ${dateRange ? `<div class="listing-meta"><strong>Dates:</strong> ${dateRange}</div>` : ""}
+            ${tournamentLocation ? `<div class="listing-meta"><strong>Location:</strong> ${escapeHtml(tournamentLocation)}</div>` : ""}
+          ` : ""}
+          <div class="listing-meta"><strong>Positions:</strong> ${escapeHtml((need.positions_needed || []).join(", ") || "Open to all positions")}</div>
+          ${need.start_date ? `<div class="listing-meta"><strong>Player needed by:</strong> ${formatOpportunityDate(need.start_date)}</div>` : ""}
+          <p>${escapeHtml(need.details || "No additional details.")}</p>
+        </article>
+      `;
+    }).join("");
   }
 
   async function loadCoachDashboard() {
@@ -181,18 +211,36 @@ if (coachProfileForm) {
       const form = new FormData(needsForm);
       const positions = String(form.get("positions_needed_text") || "")
         .split(",").map((value) => value.trim()).filter(Boolean);
+      const needType = String(form.get("need_type") || "season_roster").trim();
+      const isPickup = needType === "pickup_tournament";
+
       const need = {
         team_id: currentTeam.id,
         owner_id: currentSession.user.id,
+        need_type: needType,
         title: String(form.get("title") || "").trim(),
         age_division: textOrNull(form.get("age_division")) || currentTeam.age_division,
         positions_needed: positions,
-        city: currentTeam.city,
-        state: currentTeam.state,
+        city: isPickup ? String(form.get("tournament_city") || "").trim() : currentTeam.city,
+        state: isPickup ? String(form.get("tournament_state") || "").trim().toUpperCase() : currentTeam.state,
         start_date: textOrNull(form.get("start_date")),
+        tournament_name: isPickup ? textOrNull(form.get("tournament_name")) : null,
+        tournament_start_date: isPickup ? textOrNull(form.get("tournament_start_date")) : null,
+        tournament_end_date: isPickup ? textOrNull(form.get("tournament_end_date")) : null,
+        tournament_city: isPickup ? textOrNull(form.get("tournament_city")) : null,
+        tournament_state: isPickup ? String(form.get("tournament_state") || "").trim().toUpperCase() || null : null,
         details: textOrNull(form.get("details")),
         active: form.get("active") === "true"
       };
+
+      if (isPickup) {
+        if (!need.tournament_name) throw new Error("Enter the tournament name.");
+        if (!need.tournament_start_date) throw new Error("Enter the tournament start date.");
+        if (!need.tournament_city || !need.tournament_state) throw new Error("Enter the tournament city and state.");
+        if (need.tournament_end_date && need.tournament_end_date < need.tournament_start_date) {
+          throw new Error("The tournament end date cannot be before the start date.");
+        }
+      }
       const { error } = await supabase.from("team_needs").insert(need);
       if (error) throw error;
       needsForm.reset();
@@ -817,4 +865,150 @@ if (photoDashboardForm && document.querySelector("[data-photo-upload]")) {
   });
 
   loadSavedPhotoPreviews();
+}
+
+// Pickup Player Marketplace
+const pickupMarketplaceForm = document.querySelector("#pickup-marketplace-form");
+if (pickupMarketplaceForm) {
+  const accessStatus = document.querySelector("[data-pickup-access-status]");
+  const formStatus = pickupMarketplaceForm.querySelector("[data-form-status]");
+  const results = document.querySelector("[data-pickup-results]");
+  const summary = document.querySelector("[data-pickup-summary]");
+  const clearButton = document.querySelector("[data-pickup-clear]");
+  let accessAllowed = false;
+
+  function pickupDateRange(need) {
+    const start = formatOpportunityDate(need.tournament_start_date);
+    const end = formatOpportunityDate(need.tournament_end_date);
+    if (start && end && start !== end) return `${start} – ${end}`;
+    return start || end || "Date not entered";
+  }
+
+  function pickupTeamName(need) {
+    const team = Array.isArray(need.teams) ? need.teams[0] : need.teams;
+    return team?.team_name || team?.organization_name || "Travel softball team";
+  }
+
+  function renderPickupCards(data) {
+    if (!data.length) {
+      results.innerHTML = `<div class="pickup-empty"><h3>No pickup opportunities matched those filters.</h3><p>Try clearing one or more filters, or check back as coaches add new tournament needs.</p></div>`;
+      summary.textContent = "No active opportunities found.";
+      return;
+    }
+
+    results.innerHTML = data.map((need) => {
+      const positions = Array.isArray(need.positions_needed) ? need.positions_needed.join(", ") : (need.positions_needed || "Any position");
+      const locationText = [need.tournament_city, need.tournament_state].filter(Boolean).join(", ") || [need.city, need.state].filter(Boolean).join(", ") || "Location not entered";
+      return `
+        <article class="pickup-card">
+          <div class="pickup-card-top">
+            <div class="pickup-badges">
+              <span class="pickup-badge pink">Pickup Player</span>
+              <span class="pickup-badge">${escapeHtml(need.age_division || "Age not entered")}</span>
+            </div>
+            <h3>${escapeHtml(need.title || "Tournament player needed")}</h3>
+            <p>${escapeHtml(pickupTeamName(need))}</p>
+          </div>
+          <div class="pickup-card-body">
+            <div class="pickup-meta">
+              <div><strong>Tournament:</strong> ${escapeHtml(need.tournament_name || "Not entered")}</div>
+              <div><strong>Dates:</strong> ${escapeHtml(pickupDateRange(need))}</div>
+              <div><strong>Location:</strong> ${escapeHtml(locationText)}</div>
+              <div><strong>Position needed:</strong> ${escapeHtml(positions)}</div>
+              ${need.start_date ? `<div><strong>Player needed by:</strong> ${escapeHtml(formatOpportunityDate(need.start_date))}</div>` : ""}
+            </div>
+            <div class="pickup-details">${escapeHtml(need.details || "Contact the team through Softball Ready for additional tournament details.")}</div>
+            <div class="pickup-card-footer"><a class="btn btn-pink" href="messages.html">Open Messages</a></div>
+          </div>
+        </article>`;
+    }).join("");
+    summary.textContent = `${data.length} active pickup opportunit${data.length === 1 ? "y" : "ies"} found.`;
+  }
+
+  async function verifyPickupAccess() {
+    try {
+      const session = await getSession();
+      if (!session) {
+        accessStatus.innerHTML = `Please <a href="login.html">log in</a> to view pickup-player opportunities.`;
+        results.innerHTML = `<div class="pickup-empty">Log in to browse tournament pickup needs.</div>`;
+        return false;
+      }
+
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("membership_active")
+        .eq("id", session.user.id)
+        .single();
+      if (error) throw error;
+
+      accessAllowed = profile.membership_active === true;
+      if (!accessAllowed) {
+        accessStatus.innerHTML = `Pickup Player Marketplace access requires an active Softball Ready membership. <a href="membership.html">Activate membership</a>.`;
+        results.innerHTML = `<div class="pickup-empty">Activate membership to browse current tournament opportunities.</div>`;
+        return false;
+      }
+
+      accessStatus.textContent = "Your membership is active. Current tournament pickup opportunities are unlocked.";
+      return true;
+    } catch (error) {
+      accessStatus.textContent = error.message || "We could not verify marketplace access.";
+      accessStatus.style.color = "#8b1d3d";
+      results.innerHTML = `<div class="pickup-error">The marketplace could not be opened.</div>`;
+      return false;
+    }
+  }
+
+  async function loadPickupOpportunities() {
+    if (!accessAllowed) return;
+    const button = pickupMarketplaceForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    setStatus(formStatus, "Searching pickup opportunities...");
+    results.innerHTML = `<div class="pickup-empty">Loading tournament needs...</div>`;
+
+    try {
+      const form = new FormData(pickupMarketplaceForm);
+      let query = supabase
+        .from("team_needs")
+        .select("*,teams(team_name,organization_name,coach_name,team_level)")
+        .eq("need_type", "pickup_tournament")
+        .eq("active", true)
+        .order("tournament_start_date", { ascending: true, nullsFirst: false })
+        .limit(100);
+
+      const age = textOrNull(form.get("age_division"));
+      const state = textOrNull(form.get("state"));
+      const position = textOrNull(form.get("position"));
+      const dateFrom = textOrNull(form.get("date_from"));
+
+      if (age) query = query.eq("age_division", age);
+      if (state) query = query.eq("tournament_state", state.toUpperCase());
+      if (position) query = query.contains("positions_needed", [position]);
+      if (dateFrom) query = query.gte("tournament_start_date", dateFrom);
+
+      const { data, error } = await query;
+      if (error) throw error;
+      renderPickupCards(data || []);
+      setStatus(formStatus, "Search complete.");
+    } catch (error) {
+      setStatus(formStatus, error.message || "The pickup search could not be completed.", true);
+      results.innerHTML = `<div class="pickup-error"><strong>Pickup opportunities could not be loaded.</strong><br>${escapeHtml(error.message || "Please try again.")}</div>`;
+      summary.textContent = "Search unavailable.";
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  pickupMarketplaceForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    await loadPickupOpportunities();
+  });
+
+  clearButton?.addEventListener("click", async () => {
+    pickupMarketplaceForm.reset();
+    await loadPickupOpportunities();
+  });
+
+  (async () => {
+    if (await verifyPickupAccess()) await loadPickupOpportunities();
+  })();
 }
