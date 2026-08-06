@@ -3,139 +3,157 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Teams Directory | Softball Ready</title>
-  <meta name="description" content="Browse travel softball teams and open roster needs across the country.">
+  <title>Team Opportunities | Softball Ready</title>
+  <meta name="description" content="Browse travel softball teams looking for players across the country.">
   <link rel="stylesheet" href="styles.css">
   <style>
-    .teams-directory-page{background:#f7f8fb;min-height:100vh}.teams-hero{background:linear-gradient(135deg,#0f1f46,#263d73);color:#fff;padding:70px 20px 56px;text-align:center}.teams-hero .eyebrow{color:#ff7a9e;font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:.82rem}.teams-hero h1{margin:10px auto 14px;max-width:900px;font-size:clamp(2.2rem,5vw,4.4rem);line-height:1.02}.teams-hero p{max-width:760px;margin:0 auto;font-size:1.08rem;line-height:1.7;color:#e7ebf6}.directory-wrap{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:34px 0 70px}.directory-toolbar{background:#fff;border:1px solid #e4e7ef;border-radius:22px;padding:22px;box-shadow:0 14px 36px rgba(15,31,70,.08);margin-top:-34px;position:relative;z-index:2}.filter-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:14px}.filter-field label{display:block;font-weight:800;color:#14244d;margin-bottom:7px}.filter-field input,.filter-field select{width:100%;min-height:50px;border:1px solid #cfd5e3;border-radius:12px;padding:0 14px;font:inherit;background:#fff}.filter-field input:focus,.filter-field select:focus{outline:3px solid rgba(255,91,132,.18);border-color:#ff5b84}.directory-meta{display:flex;justify-content:space-between;gap:16px;align-items:center;margin:26px 2px 18px}.directory-meta h2{margin:0;color:#14244d;font-size:1.6rem}.directory-meta p{margin:4px 0 0;color:#5d6577}.team-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.team-card{background:#fff;border:1px solid #e1e5ee;border-radius:20px;overflow:hidden;box-shadow:0 10px 28px rgba(15,31,70,.07);display:flex;flex-direction:column}.team-card-top{padding:22px 22px 16px;border-bottom:1px solid #edf0f5}.team-card h3{margin:0 0 8px;color:#14244d;font-size:1.35rem}.team-location{color:#667085;font-weight:700}.badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:7px 10px;font-size:.78rem;font-weight:900;background:#edf2ff;color:#233d75}.badge.open{background:#ffe8ef;color:#a5224a}.team-card-body{padding:18px 22px;display:grid;gap:12px;flex:1}.team-fact{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #f0f2f6;padding-bottom:10px}.team-fact span:first-child{font-weight:800;color:#4d566a}.team-fact span:last-child{text-align:right;color:#111827}.team-description{color:#525b6e;line-height:1.6;margin:0}.team-card-actions{padding:0 22px 22px}.details-btn{width:100%;border:0;border-radius:12px;background:#ff4f7b;color:#fff;font-weight:900;font-size:1rem;padding:14px 18px;cursor:pointer}.details-btn:hover{filter:brightness(.97)}.details-panel{display:none;margin-top:14px;background:#f7f8fb;border-radius:12px;padding:14px;line-height:1.55;color:#3f485b}.details-panel.open{display:block}.empty-state{grid-column:1/-1;text-align:center;background:#fff;border:1px dashed #b8c0d0;border-radius:20px;padding:46px 24px;color:#586174}.empty-state h3{margin:0 0 8px;color:#14244d;font-size:1.4rem}.loading{grid-column:1/-1;text-align:center;padding:42px;color:#596274;font-weight:800}.coach-note{margin-top:28px;background:#14244d;color:#fff;border-radius:20px;padding:24px;display:flex;justify-content:space-between;align-items:center;gap:18px}.coach-note h3{margin:0 0 6px;font-size:1.35rem}.coach-note p{margin:0;color:#dfe5f3}.coach-note a{display:inline-block;white-space:nowrap;background:#ff5b84;color:#fff;text-decoration:none;font-weight:900;padding:13px 18px;border-radius:12px}.filter-actions{display:flex;gap:12px;align-items:end}.search-btn,.clear-btn{min-height:50px;border-radius:12px;padding:0 18px;font:inherit;font-weight:900;cursor:pointer}.search-btn{border:0;background:#ff4f7b;color:#fff}.clear-btn{border:1px solid #cfd5e3;background:#fff;color:#14244d}.directory-error{grid-column:1/-1;background:#fff3f5;border:1px solid #ffc3d1;border-radius:18px;padding:24px;color:#8b1d3d}.directory-error strong{display:block;color:#6f1630;margin-bottom:6px}@media(max-width:900px){.filter-grid{grid-template-columns:1fr 1fr}.filter-actions{grid-column:1/-1}.team-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.filter-actions{flex-direction:column;align-items:stretch}.search-btn,.clear-btn{width:100%}.teams-hero{padding:50px 18px 48px}.directory-wrap{width:min(100% - 20px,1180px)}.filter-grid,.team-grid{grid-template-columns:1fr}.directory-meta{align-items:flex-start;flex-direction:column}.coach-note{align-items:flex-start;flex-direction:column}.coach-note a{width:100%;text-align:center}}
+    .teams-directory-page{background:#f7f8fb;min-height:100vh}
+    .teams-hero{background:linear-gradient(135deg,#0f1f46,#263d73);color:#fff;padding:68px 20px 54px;text-align:center}
+    .teams-hero .eyebrow{color:#ff7a9e;font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:.82rem}
+    .teams-hero h1{margin:10px auto 14px;max-width:900px;font-size:clamp(2.2rem,5vw,4.3rem);line-height:1.04}
+    .teams-hero p{max-width:760px;margin:0 auto;font-size:1.08rem;line-height:1.7;color:#e7ebf6}
+    .directory-wrap{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:34px 0 70px}
+    .directory-toolbar{background:#fff;border:1px solid #e4e7ef;border-radius:22px;padding:22px;box-shadow:0 14px 36px rgba(15,31,70,.08);margin-top:-34px;position:relative;z-index:2}
+    .filter-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:14px}
+    .filter-field label{display:block;font-weight:800;color:#14244d;margin-bottom:7px}
+    .filter-field input,.filter-field select{width:100%;min-height:50px;border:1px solid #cfd5e3;border-radius:12px;padding:0 14px;font:inherit;background:#fff}
+    .filter-actions{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
+    .search-btn,.clear-btn{border-radius:12px;font-weight:900;font-size:1rem;padding:13px 19px;cursor:pointer}
+    .search-btn{border:0;background:#ff4f7b;color:#fff}
+    .clear-btn{border:1px solid #b9c0cf;background:#fff;color:#27344f}
+    .directory-meta{display:flex;justify-content:space-between;gap:16px;align-items:center;margin:26px 2px 18px}
+    .directory-meta h2{margin:0;color:#14244d;font-size:1.6rem}
+    .directory-meta p{margin:4px 0 0;color:#5d6577}
+    .team-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+    .team-card{background:#fff;border:1px solid #e1e5ee;border-radius:20px;overflow:hidden;box-shadow:0 10px 28px rgba(15,31,70,.07);display:flex;flex-direction:column}
+    .team-card-top{padding:22px 22px 16px;border-bottom:1px solid #edf0f5}
+    .team-card h3{margin:0 0 8px;color:#14244d;font-size:1.35rem}
+    .team-location{color:#667085;font-weight:700}
+    .badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .badge{display:inline-flex;align-items:center;border-radius:999px;padding:7px 10px;font-size:.78rem;font-weight:900;background:#edf2ff;color:#233d75}
+    .badge.open{background:#ffe8ef;color:#a5224a}
+    .team-card-body{padding:18px 22px;display:grid;gap:12px;flex:1}
+    .team-fact{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #f0f2f6;padding-bottom:10px}
+    .team-fact span:first-child{font-weight:800;color:#4d566a}
+    .team-fact span:last-child{text-align:right;color:#111827}
+    .team-description{color:#525b6e;line-height:1.6;margin:0}
+    .empty-state,.error-state,.loading{grid-column:1/-1;text-align:center;background:#fff;border-radius:20px;padding:46px 24px}
+    .empty-state{border:1px dashed #b8c0d0;color:#586174}
+    .error-state{border:1px solid #efb7c3;background:#fff4f6;color:#8e2d48}
+    .loading{color:#596274;font-weight:800}
+    .coach-note{margin-top:28px;background:#14244d;color:#fff;border-radius:20px;padding:24px;display:flex;justify-content:space-between;align-items:center;gap:18px}
+    .coach-note h3{margin:0 0 6px;font-size:1.35rem}
+    .coach-note p{margin:0;color:#dfe5f3}
+    .coach-note a{display:inline-block;white-space:nowrap;background:#ff5b84;color:#fff;text-decoration:none;font-weight:900;padding:13px 18px;border-radius:12px}
+    @media(max-width:900px){.filter-grid{grid-template-columns:1fr 1fr}.team-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:640px){.teams-hero{padding:50px 18px 48px}.directory-wrap{width:min(100% - 20px,1180px)}.filter-grid,.team-grid{grid-template-columns:1fr}.directory-meta{align-items:flex-start;flex-direction:column}.coach-note{align-items:flex-start;flex-direction:column}.coach-note a{width:100%;text-align:center}}
   </style>
 </head>
 <body class="teams-directory-page">
-  <header class="header"><div class="container nav"><a class="brand" href="index.html" aria-label="Softball Ready home"><div class="logo-mark">S<span>R</span></div><div class="brand-copy"><strong>SOFTBALL READY</strong><small>THE NATIONAL TRAVEL SOFTBALL CONNECTION.</small></div></a><button class="menu-btn" aria-expanded="false" aria-label="Open navigation">Menu</button><nav class="nav-links" aria-label="Primary navigation"><a href="index.html">Home</a><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a><a class="active" href="teams.html">Teams</a><a href="coach-dashboard.html">Coach Dashboard</a><a href="player-search.html">Player Search</a><a href="our-story.html">Our Story</a><a href="membership.html">Membership</a><a class="nav-cta" href="dashboard.html">Dashboard</a></nav></div></header>
+  <header class="header">
+    <div class="container nav">
+      <a class="brand" href="index.html" aria-label="Softball Ready home">
+        <div class="logo-mark">S<span>R</span></div>
+        <div class="brand-copy"><strong>SOFTBALL READY</strong><small>THE NATIONAL TRAVEL SOFTBALL CONNECTION.</small></div>
+      </a>
+      <button class="menu-btn" aria-expanded="false" aria-label="Open navigation">Menu</button>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="index.html">Home</a><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a>
+        <a class="active" href="teams.html">Teams</a><a href="coach-dashboard.html">Coach Dashboard</a>
+        <a href="player-search.html">Player Search</a><a href="our-story.html">Our Story</a>
+        <a href="membership.html">Membership</a><a class="nav-cta" href="dashboard.html">Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
   <main>
-    <section class="teams-hero"><div class="eyebrow">Find the right opportunity</div><h1>Travel Softball Teams Directory</h1><p>Browse teams and open roster needs by location, age division, and position. Team information is created and managed by coaches through the Coach Dashboard.</p></section>
+    <section class="teams-hero">
+      <div class="eyebrow">Players and families</div>
+      <h1>Team Opportunities Directory</h1>
+      <p>Find travel softball teams currently looking for players. Coaches create and manage all listings from their private Coach Dashboard.</p>
+    </section>
+
     <section class="directory-wrap">
-      <div class="directory-toolbar" aria-label="Team directory filters"><div class="filter-grid"><div class="filter-field"><label for="teamSearch">Search teams</label><input id="teamSearch" type="search" placeholder="Team name, city, coach, or position"></div><div class="filter-field"><label for="stateFilter">State</label><select id="stateFilter"><option value="">All states</option></select></div><div class="filter-field"><label for="ageFilter">Age division</label><select id="ageFilter"><option value="">All ages</option><option>8U</option><option>10U</option><option>12U</option><option>14U</option><option>16U</option><option>18U</option></select></div><div class="filter-field"><label for="needFilter">Roster status</label><select id="needFilter"><option value="">All teams</option><option value="open">Looking for players</option></select></div><div class="filter-actions"><button id="searchTeamsButton" class="search-btn" type="button">Search Teams</button><button id="clearFiltersButton" class="clear-btn" type="button">Clear Filters</button></div></div></div>
+      <div class="directory-toolbar">
+        <div class="filter-grid">
+          <div class="filter-field"><label for="teamSearch">Search teams</label><input id="teamSearch" type="search" placeholder="Team name, city, state, or position"></div>
+          <div class="filter-field"><label for="stateFilter">State</label><select id="stateFilter"><option value="">All states</option></select></div>
+          <div class="filter-field"><label for="ageFilter">Age division</label><select id="ageFilter"><option value="">All ages</option><option value="8u">8U</option><option value="10u">10U</option><option value="12u">12U</option><option value="14u">14U</option><option value="16u">16U</option><option value="18u">18U</option></select></div>
+          <div class="filter-field"><label for="statusFilter">Roster status</label><select id="statusFilter"><option value="">All listings</option><option value="active">Looking for players</option></select></div>
+        </div>
+        <div class="filter-actions"><button id="searchButton" class="search-btn" type="button">Search Teams</button><button id="clearButton" class="clear-btn" type="button">Clear Filters</button></div>
+      </div>
+
       <div class="directory-meta"><div><h2>Team Opportunities</h2><p id="resultSummary">Loading team listings…</p></div></div>
       <div id="teamGrid" class="team-grid" aria-live="polite"><div class="loading">Loading teams…</div></div>
-      <div class="coach-note"><div><h3>Are you a coach?</h3><p>Create or update your team profile and roster needs from your private Coach Dashboard.</p></div><a href="coach-dashboard.html">Open Coach Dashboard</a></div>
+
+      <div class="coach-note"><div><h3>Are you a coach?</h3><p>Create, edit, or close your team listings from your Coach Dashboard.</p></div><a href="coach-dashboard.html">Open Coach Dashboard</a></div>
     </section>
   </main>
-  <footer class="footer"><div class="container footer-grid"><div><div class="brand"><div class="logo-mark">S<span>R</span></div><div class="brand-copy"><strong>SOFTBALL READY</strong><small>THE NATIONAL TRAVEL SOFTBALL CONNECTION.</small></div></div></div><div><h4>Quick Links</h4><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a><a href="teams.html">Teams</a></div><div><h4>Resources</h4><a href="our-story.html">Our Story</a><a href="tryouts.html">Tryouts</a></div><div><h4>Connect</h4><a href="mailto:info@softballready.net">info@softballready.net</a><a href="login.html">Member Login</a></div></div><div class="container footer-bottom"><div class="footer-motto">Where Opportunity Meets Preparation.</div><div>© 2026 Softball Ready</div></div></footer>
-  <script src="script.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script>
-  <script>
-  (() => {
-    const grid = document.getElementById('teamGrid');
-    const summary = document.getElementById('resultSummary');
-    const search = document.getElementById('teamSearch');
-    const stateFilter = document.getElementById('stateFilter');
-    const ageFilter = document.getElementById('ageFilter');
-    const needFilter = document.getElementById('needFilter');
-    const searchButton = document.getElementById('searchTeamsButton');
-    const clearButton = document.getElementById('clearFiltersButton');
-    let teams = [];
 
-    const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
-    })[char]);
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div><div class="brand"><div class="logo-mark">S<span>R</span></div><div class="brand-copy"><strong>SOFTBALL READY</strong><small>THE NATIONAL TRAVEL SOFTBALL CONNECTION.</small></div></div></div>
+      <div><h4>Quick Links</h4><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a><a href="teams.html">Teams</a></div>
+      <div><h4>Resources</h4><a href="our-story.html">Our Story</a><a href="tryouts.html">Tryouts</a></div>
+      <div><h4>Connect</h4><a href="mailto:info@softballready.net">info@softballready.net</a><a href="login.html">Member Login</a></div>
+    </div>
+    <div class="container footer-bottom"><div class="footer-motto">Where Opportunity Meets Preparation.</div><div>© 2026 Softball Ready</div></div>
+  </footer>
 
-    function getClient() {
-      if (window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient;
-      try {
-        if (typeof supabase !== 'undefined' && supabase && typeof supabase.from === 'function') return supabase;
-      } catch (_) {}
-      if (window.sb && typeof window.sb.from === 'function') return window.sb;
-      return null;
-    }
+  <script src="script.js"></script>
+  <script type="module">
+    import { supabase } from "./supabase-config.js";
 
-    function normalize(row) {
-      return {
-        teamName: row.title || 'Team opportunity',
-        city: row.city || '',
-        state: row.state || '',
-        age: row.age_division || '',
-        positions: row.positions_needed || '',
-        details: row.details || '',
-        startDate: row.start_date || '',
-        isOpen: row.active !== false
-      };
-    }
+    const grid = document.getElementById("teamGrid");
+    const summary = document.getElementById("resultSummary");
+    const searchInput = document.getElementById("teamSearch");
+    const stateFilter = document.getElementById("stateFilter");
+    const ageFilter = document.getElementById("ageFilter");
+    const statusFilter = document.getElementById("statusFilter");
+    const searchButton = document.getElementById("searchButton");
+    const clearButton = document.getElementById("clearButton");
+    let listings = [];
 
-    async function fetchTeams() {
-      const client = getClient();
-      if (!client) throw new Error('The team directory could not connect to Softball Ready data.');
-      const { data, error } = await client
-        .from('team_needs')
-        .select('id,title,age_division,positions_needed,city,state,start_date,details,active,created_at')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return Array.isArray(data) ? data.map(normalize) : [];
-    }
+    const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[char]);
 
-    function formatDate(value) {
-      if (!value) return 'Flexible';
-      const date = new Date(`${value}T00:00:00`);
-      return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' });
-    }
+    function normalize(row){return{id:row.id,title:row.title||"Unnamed Team Opportunity",age:row.age_division||"",positions:row.positions_needed||"",city:row.city||"",state:row.state||"",startDate:row.start_date||"",details:row.details||"",active:row.active!==false,createdAt:row.created_at||""}}
 
-    function card(team, index) {
-      const location = [team.city, team.state].filter(Boolean).join(', ') || 'Location not listed';
-      const age = team.age || 'Age division not listed';
-      const positions = team.positions || 'Contact the coach for open positions';
-      const details = team.details || 'Additional program and opportunity details have not been added yet.';
-      return `<article class="team-card"><div class="team-card-top"><h3>${esc(team.teamName)}</h3><div class="team-location">${esc(location)}</div><div class="badge-row"><span class="badge">${esc(age)}</span>${team.isOpen ? '<span class="badge open">Looking for players</span>' : ''}</div></div><div class="team-card-body"><div class="team-fact"><span>Position needed</span><span>${esc(positions)}</span></div><div class="team-fact"><span>Start date</span><span>${esc(formatDate(team.startDate))}</span></div><p class="team-description">${esc(details)}</p></div><div class="team-card-actions"><button class="details-btn" type="button" data-details="${index}">View Team Details</button><div id="details-${index}" class="details-panel"><strong>${esc(team.teamName)}</strong><br>${esc(details)}</div></div></article>`;
-    }
-
-    function render() {
-      const query = search.value.trim().toLowerCase();
-      const selectedState = stateFilter.value;
-      const selectedAge = ageFilter.value.toLowerCase();
-      const openOnly = needFilter.value === 'open';
-      const filtered = teams.filter(team => {
-        const searchable = [team.teamName, team.city, team.state, team.age, team.positions, team.details].join(' ').toLowerCase();
-        return (!query || searchable.includes(query))
-          && (!selectedState || String(team.state).toLowerCase() === selectedState)
-          && (!selectedAge || String(team.age).toLowerCase() === selectedAge)
-          && (!openOnly || team.isOpen);
+    function populateStates(){
+      stateFilter.innerHTML='<option value="">All states</option>';
+      [...new Set(listings.map(item=>item.state.trim()).filter(Boolean))].sort().forEach(state=>{
+        const option=document.createElement("option");option.value=state.toLowerCase();option.textContent=state;stateFilter.appendChild(option);
       });
-      summary.textContent = `${filtered.length} team opportunit${filtered.length === 1 ? 'y' : 'ies'} found`;
-      if (!filtered.length) {
-        grid.innerHTML = '<div class="empty-state"><h3>No matching teams yet</h3><p>Try a different team name or clear the filters. New opportunities will appear as coaches post them.</p></div>';
-        return;
-      }
-      grid.innerHTML = filtered.map(card).join('');
-      grid.querySelectorAll('[data-details]').forEach(button => button.addEventListener('click', () => {
-        const panel = document.getElementById(`details-${button.dataset.details}`);
-        panel.classList.toggle('open');
-        button.textContent = panel.classList.contains('open') ? 'Hide Team Details' : 'View Team Details';
-      }));
     }
 
-    async function init() {
-      try {
-        teams = await fetchTeams();
-        render();
-      } catch (error) {
-        console.error(error);
-        summary.textContent = 'Team listings could not be loaded';
-        grid.innerHTML = `<div class="directory-error"><strong>We could not load team opportunities.</strong>${esc(error.message || 'Please try again shortly.')}</div>`;
-      }
+    function formatDate(value){if(!value)return"Flexible";const date=new Date(value+"T00:00:00");return Number.isNaN(date.getTime())?value:date.toLocaleDateString()}
+
+    function render(){
+      const query=searchInput.value.trim().toLowerCase(),state=stateFilter.value,age=ageFilter.value,status=statusFilter.value;
+      const filtered=listings.filter(item=>{
+        const haystack=[item.title,item.city,item.state,item.age,item.positions,item.details].join(" ").toLowerCase();
+        return(!query||haystack.includes(query))&&(!state||item.state.toLowerCase()===state)&&(!age||item.age.toLowerCase()===age)&&(!status||item.active);
+      });
+      summary.textContent=`${filtered.length} team opportunit${filtered.length===1?"y":"ies"} found`;
+      if(!filtered.length){grid.innerHTML='<div class="empty-state"><h3>No matching team opportunities</h3><p>Try changing your search or filters. New listings will appear here as coaches post them.</p></div>';return}
+      grid.innerHTML=filtered.map(item=>{
+        const location=[item.city,item.state].filter(Boolean).join(", ")||"Location not listed";
+        return `<article class="team-card"><div class="team-card-top"><h3>${escapeHtml(item.title)}</h3><div class="team-location">${escapeHtml(location)}</div><div class="badge-row">${item.age?`<span class="badge">${escapeHtml(item.age)}</span>`:""}${item.active?'<span class="badge open">Looking for players</span>':""}</div></div><div class="team-card-body"><div class="team-fact"><span>Positions needed</span><span>${escapeHtml(item.positions||"Contact coach")}</span></div><div class="team-fact"><span>Needed by</span><span>${escapeHtml(formatDate(item.startDate))}</span></div><p class="team-description">${escapeHtml(item.details||"No additional details have been posted yet.")}</p></div></article>`;
+      }).join("");
     }
 
-    searchButton.addEventListener('click', render);
-    search.addEventListener('keydown', event => {
-      if (event.key === 'Enter') { event.preventDefault(); render(); }
-    });
-    [stateFilter, ageFilter, needFilter].forEach(element => element.addEventListener('change', render));
-    clearButton.addEventListener('click', () => {
-      search.value = '';
-      stateFilter.value = '';
-      ageFilter.value = '';
-      needFilter.value = '';
-      render();
-    });
-    init();
-  })();
-</script>
+    async function loadListings(){
+      grid.innerHTML='<div class="loading">Loading teams…</div>';summary.textContent="Loading team listings…";
+      const {data,error}=await supabase.from("team_needs").select("id,title,age_division,positions_needed,city,state,start_date,details,active,created_at").eq("active",true).order("created_at",{ascending:false});
+      if(error){console.error("Team directory error:",error);summary.textContent="Team listings could not be loaded";grid.innerHTML=`<div class="error-state"><h3>We could not load team opportunities.</h3><p>${escapeHtml(error.message||"The team directory could not connect to Softball Ready data.")}</p></div>`;return}
+      listings=(data||[]).map(normalize);populateStates();render();
+    }
+
+    searchButton.addEventListener("click",render);
+    searchInput.addEventListener("keydown",event=>{if(event.key==="Enter")render()});
+    clearButton.addEventListener("click",()=>{searchInput.value="";stateFilter.value="";ageFilter.value="";statusFilter.value="";render()});
+    stateFilter.addEventListener("change",render);ageFilter.addEventListener("change",render);statusFilter.addEventListener("change",render);
+    loadListings();
+  </script>
 </body>
 </html>
