@@ -253,8 +253,51 @@ if (coachProfileForm) {
     }
   });
 
+  async function loadPickupInterests() {
+    if (!currentSession || !currentTeam) return;
+    let panel = document.querySelector("[data-pickup-interest-panel]");
+    if (!panel) {
+      panel = document.createElement("div");
+      panel.className = "form-panel";
+      panel.style.marginTop = "28px";
+      panel.setAttribute("data-pickup-interest-panel", "");
+      panel.innerHTML = `<div class="eyebrow">Pickup responses</div><h2 style="color:var(--navy);margin-top:8px">Interested Players</h2><div data-pickup-interest-list><p>Loading responses...</p></div>`;
+      needsList?.closest(".form-panel")?.after(panel);
+    }
+    const list = panel.querySelector("[data-pickup-interest-list]");
+    const { data, error } = await supabase
+      .from("pickup_interests")
+      .select("id,message,status,created_at,team_needs!inner(title,owner_id),players(first_name,last_name,age_division,primary_position,city,state)")
+      .eq("team_needs.owner_id", currentSession.user.id)
+      .order("created_at", { ascending: false });
+    if (error) return list.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
+    if (!data?.length) return list.innerHTML = "<p>No players have responded to your pickup opportunities yet.</p>";
+    list.innerHTML = data.map((item) => {
+      const player = Array.isArray(item.players) ? item.players[0] : item.players;
+      const need = Array.isArray(item.team_needs) ? item.team_needs[0] : item.team_needs;
+      return `<article class="listing-card"><span class="badge">${escapeHtml(item.status || "new")}</span><h3>${escapeHtml(player ? `${player.first_name} ${player.last_name}` : "Player response")}</h3><p><strong>Opportunity:</strong> ${escapeHtml(need?.title || "Pickup need")}</p><p>${escapeHtml(item.message)}</p><div class="listing-meta">${escapeHtml([player?.age_division, player?.primary_position, [player?.city, player?.state].filter(Boolean).join(", ")].filter(Boolean).join(" • "))}</div></article>`;
+    }).join("");
+  }
+
+  const originalLoadNeeds = loadNeeds;
+  loadNeeds = async function() {
+    await originalLoadNeeds();
+    await loadPickupInterests();
+  };
+
   loadCoachDashboard();
 }
+
+// Add Pickup Players to navigation on pages using this application script.
+document.querySelectorAll(".nav-links").forEach((nav) => {
+  if (!nav.querySelector('a[href="pickup-players.html"]')) {
+    const link = document.createElement("a");
+    link.href = "pickup-players.html";
+    link.textContent = "Pickup Players";
+    const teamsLink = nav.querySelector('a[href="teams.html"]');
+    teamsLink?.after(link);
+  }
+});
 
 const playerSearchForm = document.querySelector("#player-search-form");
 if (playerSearchForm) {
@@ -918,11 +961,64 @@ if (pickupMarketplaceForm) {
               ${need.start_date ? `<div><strong>Player needed by:</strong> ${escapeHtml(formatOpportunityDate(need.start_date))}</div>` : ""}
             </div>
             <div class="pickup-details">${escapeHtml(need.details || "Contact the team through Softball Ready for additional tournament details.")}</div>
-            <div class="pickup-card-footer"><a class="btn btn-pink" href="messages.html">Open Messages</a></div>
+            <div class="pickup-card-footer">
+              <button class="btn btn-pink" type="button"
+                data-pickup-interest
+                data-need-id="${need.id}"
+                data-need-title="${escapeHtml(need.title || "Tournament player needed")}">
+                I'm Interested
+              </button>
+              <p data-interest-status="${need.id}" style="font-weight:800;margin:10px 0 0"></p>
+            </div>
           </div>
         </article>`;
     }).join("");
     summary.textContent = `${data.length} active pickup opportunit${data.length === 1 ? "y" : "ies"} found.`;
+
+    results.querySelectorAll("[data-pickup-interest]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const needId = Number(button.dataset.needId);
+        const title = button.dataset.needTitle || "this pickup opportunity";
+        const status = results.querySelector(`[data-interest-status="${needId}"]`);
+        const message = window.prompt(
+          `Send the coach a private note about ${title}:`,
+          "Hello, my player is interested and available. Please contact us through Softball Ready."
+        );
+        if (message === null) return;
+        const body = message.trim();
+        if (!body) return setStatus(status, "Please enter a message before sending.", true);
+
+        button.disabled = true;
+        setStatus(status, "Sending your interest...");
+        try {
+          const session = await getSession();
+          if (!session) throw new Error("Please log in again.");
+          const { data: player, error: playerError } = await supabase
+            .from("players")
+            .select("id")
+            .eq("owner_id", session.user.id)
+            .limit(1)
+            .maybeSingle();
+          if (playerError) throw playerError;
+          if (!player) throw new Error("Create and save a player profile before responding.");
+
+          const { error } = await supabase.from("pickup_interests").upsert({
+            team_need_id: needId,
+            player_id: player.id,
+            player_owner_id: session.user.id,
+            message: body,
+            status: "new"
+          }, { onConflict: "team_need_id,player_id" });
+          if (error) throw error;
+          setStatus(status, "Interest sent privately to the coach.");
+          button.textContent = "Interest Sent";
+        } catch (error) {
+          setStatus(status, error.message || "Your interest could not be sent.", true);
+        } finally {
+          button.disabled = false;
+        }
+      });
+    });
   }
 
   async function verifyPickupAccess() {
