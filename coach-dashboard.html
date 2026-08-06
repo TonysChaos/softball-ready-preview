@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Coach Dashboard | Softball Ready</title>
-  <meta name="description" content="Create and manage a Softball Ready team profile and roster needs.">
+  <meta name="description" content="Create and manage a Softball Ready team profile, season roster needs, and last-minute pickup player opportunities.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -26,7 +26,7 @@
 <section class="page-hero"><div class="container">
   <div class="eyebrow" style="color:#ff72a7">Coach dashboard</div>
   <h1>Build Your Team Presence</h1>
-  <p>Create your team profile, post a roster need, and prepare to search for players.</p>
+  <p>Create your team profile, post a season roster opening, or find a pickup player for an upcoming tournament.</p>
 </div></section>
 
 <section class="section"><div class="container">
@@ -61,24 +61,44 @@
 
   <form class="form-panel" id="team-need-form" style="margin-top:28px">
     <input type="hidden" name="need_id">
-    <div class="eyebrow">Roster need</div>
-    <h2 style="color:var(--navy);margin-top:8px">Post an Opening</h2>
-    <p>A team profile must be saved before an opening can be posted.</p>
+    <div class="eyebrow">Player need</div>
+    <h2 style="color:var(--navy);margin-top:8px">Post a Player Opportunity</h2>
+    <p>Post a regular roster opening or a last-minute pickup need for a tournament. A team profile must be saved first.</p>
     <div class="form-grid">
-      <div class="field full"><label>Opening title *</label><input name="title" required placeholder="Example: 14U Pitcher Needed"></div>
+      <div class="field full">
+        <label>Need type *</label>
+        <select name="need_type" id="need-type" required>
+          <option value="">Choose one</option>
+          <option value="season_roster">Season roster opening</option>
+          <option value="pickup_tournament">Pickup player for a tournament</option>
+        </select>
+      </div>
+      <div class="field full"><label>Opportunity title *</label><input name="title" required placeholder="Example: 14U Pitcher Needed for Weekend Tournament"></div>
       <div class="field"><label>Age division</label><select name="age_division"><option value="">Use team division</option><option>8U</option><option>10U</option><option>12U</option><option>14U</option><option>16U</option><option>18U</option><option>College</option></select></div>
       <div class="field"><label>Positions needed</label><input name="positions_needed_text" placeholder="Pitcher, catcher, utility"></div>
-      <div class="field"><label>Start date</label><input name="start_date" type="date"></div>
-      <div class="field"><label>Active opening?</label><select name="active"><option value="true">Yes</option><option value="false">No</option></select></div>
-      <div class="field full"><label>Details</label><textarea name="details" rows="5"></textarea></div>
+
+      <div class="field full" id="pickup-player-fields" hidden>
+        <div class="notice" style="margin-bottom:18px">Use these fields for a one-time tournament need so families can quickly see when and where the team is playing.</div>
+        <div class="form-grid">
+          <div class="field full"><label>Tournament name *</label><input name="tournament_name" placeholder="Example: Summer Slam Classic"></div>
+          <div class="field"><label>Tournament start date *</label><input name="tournament_start_date" type="date"></div>
+          <div class="field"><label>Tournament end date</label><input name="tournament_end_date" type="date"></div>
+          <div class="field"><label>Tournament city *</label><input name="tournament_city" placeholder="City"></div>
+          <div class="field"><label>Tournament state *</label><input name="tournament_state" maxlength="2" placeholder="GA"></div>
+        </div>
+      </div>
+
+      <div class="field"><label>Player needed by</label><input name="start_date" type="date"></div>
+      <div class="field"><label>Active opportunity?</label><select name="active"><option value="true">Yes</option><option value="false">No</option></select></div>
+      <div class="field full"><label>Details</label><textarea name="details" rows="5" placeholder="Include skill level, schedule, uniform information, fees, contact instructions, and anything families should know."></textarea></div>
     </div>
-    <button class="btn btn-pink" type="submit" style="margin-top:24px">Save Roster Need</button>
+    <button class="btn btn-pink" type="submit" style="margin-top:24px">Save Player Need</button>
     <p data-form-status style="font-weight:800;color:var(--navy)"></p>
   </form>
 
   <div class="form-panel" style="margin-top:28px">
-    <div class="eyebrow">Your posted needs</div>
-    <h2 style="color:var(--navy);margin-top:8px">Current Openings</h2>
+    <div class="eyebrow">Your posted opportunities</div>
+    <h2 style="color:var(--navy);margin-top:8px">Current Player Needs</h2>
     <div data-team-needs-list><p>Loading openings...</p></div>
   </div>
 </div></section>
@@ -88,4 +108,25 @@
   <div class="footer-motto">Where Opportunity Meets Preparation.</div><div>© 2026 Softball Ready. All rights reserved.</div>
 </div></div></footer>
 <script src="script.js"></script><script type="module" src="supabase-app.js"></script>
+<script>
+  const needType = document.getElementById('need-type');
+  const pickupFields = document.getElementById('pickup-player-fields');
+  const pickupRequiredNames = ['tournament_name', 'tournament_start_date', 'tournament_city', 'tournament_state'];
+
+  function updatePickupFields() {
+    const isPickupNeed = needType && needType.value === 'pickup_tournament';
+    if (!pickupFields) return;
+
+    pickupFields.hidden = !isPickupNeed;
+    pickupRequiredNames.forEach((name) => {
+      const field = pickupFields.querySelector(`[name="${name}"]`);
+      if (field) field.required = isPickupNeed;
+    });
+  }
+
+  if (needType) {
+    needType.addEventListener('change', updatePickupFields);
+    updatePickupFields();
+  }
+</script>
 </body></html>
