@@ -27,7 +27,8 @@
     .team-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
     .team-card{background:#fff;border:1px solid #e1e5ee;border-radius:20px;overflow:hidden;box-shadow:0 10px 28px rgba(15,31,70,.07);display:flex;flex-direction:column}
     .team-card-top{padding:22px 22px 16px;border-bottom:1px solid #edf0f5}
-    .team-card h3{margin:0 0 8px;color:#14244d;font-size:1.35rem}
+    .team-card h3{margin:0 0 4px;color:#14244d;font-size:1.35rem}
+    .opportunity-title{margin:0 0 9px;color:#4d5b79;font-weight:800;line-height:1.4}
     .team-location{color:#667085;font-weight:700}
     .badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
     .badge{display:inline-flex;align-items:center;border-radius:999px;padding:7px 10px;font-size:.78rem;font-weight:900;background:#edf2ff;color:#233d75}
@@ -70,24 +71,101 @@
     <section class="teams-hero">
       <div class="eyebrow">Players and families</div>
       <h1>Team Opportunities Directory</h1>
-      <p>Find travel softball teams currently looking for players. Coaches create and manage all listings from their private Coach Dashboard.</p>
+      <p>Find travel softball teams currently looking for players. Coaches create and manage listings from their private Coach Dashboard.</p>
     </section>
 
     <section class="directory-wrap">
       <div class="directory-toolbar">
         <div class="filter-grid">
-          <div class="filter-field"><label for="teamSearch">Search teams</label><input id="teamSearch" type="search" placeholder="Team name, city, state, or position"></div>
-          <div class="filter-field"><label for="stateFilter">State</label><select id="stateFilter"><option value="">All states</option></select></div>
-          <div class="filter-field"><label for="ageFilter">Age division</label><select id="ageFilter"><option value="">All ages</option><option value="8u">8U</option><option value="10u">10U</option><option value="12u">12U</option><option value="14u">14U</option><option value="16u">16U</option><option value="18u">18U</option></select></div>
-          <div class="filter-field"><label for="statusFilter">Roster status</label><select id="statusFilter"><option value="">All listings</option><option value="active">Looking for players</option></select></div>
+          <div class="filter-field">
+            <label for="teamSearch">Search teams</label>
+            <input id="teamSearch" type="search" placeholder="Team name, city, state, or position">
+          </div>
+          <div class="filter-field">
+            <label for="stateFilter">State</label>
+            <select id="stateFilter">
+              <option value="">All states</option>
+              <option value="alabama">Alabama</option>
+              <option value="alaska">Alaska</option>
+              <option value="arizona">Arizona</option>
+              <option value="arkansas">Arkansas</option>
+              <option value="california">California</option>
+              <option value="colorado">Colorado</option>
+              <option value="connecticut">Connecticut</option>
+              <option value="delaware">Delaware</option>
+              <option value="florida">Florida</option>
+              <option value="georgia">Georgia</option>
+              <option value="hawaii">Hawaii</option>
+              <option value="idaho">Idaho</option>
+              <option value="illinois">Illinois</option>
+              <option value="indiana">Indiana</option>
+              <option value="iowa">Iowa</option>
+              <option value="kansas">Kansas</option>
+              <option value="kentucky">Kentucky</option>
+              <option value="louisiana">Louisiana</option>
+              <option value="maine">Maine</option>
+              <option value="maryland">Maryland</option>
+              <option value="massachusetts">Massachusetts</option>
+              <option value="michigan">Michigan</option>
+              <option value="minnesota">Minnesota</option>
+              <option value="mississippi">Mississippi</option>
+              <option value="missouri">Missouri</option>
+              <option value="montana">Montana</option>
+              <option value="nebraska">Nebraska</option>
+              <option value="nevada">Nevada</option>
+              <option value="new hampshire">New Hampshire</option>
+              <option value="new jersey">New Jersey</option>
+              <option value="new mexico">New Mexico</option>
+              <option value="new york">New York</option>
+              <option value="north carolina">North Carolina</option>
+              <option value="north dakota">North Dakota</option>
+              <option value="ohio">Ohio</option>
+              <option value="oklahoma">Oklahoma</option>
+              <option value="oregon">Oregon</option>
+              <option value="pennsylvania">Pennsylvania</option>
+              <option value="rhode island">Rhode Island</option>
+              <option value="south carolina">South Carolina</option>
+              <option value="south dakota">South Dakota</option>
+              <option value="tennessee">Tennessee</option>
+              <option value="texas">Texas</option>
+              <option value="utah">Utah</option>
+              <option value="vermont">Vermont</option>
+              <option value="virginia">Virginia</option>
+              <option value="washington">Washington</option>
+              <option value="west virginia">West Virginia</option>
+              <option value="wisconsin">Wisconsin</option>
+              <option value="wyoming">Wyoming</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="ageFilter">Age division</label>
+            <select id="ageFilter">
+              <option value="">All ages</option>
+              <option value="8u">8U</option><option value="10u">10U</option><option value="12u">12U</option>
+              <option value="14u">14U</option><option value="16u">16U</option><option value="18u">18U</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="statusFilter">Roster status</label>
+            <select id="statusFilter">
+              <option value="">All listings</option>
+              <option value="active">Looking for players</option>
+            </select>
+          </div>
         </div>
-        <div class="filter-actions"><button id="searchButton" class="search-btn" type="button">Search Teams</button><button id="clearButton" class="clear-btn" type="button">Clear Filters</button></div>
+        <div class="filter-actions">
+          <button id="searchButton" class="search-btn" type="button">Search Teams</button>
+          <button id="clearButton" class="clear-btn" type="button">Clear Filters</button>
+        </div>
       </div>
 
       <div class="directory-meta"><div><h2>Team Opportunities</h2><p id="resultSummary">Loading team listings…</p></div></div>
       <div id="teamGrid" class="team-grid" aria-live="polite"><div class="loading">Loading teams…</div></div>
 
-      <div class="coach-note"><div><h3>Are you a coach?</h3><p>Create, edit, or close your team listings from your Coach Dashboard.</p></div><a href="coach-dashboard.html">Open Coach Dashboard</a></div>
+      <div class="coach-note">
+        <div><h3>Are you a coach?</h3><p>Create, edit, or close your team listings from your Coach Dashboard.</p></div>
+        <a href="coach-dashboard.html">Open Coach Dashboard</a>
+      </div>
     </section>
   </main>
 
@@ -117,42 +195,123 @@
 
     const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[char]);
 
-    function normalize(row){return{id:row.id,title:row.title||"Unnamed Team Opportunity",age:row.age_division||"",positions:row.positions_needed||"",city:row.city||"",state:row.state||"",startDate:row.start_date||"",details:row.details||"",active:row.active!==false,createdAt:row.created_at||""}}
-
-    function populateStates(){
-      stateFilter.innerHTML='<option value="">All states</option>';
-      [...new Set(listings.map(item=>item.state.trim()).filter(Boolean))].sort().forEach(state=>{
-        const option=document.createElement("option");option.value=state.toLowerCase();option.textContent=state;stateFilter.appendChild(option);
-      });
+    function formatDate(value) {
+      if (!value) return "Flexible";
+      const date = new Date(value + "T00:00:00");
+      return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString();
     }
 
-    function formatDate(value){if(!value)return"Flexible";const date=new Date(value+"T00:00:00");return Number.isNaN(date.getTime())?value:date.toLocaleDateString()}
+    function render() {
+      const query = searchInput.value.trim().toLowerCase();
+      const state = stateFilter.value;
+      const age = ageFilter.value;
+      const status = statusFilter.value;
 
-    function render(){
-      const query=searchInput.value.trim().toLowerCase(),state=stateFilter.value,age=ageFilter.value,status=statusFilter.value;
-      const filtered=listings.filter(item=>{
-        const haystack=[item.title,item.city,item.state,item.age,item.positions,item.details].join(" ").toLowerCase();
-        return(!query||haystack.includes(query))&&(!state||item.state.toLowerCase()===state)&&(!age||item.age.toLowerCase()===age)&&(!status||item.active);
+      const filtered = listings.filter(item => {
+        const haystack = [
+          item.teamName, item.organizationName, item.title, item.city,
+          item.state, item.age, item.positions, item.details
+        ].join(" ").toLowerCase();
+
+        return (!query || haystack.includes(query))
+          && (!state || item.state.toLowerCase() === state)
+          && (!age || item.age.toLowerCase() === age)
+          && (!status || item.active);
       });
-      summary.textContent=`${filtered.length} team opportunit${filtered.length===1?"y":"ies"} found`;
-      if(!filtered.length){grid.innerHTML='<div class="empty-state"><h3>No matching team opportunities</h3><p>Try changing your search or filters. New listings will appear here as coaches post them.</p></div>';return}
-      grid.innerHTML=filtered.map(item=>{
-        const location=[item.city,item.state].filter(Boolean).join(", ")||"Location not listed";
-        return `<article class="team-card"><div class="team-card-top"><h3>${escapeHtml(item.title)}</h3><div class="team-location">${escapeHtml(location)}</div><div class="badge-row">${item.age?`<span class="badge">${escapeHtml(item.age)}</span>`:""}${item.active?'<span class="badge open">Looking for players</span>':""}</div></div><div class="team-card-body"><div class="team-fact"><span>Positions needed</span><span>${escapeHtml(item.positions||"Contact coach")}</span></div><div class="team-fact"><span>Needed by</span><span>${escapeHtml(formatDate(item.startDate))}</span></div><p class="team-description">${escapeHtml(item.details||"No additional details have been posted yet.")}</p></div></article>`;
+
+      summary.textContent = `${filtered.length} team opportunit${filtered.length === 1 ? "y" : "ies"} found`;
+
+      if (!filtered.length) {
+        grid.innerHTML = '<div class="empty-state"><h3>No matching team opportunities</h3><p>Try changing your search or filters. New listings will appear here as coaches post them.</p></div>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const location = [item.city, item.state].filter(Boolean).join(", ") || "Location not listed";
+        const teamLabel = item.teamName || item.organizationName || "Team name not listed";
+        return `
+          <article class="team-card">
+            <div class="team-card-top">
+              <h3>${escapeHtml(teamLabel)}</h3>
+              <p class="opportunity-title">${escapeHtml(item.title)}</p>
+              <div class="team-location">${escapeHtml(location)}</div>
+              <div class="badge-row">
+                ${item.age ? `<span class="badge">${escapeHtml(item.age)}</span>` : ""}
+                ${item.active ? '<span class="badge open">Looking for players</span>' : ""}
+              </div>
+            </div>
+            <div class="team-card-body">
+              <div class="team-fact"><span>Positions needed</span><span>${escapeHtml(item.positions || "Contact coach")}</span></div>
+              <div class="team-fact"><span>Needed by</span><span>${escapeHtml(formatDate(item.startDate))}</span></div>
+              <p class="team-description">${escapeHtml(item.details || "No additional details have been posted yet.")}</p>
+            </div>
+          </article>`;
       }).join("");
     }
 
-    async function loadListings(){
-      grid.innerHTML='<div class="loading">Loading teams…</div>';summary.textContent="Loading team listings…";
-      const {data,error}=await supabase.from("team_needs").select("id,title,age_division,positions_needed,city,state,start_date,details,active,created_at").eq("active",true).order("created_at",{ascending:false});
-      if(error){console.error("Team directory error:",error);summary.textContent="Team listings could not be loaded";grid.innerHTML=`<div class="error-state"><h3>We could not load team opportunities.</h3><p>${escapeHtml(error.message||"The team directory could not connect to Softball Ready data.")}</p></div>`;return}
-      listings=(data||[]).map(normalize);populateStates();render();
+    async function loadListings() {
+      grid.innerHTML = '<div class="loading">Loading teams…</div>';
+      summary.textContent = "Loading team listings…";
+
+      const [needsResult, teamsResult] = await Promise.all([
+        supabase
+          .from("team_needs")
+          .select("id,owner_id,title,age_division,positions_needed,city,state,start_date,details,active,created_at")
+          .eq("active", true)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("teams")
+          .select("owner_id,team_name,organization_name")
+      ]);
+
+      if (needsResult.error) {
+        console.error("Team needs error:", needsResult.error);
+        summary.textContent = "Team listings could not be loaded";
+        grid.innerHTML = `<div class="error-state"><h3>We could not load team opportunities.</h3><p>${escapeHtml(needsResult.error.message)}</p></div>`;
+        return;
+      }
+
+      if (teamsResult.error) {
+        console.error("Team profiles error:", teamsResult.error);
+      }
+
+      const teamByOwner = new Map(
+        (teamsResult.data || []).map(team => [team.owner_id, team])
+      );
+
+      listings = (needsResult.data || []).map(row => {
+        const team = teamByOwner.get(row.owner_id) || {};
+        return {
+          id: row.id,
+          teamName: team.team_name || "",
+          organizationName: team.organization_name || "",
+          title: row.title || "Roster opportunity",
+          age: row.age_division || "",
+          positions: row.positions_needed || "",
+          city: row.city || "",
+          state: row.state || "",
+          startDate: row.start_date || "",
+          details: row.details || "",
+          active: row.active !== false
+        };
+      });
+
+      render();
     }
 
-    searchButton.addEventListener("click",render);
-    searchInput.addEventListener("keydown",event=>{if(event.key==="Enter")render()});
-    clearButton.addEventListener("click",()=>{searchInput.value="";stateFilter.value="";ageFilter.value="";statusFilter.value="";render()});
-    stateFilter.addEventListener("change",render);ageFilter.addEventListener("change",render);statusFilter.addEventListener("change",render);
+    searchButton.addEventListener("click", render);
+    searchInput.addEventListener("keydown", event => { if (event.key === "Enter") render(); });
+    clearButton.addEventListener("click", () => {
+      searchInput.value = "";
+      stateFilter.value = "";
+      ageFilter.value = "";
+      statusFilter.value = "";
+      render();
+    });
+    stateFilter.addEventListener("change", render);
+    ageFilter.addEventListener("change", render);
+    statusFilter.addEventListener("change", render);
+
     loadListings();
   </script>
 </body>
