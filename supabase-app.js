@@ -977,7 +977,7 @@ if (pickupMarketplaceForm) {
 
     results.querySelectorAll("[data-pickup-interest]").forEach((button) => {
       button.addEventListener("click", async () => {
-        const needId = Number(button.dataset.needId);
+        const needId = button.dataset.needId;
         const title = button.dataset.needTitle || "this pickup opportunity";
         const status = results.querySelector(`[data-interest-status="${needId}"]`);
         const message = window.prompt(
