@@ -8,31 +8,61 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     .owner-page{background:#f5f7fb;min-height:100vh}
-    .owner-hero{background:linear-gradient(135deg,#0b1d45,#17345f);color:#fff;padding:58px 0 48px}
-    .owner-hero h1{color:#fff;margin:8px 0 10px;font-size:clamp(2.4rem,6vw,4.8rem);line-height:1}
-    .owner-hero p{max-width:780px;color:#e8eef8;font-size:1.08rem;margin:0}
-    .owner-wrap{padding:34px 0 78px}
-    .owner-status{background:#fff;border:1px solid #dfe5ef;border-left:5px solid var(--pink);border-radius:16px;padding:17px 19px;margin-bottom:24px;font-weight:850;color:var(--navy);box-shadow:0 8px 22px rgba(7,29,75,.05)}
-    .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-    .metric{background:#fff;border:1px solid #e1e6ef;border-radius:20px;padding:22px;box-shadow:0 10px 28px rgba(7,29,75,.06)}
-    .metric-label{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;font-weight:900;color:#667085}
-    .metric-value{font-size:2.55rem;line-height:1;margin:10px 0 4px;font-weight:950;color:var(--navy)}
-    .metric-note{font-size:.88rem;color:#667085}
-    .owner-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;margin-top:24px}
-    .owner-panel{background:#fff;border:1px solid #e1e6ef;border-radius:22px;padding:24px;box-shadow:0 10px 28px rgba(7,29,75,.06)}
-    .owner-panel h2{margin:0 0 6px;color:var(--navy)}
-    .owner-panel .sub{margin:0 0 18px;color:#667085}
+    .owner-hero{background:linear-gradient(135deg,#0b1d45,#17345f);color:#fff;padding:54px 0 44px}
+    .owner-hero h1{color:#fff;margin:8px 0 10px;font-size:clamp(2.35rem,6vw,4.6rem);line-height:1}
+    .owner-hero p{max-width:820px;color:#e8eef8;font-size:1.08rem;margin:0}
+    .owner-wrap{padding:30px 0 80px}
+    .owner-status{background:#fff;border:1px solid #dfe5ef;border-left:5px solid var(--pink);border-radius:16px;padding:17px 19px;margin-bottom:22px;font-weight:850;color:var(--navy);box-shadow:0 8px 22px rgba(7,29,75,.05)}
+    .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}
+    .metric{background:#fff;border:1px solid #e1e6ef;border-radius:20px;padding:21px;box-shadow:0 10px 28px rgba(7,29,75,.06)}
+    .metric-label{font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;font-weight:900;color:#667085}
+    .metric-value{font-size:2.45rem;line-height:1;margin:10px 0 4px;font-weight:950;color:var(--navy)}
+    .metric-note{font-size:.86rem;color:#667085}
+    .owner-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 18px}
+    .owner-tab{border:1px solid #d9e0eb;background:#fff;color:var(--navy);border-radius:999px;padding:10px 15px;font-weight:900;cursor:pointer}
+    .owner-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .owner-section{display:none}
+    .owner-section.active{display:block}
+    .owner-panel{background:#fff;border:1px solid #e1e6ef;border-radius:22px;padding:23px;box-shadow:0 10px 28px rgba(7,29,75,.06);margin-bottom:20px}
+    .owner-panel-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
+    .owner-panel h2{margin:0;color:var(--navy)}
+    .owner-panel .sub{margin:5px 0 0;color:#667085}
+    .owner-search{min-width:min(360px,100%);border:1px solid #d4dbe7;border-radius:12px;padding:12px 14px;font:inherit}
+    .owner-table-wrap{overflow:auto;border:1px solid #e5e9f0;border-radius:16px}
+    .owner-table{width:100%;border-collapse:collapse;min-width:860px;background:#fff}
+    .owner-table th,.owner-table td{text-align:left;padding:13px 14px;border-bottom:1px solid #e8ecf2;vertical-align:middle}
+    .owner-table th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:#667085;background:#f8fafc}
+    .owner-table td{color:#344054}
+    .owner-table tr:last-child td{border-bottom:0}
+    .badge{display:inline-flex;align-items:center;border-radius:999px;padding:6px 10px;font-size:.78rem;font-weight:900;background:#edf3fb;color:#17345f}
+    .badge.green{background:#e8f7ee;color:#18733d}
+    .badge.pink{background:#fff0f6;color:#a7184e}
+    .badge.gold{background:#fff7e6;color:#805b10}
+    .badge.gray{background:#eef1f5;color:#475467}
+    .owner-btn{border:0;border-radius:10px;padding:9px 12px;font:inherit;font-size:.86rem;font-weight:900;cursor:pointer}
+    .owner-btn.primary{background:var(--navy);color:#fff}
+    .owner-btn.pink{background:var(--pink);color:#fff}
+    .owner-btn.light{background:#eef3f9;color:var(--navy)}
+    .owner-btn.warn{background:#fff4e5;color:#8a4b08}
+    .owner-btn:disabled{opacity:.55;cursor:not-allowed}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .alerts-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    .alert-card{border:1px solid #e1e6ef;border-radius:18px;padding:20px;background:#fff}
+    .alert-card strong{display:block;font-size:1.9rem;color:var(--navy);margin:6px 0}
     .activity-list{display:grid;gap:12px}
     .activity-item{border:1px solid #e6eaf1;border-radius:15px;padding:15px}
     .activity-item strong{display:block;color:var(--navy);margin-bottom:4px}
     .activity-item span{color:#667085;font-size:.9rem}
-    .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
     .quick-link{display:block;border:1px solid #dfe5ef;border-radius:15px;padding:16px;font-weight:900;color:var(--navy);background:#fafbfe}
     .quick-link:hover{border-color:var(--pink);color:var(--pink)}
     .owner-pill{display:inline-flex;border-radius:999px;padding:7px 11px;background:#fff0f6;color:#a7184e;font-weight:900;font-size:.78rem}
-    .private-note{margin-top:22px;padding:16px 18px;border-radius:16px;background:#fff7e6;border:1px solid #f2d59a;color:#684d15;font-weight:750}
-    @media(max-width:900px){.metric-grid{grid-template-columns:repeat(2,1fr)}.owner-grid{grid-template-columns:1fr}}
-    @media(max-width:560px){.metric-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr}}
+    .private-note{margin-top:18px;padding:15px 17px;border-radius:15px;background:#fff7e6;border:1px solid #f2d59a;color:#684d15;font-weight:750}
+    .empty{color:#667085;padding:18px}
+    .toast{position:fixed;right:20px;bottom:20px;max-width:360px;background:#17345f;color:#fff;padding:14px 17px;border-radius:13px;box-shadow:0 14px 35px rgba(0,0,0,.2);font-weight:850;z-index:999;display:none}
+    .toast.error{background:#9f1d20}
+    @media(max-width:900px){.metric-grid{grid-template-columns:repeat(2,1fr)}.alerts-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:560px){.metric-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr}.owner-panel{padding:16px}.owner-tab{flex:1 1 45%;text-align:center}}
   </style>
 </head>
 <body class="owner-page">
@@ -57,9 +87,9 @@
 <main>
   <section class="owner-hero">
     <div class="container">
-      <div class="owner-pill">PRIVATE OWNER ACCESS</div>
+      <div class="owner-pill">PRIVATE OWNER ACCESS • V2</div>
       <h1>SoftballReady.net Control Center</h1>
-      <p>A simple view of the platform: accounts, players, teams, memberships, pickup activity, and messaging volume.</p>
+      <p>Run the platform from one place: see activity, find members, review players and teams, manage membership access, and keep pickup opportunities current.</p>
     </div>
   </section>
 
@@ -68,7 +98,7 @@
       <div class="owner-status" data-owner-status>Verifying owner access and loading platform activity...</div>
 
       <div class="metric-grid">
-        <article class="metric"><div class="metric-label">Accounts</div><div class="metric-value" data-metric="accounts">—</div><div class="metric-note">Registered profiles</div></article>
+        <article class="metric"><div class="metric-label">Accounts</div><div class="metric-value" data-metric="accounts">—</div><div class="metric-note">Registered accounts</div></article>
         <article class="metric"><div class="metric-label">Players</div><div class="metric-value" data-metric="players">—</div><div class="metric-note">Player profiles</div></article>
         <article class="metric"><div class="metric-label">Teams</div><div class="metric-value" data-metric="teams">—</div><div class="metric-note">Coach/team profiles</div></article>
         <article class="metric"><div class="metric-label">Active Memberships</div><div class="metric-value" data-metric="memberships">—</div><div class="metric-note">Current paid access</div></article>
@@ -78,14 +108,29 @@
         <article class="metric"><div class="metric-label">Messages</div><div class="metric-value" data-metric="messages">—</div><div class="metric-note">Private messages sent</div></article>
       </div>
 
-      <div class="owner-grid">
-        <section class="owner-panel">
-          <h2>Recent Pickup Activity</h2>
-          <p class="sub">Latest player responses to tournament pickup opportunities. Message contents are not displayed here.</p>
-          <div class="activity-list" data-owner-activity><p>Loading recent activity...</p></div>
-        </section>
+      <div class="owner-tabs" role="tablist">
+        <button class="owner-tab active" data-owner-tab="overview">Overview</button>
+        <button class="owner-tab" data-owner-tab="accounts">Accounts</button>
+        <button class="owner-tab" data-owner-tab="players">Players</button>
+        <button class="owner-tab" data-owner-tab="teams">Teams & Needs</button>
+        <button class="owner-tab" data-owner-tab="pickup">Pickup Activity</button>
+      </div>
 
-        <aside class="owner-panel">
+      <section class="owner-section active" data-owner-section="overview">
+        <div class="alerts-grid">
+          <article class="alert-card"><div class="metric-label">Expired Pickup Listings</div><strong data-alert="expiredPickup">—</strong><span class="metric-note">Active listings with tournament dates in the past</span></article>
+          <article class="alert-card"><div class="metric-label">New Pickup Interests</div><strong data-alert="newInterests">—</strong><span class="metric-note">Responses still marked new</span></article>
+          <article class="alert-card"><div class="metric-label">Non-Member Accounts</div><strong data-alert="nonMembers">—</strong><span class="metric-note">Accounts without active membership</span></article>
+        </div>
+
+        <div class="owner-panel" style="margin-top:20px">
+          <div class="owner-panel-head">
+            <div><h2>Recent Pickup Activity</h2><p class="sub">Latest player responses. Private message contents are not displayed here.</p></div>
+          </div>
+          <div class="activity-list" data-owner-activity><p>Loading recent activity...</p></div>
+        </div>
+
+        <div class="owner-panel">
           <h2>Quick Access</h2>
           <p class="sub">Jump directly to the main operating areas.</p>
           <div class="quick-grid">
@@ -96,13 +141,77 @@
             <a class="quick-link" href="membership.html">Membership</a>
             <a class="quick-link" href="teams.html">Team Opportunities</a>
           </div>
-          <div class="private-note">This dashboard is read-only in Version 1. Moderation and account-management controls will be added only after we verify the owner view is working safely.</div>
-        </aside>
-      </div>
+        </div>
+      </section>
+
+      <section class="owner-section" data-owner-section="accounts">
+        <div class="owner-panel">
+          <div class="owner-panel-head">
+            <div><h2>Accounts & Membership</h2><p class="sub">Find an account and correct membership access when needed.</p></div>
+            <input class="owner-search" data-search="accounts" placeholder="Search name, email, or account type">
+          </div>
+          <div class="owner-table-wrap"><table class="owner-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Type</th><th>Membership</th><th>Action</th></tr></thead>
+            <tbody data-table="accounts"><tr><td colspan="5">Loading accounts...</td></tr></tbody>
+          </table></div>
+          <div class="private-note">Membership changes here are administrative corrections. Stripe remains the payment system of record for normal purchases.</div>
+        </div>
+      </section>
+
+      <section class="owner-section" data-owner-section="players">
+        <div class="owner-panel">
+          <div class="owner-panel-head">
+            <div><h2>Player Directory</h2><p class="sub">Review player profiles without exposing private parent contact on this overview.</p></div>
+            <input class="owner-search" data-search="players" placeholder="Search player, age, position, city, or state">
+          </div>
+          <div class="owner-table-wrap"><table class="owner-table">
+            <thead><tr><th>Player</th><th>Age</th><th>Position</th><th>Location</th><th>Searchable</th><th>Profile</th></tr></thead>
+            <tbody data-table="players"><tr><td colspan="6">Loading players...</td></tr></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section class="owner-section" data-owner-section="teams">
+        <div class="owner-panel">
+          <div class="owner-panel-head">
+            <div><h2>Teams</h2><p class="sub">Review team profiles currently in the system.</p></div>
+            <input class="owner-search" data-search="teams" placeholder="Search team, coach, organization, age, or location">
+          </div>
+          <div class="owner-table-wrap"><table class="owner-table">
+            <thead><tr><th>Team</th><th>Coach</th><th>Age</th><th>Location</th><th>Organization</th></tr></thead>
+            <tbody data-table="teams"><tr><td colspan="5">Loading teams...</td></tr></tbody>
+          </table></div>
+        </div>
+
+        <div class="owner-panel">
+          <div class="owner-panel-head">
+            <div><h2>Team Needs</h2><p class="sub">Close stale or filled listings without deleting history.</p></div>
+            <input class="owner-search" data-search="needs" placeholder="Search team need, tournament, age, or location">
+          </div>
+          <div class="owner-table-wrap"><table class="owner-table">
+            <thead><tr><th>Type</th><th>Need</th><th>Age</th><th>Location / Date</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody data-table="needs"><tr><td colspan="6">Loading team needs...</td></tr></tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section class="owner-section" data-owner-section="pickup">
+        <div class="owner-panel">
+          <div class="owner-panel-head">
+            <div><h2>Pickup Interest Queue</h2><p class="sub">Track responses from new → reviewed → closed.</p></div>
+            <input class="owner-search" data-search="interests" placeholder="Search player, opportunity, status, or position">
+          </div>
+          <div class="owner-table-wrap"><table class="owner-table">
+            <thead><tr><th>Player</th><th>Opportunity</th><th>Submitted</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody data-table="interests"><tr><td colspan="5">Loading pickup interests...</td></tr></tbody>
+          </table></div>
+        </div>
+      </section>
     </div>
   </section>
 </main>
 
+<div class="toast" data-toast></div>
 <script src="script.js"></script>
 <script type="module" src="owner-admin.js"></script>
 </body>
