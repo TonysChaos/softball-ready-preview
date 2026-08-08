@@ -1,0 +1,20 @@
+SoftballReady.net — Clean Production Build
+
+Status: Phase 2A clean production baseline
+
+Included:
+- Current working public/member pages
+- Current working supabase-app.js
+- Messaging and membership application files
+- Vercel server functions in /api only
+- Only image assets referenced by production pages
+
+Intentionally excluded from this clean build:
+- Duplicate root copies of API server files
+- supabase-app-5.js duplicate development copy
+- launch-center.html internal/development page
+- sr-logo-png.html helper/development page
+- START-HERE.txt and UPLOAD-INSTRUCTIONS.txt temporary workflow files
+- hero-original.jpeg and story-original.jpeg unused originals
+
+Do not delete the existing live repository until this build has been uploaded and tested successfully.

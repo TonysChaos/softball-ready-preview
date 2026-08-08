@@ -1,0 +1,212 @@
+{
+  "build": "SoftballReady.net Clean Production v1",
+  "validation": "All local HTML/CSS references resolved; JS syntax checked",
+  "file_count": 41,
+  "files": [
+    {
+      "file": "FullSizeRender.JPEG",
+      "bytes": 2999537,
+      "sha256": "c522b1e55cd65cec4c2d3a49b8481f8831ae6143d60023381a0355ff875dddb8"
+    },
+    {
+      "file": "IMG-4930-small2.jpg",
+      "bytes": 4545854,
+      "sha256": "fe6798c9af46cab2a19190df022d255420b3de57853c1fdd4fe726d856a2173f"
+    },
+    {
+      "file": "IMG_1192.jpg",
+      "bytes": 197298,
+      "sha256": "9a7e6b9fb4c0c461d39248a35934a27ebbfd06fc599e6f190531deb02467c6a0"
+    },
+    {
+      "file": "PRODUCTION-NOTES.txt",
+      "bytes": 771,
+      "sha256": "8df2d3635a8b354b5e19e4146cc16950e5828416a2670a209315f516225e991b"
+    },
+    {
+      "file": "api/_server-helpers.js",
+      "bytes": 918,
+      "sha256": "eb48d4748290cb4d268db52472ee2a49436ce4e2a3101799d05646c6f353c95c"
+    },
+    {
+      "file": "api/create-checkout-session.js",
+      "bytes": 1437,
+      "sha256": "19f04e248c7716d7f27ba65e5548e8096eb6fb615c04f28c9a3947af81a9c64f"
+    },
+    {
+      "file": "api/create-portal-session.js",
+      "bytes": 717,
+      "sha256": "67b13a77765142f8c466be0aa8fd4927e11bf5f7f99df82ef1fcbcc150b655fe"
+    },
+    {
+      "file": "api/stripe-webhook.js",
+      "bytes": 2474,
+      "sha256": "963db6aed6efcf491ee2501d91927bf55d61fecbc196e34bb593c242bcc29c17"
+    },
+    {
+      "file": "assets/IMG_4298.jpeg",
+      "bytes": 365186,
+      "sha256": "dcdebccd8cf275f0069de5bff8b766f6490af48dc506230c7dddc9a5f8c2d107"
+    },
+    {
+      "file": "assets/IMG_4780.jpg",
+      "bytes": 4419970,
+      "sha256": "acb15ac8233e795e2ede63067a3468e1d5113ca995fa041d8f0f93df1f7c6ac0"
+    },
+    {
+      "file": "assets/IMG_5706.jpg",
+      "bytes": 122752,
+      "sha256": "c87ccda433a241e35ea1623b7d9aaabb5326445a89bbebbed9a1bdb8df2b8013"
+    },
+    {
+      "file": "coach-dashboard.html",
+      "bytes": 8132,
+      "sha256": "a5f38a10c63be0c5b8b0bbac4ac9fc21e7d64d66ec5d415cc3719773c33fd3d0"
+    },
+    {
+      "file": "community-standards.html",
+      "bytes": 3659,
+      "sha256": "0214e976530c9ae6a3c0c242f93c26a525430358537bc3c7ba73f72d08b311bb"
+    },
+    {
+      "file": "contact.html",
+      "bytes": 3426,
+      "sha256": "ab21571f4a4bc84cba0bcf81dfbf8f181b9757b691019cee7fe4ed99a9ccfb65"
+    },
+    {
+      "file": "fun-photo.jpg",
+      "bytes": 5929720,
+      "sha256": "7823d13602f5613a018ff9bcdea9861b1acf8d08347f29eca3b48d067743b7d2"
+    },
+    {
+      "file": "home-photo.jpeg",
+      "bytes": 329178,
+      "sha256": "4ed4b58a069987be38f751c7fbd429b85c6a544564c7babeb5286601d64fe65e"
+    },
+    {
+      "file": "how-it-works.html",
+      "bytes": 4410,
+      "sha256": "bc5284f43092283894f1ef855d49ae88f7715a629696e7fb2684fb9d8f39a5c2"
+    },
+    {
+      "file": "index.html",
+      "bytes": 14044,
+      "sha256": "2eeb905c4687e9b0df8422bcd14eb0208508d98a0171842c9732d05e262474ce"
+    },
+    {
+      "file": "login.html",
+      "bytes": 4286,
+      "sha256": "8cb09a1608d8add96a8715f7895e63c561b40e1b95d826b85ab676dd0bec3775"
+    },
+    {
+      "file": "membership-app.js",
+      "bytes": 3624,
+      "sha256": "26ad1ec3f8065d482e824aeb061b4aab1eec8c35d971a160dac204cc01f290e9"
+    },
+    {
+      "file": "membership-cancel.html",
+      "bytes": 589,
+      "sha256": "cd3d7c223ac0077af150a8ae5972f0663b6cef95d7c3cae393b1048c24e316e4"
+    },
+    {
+      "file": "membership-success.html",
+      "bytes": 1132,
+      "sha256": "c6ece059bc715608954fc24be7c7060ee94d52960b861c9542c40f8f829d9341"
+    },
+    {
+      "file": "membership.html",
+      "bytes": 3897,
+      "sha256": "235620c52ad875629101465ee32d3ab6ee74b497eb3d5fd5a10802f9eb10eb2b"
+    },
+    {
+      "file": "message-app.js",
+      "bytes": 10387,
+      "sha256": "f2f8be302e04db17d6581f5a147da08da4be8843ed7acdf36f7ec3f1cb5cfd52"
+    },
+    {
+      "file": "messages.html",
+      "bytes": 9509,
+      "sha256": "43d25ee186de2760c4201b55b2824ffb2de1c8fa582bda4537d64686e2744e1f"
+    },
+    {
+      "file": "our-promise.html",
+      "bytes": 3668,
+      "sha256": "1d1677e2b8bffc115d7993c5dda4270ea758ae555a413d9260ab9f57fc5c524c"
+    },
+    {
+      "file": "our-story.html",
+      "bytes": 8952,
+      "sha256": "6d37ac72196ad11c49b4f3033b9b91e0f3dc231158c8e36e7fbe2592dae5c8a2"
+    },
+    {
+      "file": "package.json",
+      "bytes": 182,
+      "sha256": "9acc892b243915e0f115202ec3fa28e22a08e32159d660b6bb08a9014c093974"
+    },
+    {
+      "file": "pickup-players.html",
+      "bytes": 7582,
+      "sha256": "f2954f9710af4952baffe4b0f3e8c27a21ac5ce65b87b870bd4781867334bffc"
+    },
+    {
+      "file": "player-dashboard.html",
+      "bytes": 12572,
+      "sha256": "6a46230d2ee52046349d6aa23b6ed621ffa85c49383043dc68087a16b5fdb343"
+    },
+    {
+      "file": "player-profile.html",
+      "bytes": 7279,
+      "sha256": "12901c7cc133ac1c4ee2936fa1b86516aecca4505be19e23694911ca6af1fff5"
+    },
+    {
+      "file": "player-search.html",
+      "bytes": 6576,
+      "sha256": "3acff9b8d269fed8ff465ace1f74f8f611b2f43212f38ccc64a77208ea3cc07c"
+    },
+    {
+      "file": "players.html",
+      "bytes": 6247,
+      "sha256": "b9715ca1d63ee16fffea52802f2ff83b6e049b8ffbcc5d580e8b5e0442972844"
+    },
+    {
+      "file": "reset-password.html",
+      "bytes": 2465,
+      "sha256": "dc5249b190ca689b0a6bdbee4bf106505701ed6851abbee2825e79291af4d8c9"
+    },
+    {
+      "file": "script.js",
+      "bytes": 665,
+      "sha256": "5daf2e4f2bcdfa7ba4cffd9a0bf1987357493ba8595bf6180c9cc15300b5579c"
+    },
+    {
+      "file": "styles.css",
+      "bytes": 11745,
+      "sha256": "ef2964ecbfc8872eead41e178053192f96aef0c67723079122c5b5b3e3e81498"
+    },
+    {
+      "file": "supabase-app.js",
+      "bytes": 56528,
+      "sha256": "2226e1f5fe69629fc23f0dcf775f19dc8f5ddd5199965d4f30b53d6f12101e9b"
+    },
+    {
+      "file": "supabase-config.js",
+      "bytes": 324,
+      "sha256": "b0257ca8b53fd21f345fa6e83a5a4c32e9a620fa93a241344b1ef05212d4404d"
+    },
+    {
+      "file": "team-photo-small.jpg",
+      "bytes": 5760436,
+      "sha256": "a242dd53c5ffe1b033544f341c583e7e6cee187b49588b860a3bcf136634cfcb"
+    },
+    {
+      "file": "teams.html",
+      "bytes": 16949,
+      "sha256": "51859a307acf54d982992a0db93406e1113977548615f6690fed5696221f054d"
+    },
+    {
+      "file": "tryouts.html",
+      "bytes": 3392,
+      "sha256": "7ad60d17756871441d15ef174686b9cde48d95ddee78958b2747eac9c34b2ce7"
+    }
+  ]
+}
