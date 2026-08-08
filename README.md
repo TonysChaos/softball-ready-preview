@@ -1,36 +1,72 @@
-# Softball Ready — Launch Website Build
+# SoftballReady.net
 
-This folder contains a responsive, multi-page front-end build for softballready.net.
+**The National Travel Softball Connection**
 
-## Included pages
-- Home
-- How It Works
-- Players / player profile form
-- Teams / team need form
-- Our Story
-- Membership
-- Tryouts
-- Contact / We're Here to Help
-- Community Standards
-- Login placeholder
+SoftballReady.net is a nationwide travel softball platform designed to help players, families, coaches, and teams find opportunities and connect more easily.
 
-## Important
-The visual website is working. Forms currently operate as demonstrations and do not store data. The next application stage connects authentication, a database, Stripe membership, search, messaging, and dashboards.
+## Current Production Build
 
-## Publish with GitHub + Vercel
-1. Upload every file and the `assets` folder to the root of the GitHub repository connected to Vercel.
-2. Commit the changes to the main branch.
-3. Vercel will deploy automatically.
-4. Open softballready.net and confirm the new deployment.
+**Status:** Phase 2A — Clean Production Baseline
 
-The original uploaded photographs are included as the source images so the athletes remain as close to the originals as possible.
+The current build includes:
 
+- Account signup, login, logout, and password reset
+- Player profile creation and editing
+- Player photo uploads
+- Coach/team profiles
+- Team opportunities and roster needs
+- Pickup Player Marketplace
+- Pickup Player “I’m Interested” flow
+- Coach player search
+- Private messaging
+- Membership pages and Stripe integration
+- Player and coach dashboards
+- Tryout directory interface
+- Community Standards, Our Story, Our Promise, and Contact pages
+- Mobile-responsive layouts
+- Vercel server functions contained in `/api`
 
-## New approved launch additions
-- Nationwide launch positioning
-- Founding Member / Launch Center
-- Tournament and social-share toolkit framework
-- Membership Benefits language
-- “Be part of the ever-expanding softball community.”
-- Community Growth section
-- Our Promise page and North Star
+## Project Structure
+
+- `index.html` — Home page
+- `players.html` — Player profile entry
+- `player-dashboard.html` — Player account/profile management
+- `player-profile.html` — Full player profile view
+- `player-search.html` — Coach player search
+- `teams.html` — Team opportunities directory
+- `coach-dashboard.html` — Team profile and team-need management
+- `pickup-players.html` — Pickup Player Marketplace
+- `messages.html` — Private messaging center
+- `membership.html` — Membership
+- `tryouts.html` — Tryout directory
+- `supabase-app.js` — Main application logic
+- `message-app.js` — Messaging logic
+- `membership-app.js` — Membership logic
+- `supabase-config.js` — Browser Supabase configuration
+- `styles.css` — Shared site styling
+- `/api` — Vercel server functions for Stripe and Supabase
+- `/assets` — Production image assets
+
+## Infrastructure
+
+- **Domain:** SoftballReady.net
+- **Hosting:** Vercel
+- **Source of truth:** GitHub
+- **Database / authentication / storage:** Supabase
+- **Payments:** Stripe
+
+## Production Rules
+
+- GitHub is the source of truth.
+- Vercel deploys from the GitHub repository.
+- Do not create numbered copies of production JavaScript files.
+- The live application must use `supabase-app.js`.
+- Server functions belong in `/api`.
+- Do not delete or replace working production files without first verifying dependencies.
+- Keep the experience simple, mobile-friendly, and focused on helping softball families and teams connect.
+
+## Product Principle
+
+Every improvement to SoftballReady.net should make it easier for a player to find an opportunity, a family to find the right team, or a coach to find the right player.
+
+**Where Opportunity Meets Preparation.**
