@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Owner Dashboard | SoftballReady.net</title>
+  <meta name="description" content="Private owner dashboard for SoftballReady.net.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .owner-page{background:#f5f7fb;min-height:100vh}
+    .owner-hero{background:linear-gradient(135deg,#0b1d45,#17345f);color:#fff;padding:58px 0 48px}
+    .owner-hero h1{color:#fff;margin:8px 0 10px;font-size:clamp(2.4rem,6vw,4.8rem);line-height:1}
+    .owner-hero p{max-width:780px;color:#e8eef8;font-size:1.08rem;margin:0}
+    .owner-wrap{padding:34px 0 78px}
+    .owner-status{background:#fff;border:1px solid #dfe5ef;border-left:5px solid var(--pink);border-radius:16px;padding:17px 19px;margin-bottom:24px;font-weight:850;color:var(--navy);box-shadow:0 8px 22px rgba(7,29,75,.05)}
+    .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+    .metric{background:#fff;border:1px solid #e1e6ef;border-radius:20px;padding:22px;box-shadow:0 10px 28px rgba(7,29,75,.06)}
+    .metric-label{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;font-weight:900;color:#667085}
+    .metric-value{font-size:2.55rem;line-height:1;margin:10px 0 4px;font-weight:950;color:var(--navy)}
+    .metric-note{font-size:.88rem;color:#667085}
+    .owner-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;margin-top:24px}
+    .owner-panel{background:#fff;border:1px solid #e1e6ef;border-radius:22px;padding:24px;box-shadow:0 10px 28px rgba(7,29,75,.06)}
+    .owner-panel h2{margin:0 0 6px;color:var(--navy)}
+    .owner-panel .sub{margin:0 0 18px;color:#667085}
+    .activity-list{display:grid;gap:12px}
+    .activity-item{border:1px solid #e6eaf1;border-radius:15px;padding:15px}
+    .activity-item strong{display:block;color:var(--navy);margin-bottom:4px}
+    .activity-item span{color:#667085;font-size:.9rem}
+    .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .quick-link{display:block;border:1px solid #dfe5ef;border-radius:15px;padding:16px;font-weight:900;color:var(--navy);background:#fafbfe}
+    .quick-link:hover{border-color:var(--pink);color:var(--pink)}
+    .owner-pill{display:inline-flex;border-radius:999px;padding:7px 11px;background:#fff0f6;color:#a7184e;font-weight:900;font-size:.78rem}
+    .private-note{margin-top:22px;padding:16px 18px;border-radius:16px;background:#fff7e6;border:1px solid #f2d59a;color:#684d15;font-weight:750}
+    @media(max-width:900px){.metric-grid{grid-template-columns:repeat(2,1fr)}.owner-grid{grid-template-columns:1fr}}
+    @media(max-width:560px){.metric-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body class="owner-page">
+<header class="header">
+  <div class="container nav">
+    <a class="brand" href="index.html" aria-label="SoftballReady.net home">
+      <div class="logo-mark">S<span>R</span></div>
+      <div class="brand-copy"><strong>SOFTBALL <span style="color:var(--pink)">READY.NET</span></strong><small>The National Travel Softball Connection.</small></div>
+    </a>
+    <button class="menu-btn" aria-expanded="false" aria-label="Open navigation">☰</button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="coach-dashboard.html">Coach Dashboard</a>
+      <a href="player-search.html">Player Search</a>
+      <a href="messages.html">Messages</a>
+      <a href="owner-dashboard.html" aria-current="page">Owner Dashboard</a>
+    </nav>
+    <button class="btn btn-outline" type="button" data-owner-logout>Log Out</button>
+  </div>
+</header>
+
+<main>
+  <section class="owner-hero">
+    <div class="container">
+      <div class="owner-pill">PRIVATE OWNER ACCESS</div>
+      <h1>SoftballReady.net Control Center</h1>
+      <p>A simple view of the platform: accounts, players, teams, memberships, pickup activity, and messaging volume.</p>
+    </div>
+  </section>
+
+  <section class="owner-wrap">
+    <div class="container">
+      <div class="owner-status" data-owner-status>Verifying owner access and loading platform activity...</div>
+
+      <div class="metric-grid">
+        <article class="metric"><div class="metric-label">Accounts</div><div class="metric-value" data-metric="accounts">—</div><div class="metric-note">Registered profiles</div></article>
+        <article class="metric"><div class="metric-label">Players</div><div class="metric-value" data-metric="players">—</div><div class="metric-note">Player profiles</div></article>
+        <article class="metric"><div class="metric-label">Teams</div><div class="metric-value" data-metric="teams">—</div><div class="metric-note">Coach/team profiles</div></article>
+        <article class="metric"><div class="metric-label">Active Memberships</div><div class="metric-value" data-metric="memberships">—</div><div class="metric-note">Current paid access</div></article>
+        <article class="metric"><div class="metric-label">Pickup Opportunities</div><div class="metric-value" data-metric="pickupNeeds">—</div><div class="metric-note">Active tournament needs</div></article>
+        <article class="metric"><div class="metric-label">Pickup Interests</div><div class="metric-value" data-metric="pickupInterests">—</div><div class="metric-note">Player responses</div></article>
+        <article class="metric"><div class="metric-label">Season Needs</div><div class="metric-value" data-metric="seasonNeeds">—</div><div class="metric-note">Active roster openings</div></article>
+        <article class="metric"><div class="metric-label">Messages</div><div class="metric-value" data-metric="messages">—</div><div class="metric-note">Private messages sent</div></article>
+      </div>
+
+      <div class="owner-grid">
+        <section class="owner-panel">
+          <h2>Recent Pickup Activity</h2>
+          <p class="sub">Latest player responses to tournament pickup opportunities. Message contents are not displayed here.</p>
+          <div class="activity-list" data-owner-activity><p>Loading recent activity...</p></div>
+        </section>
+
+        <aside class="owner-panel">
+          <h2>Quick Access</h2>
+          <p class="sub">Jump directly to the main operating areas.</p>
+          <div class="quick-grid">
+            <a class="quick-link" href="coach-dashboard.html">Coach Dashboard</a>
+            <a class="quick-link" href="player-search.html">Player Search</a>
+            <a class="quick-link" href="pickup-players.html">Pickup Marketplace</a>
+            <a class="quick-link" href="messages.html">Messages</a>
+            <a class="quick-link" href="membership.html">Membership</a>
+            <a class="quick-link" href="teams.html">Team Opportunities</a>
+          </div>
+          <div class="private-note">This dashboard is read-only in Version 1. Moderation and account-management controls will be added only after we verify the owner view is working safely.</div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+<script type="module" src="owner-admin.js"></script>
+</body>
+</html>

@@ -1108,3 +1108,29 @@ if (pickupMarketplaceForm) {
     if (await verifyPickupAccess()) await loadPickupOpportunities();
   })();
 }
+
+
+async function addOwnerDashboardLinkForAdmin() {
+  try {
+    const session = await getSession();
+    if (!session) return;
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("account_type")
+      .eq("id", session.user.id)
+      .single();
+    if (error || profile?.account_type !== "admin") return;
+
+    document.querySelectorAll(".nav-links").forEach((nav) => {
+      if (nav.querySelector('a[href="owner-dashboard.html"]')) return;
+      const link = document.createElement("a");
+      link.href = "owner-dashboard.html";
+      link.textContent = "Owner Dashboard";
+      const membership = nav.querySelector('a[href="membership.html"]');
+      membership ? membership.after(link) : nav.appendChild(link);
+    });
+  } catch (_) {
+    // Owner-link detection should never interrupt normal site behavior.
+  }
+}
+addOwnerDashboardLinkForAdmin();
