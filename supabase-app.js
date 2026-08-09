@@ -311,16 +311,57 @@ if (coachProfileForm) {
     const list = panel.querySelector("[data-pickup-interest-list]");
     const { data, error } = await supabase
       .from("pickup_interests")
-      .select("id,message,status,created_at,team_needs!inner(title,owner_id),players(first_name,last_name,age_division,primary_position,city,state)")
+      .select("id,message,status,created_at,team_need_id,team_needs!inner(id,title,owner_id,active,need_type,tournament_start_date,tournament_end_date,start_date),players(first_name,last_name,age_division,primary_position,city,state)")
       .eq("team_needs.owner_id", currentSession.user.id)
       .order("created_at", { ascending: false });
     if (error) return list.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
-    if (!data?.length) return list.innerHTML = "<p>No players have responded to your pickup opportunities yet.</p>";
-    list.innerHTML = data.map((item) => {
+
+    const today = new Date().toISOString().slice(0, 10);
+    const currentResponses = (data || []).filter((item) => {
+      if (item.status === "closed") return false;
+      const need = Array.isArray(item.team_needs) ? item.team_needs[0] : item.team_needs;
+      if (!need || need.active === false) return false;
+      if (need.need_type === "pickup_tournament") {
+        const lastTournamentDate = need.tournament_end_date || need.tournament_start_date || need.start_date;
+        if (lastTournamentDate && lastTournamentDate < today) return false;
+      }
+      return true;
+    });
+
+    if (!currentResponses.length) return list.innerHTML = "<p>No current pickup responses need your attention.</p>";
+
+    list.innerHTML = currentResponses.map((item) => {
       const player = Array.isArray(item.players) ? item.players[0] : item.players;
       const need = Array.isArray(item.team_needs) ? item.team_needs[0] : item.team_needs;
-      return `<article class="listing-card"><span class="badge">${escapeHtml(item.status || "new")}</span><h3>${escapeHtml(player ? `${player.first_name} ${player.last_name}` : "Player response")}</h3><p><strong>Opportunity:</strong> ${escapeHtml(need?.title || "Pickup need")}</p><p>${escapeHtml(item.message)}</p><div class="listing-meta">${escapeHtml([player?.age_division, player?.primary_position, [player?.city, player?.state].filter(Boolean).join(", ")].filter(Boolean).join(" • "))}</div></article>`;
+      return `<article class="listing-card">
+        <span class="badge">${escapeHtml(item.status || "new")}</span>
+        <h3>${escapeHtml(player ? `${player.first_name} ${player.last_name}` : "Player response")}</h3>
+        <p><strong>Opportunity:</strong> ${escapeHtml(need?.title || "Pickup need")}</p>
+        <p>${escapeHtml(item.message)}</p>
+        <div class="listing-meta">${escapeHtml([player?.age_division, player?.primary_position, [player?.city, player?.state].filter(Boolean).join(", ")].filter(Boolean).join(" • "))}</div>
+        <div style="margin-top:16px">
+          <button class="btn btn-outline" type="button" data-close-pickup-response="${escapeHtml(item.id)}">Close Response</button>
+        </div>
+      </article>`;
     }).join("");
+
+    list.querySelectorAll("[data-close-pickup-response]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        if (!confirm("Close this pickup response? It will disappear from your active Interested Players list.")) return;
+        button.disabled = true;
+        try {
+          const { error: updateError } = await supabase
+            .from("pickup_interests")
+            .update({ status: "closed", updated_at: new Date().toISOString() })
+            .eq("id", button.dataset.closePickupResponse);
+          if (updateError) throw updateError;
+          await loadPickupInterests();
+        } catch (updateError) {
+          alert(updateError.message || "We could not close this pickup response.");
+          button.disabled = false;
+        }
+      });
+    });
   }
 
   const originalLoadNeeds = loadNeeds;
