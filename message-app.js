@@ -286,6 +286,28 @@ window.addEventListener("beforeunload", () => {
   try {
     const session = await requireSession();
     if (!session) return;
+
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("membership_active,account_type")
+      .eq("id", session.user.id)
+      .single();
+    if (profileError) throw profileError;
+
+    const memberActive = profile?.membership_active === true || profile?.account_type === "admin";
+    if (!memberActive) {
+      setPageStatus("Private messaging is a Softball Ready member benefit. Your profile can still be created and saved for free.");
+      if (messageInput) messageInput.disabled = true;
+      if (sendButton) sendButton.disabled = true;
+      if (conversationSearch) conversationSearch.disabled = true;
+      if (conversationList) conversationList.innerHTML = `
+        <div class="empty-state"><div><div class="empty-icon">🔒</div>
+        <h3 style="color:#17345f">Membership required</h3>
+        <p>Activate membership to send and receive private Softball Ready messages.</p>
+        <p><a class="btn btn-pink" href="membership.html">View Membership</a></p></div></div>`;
+      return;
+    }
+
     setPageStatus("Your private inbox is ready.");
     await loadConversations();
   } catch (error) {

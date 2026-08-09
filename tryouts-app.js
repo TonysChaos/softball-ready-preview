@@ -173,6 +173,7 @@ if (postForm) {
   const list = $("[data-coach-tryout-list]");
   let session = null;
   let team = null;
+  let coachProfile = null;
 
   function renderCoachTryouts(rows) {
     if (!list) return;
@@ -232,6 +233,8 @@ if (postForm) {
     try {
       if (!session) throw new Error("Please log in first.");
       if (!team?.id) throw new Error("Save your team profile before posting a tryout.");
+      const canPost = coachProfile?.membership_active === true || coachProfile?.account_type === "admin";
+      if (!canPost) throw new Error("An active Softball Ready membership is required to publish a tryout.");
 
       const fd = new FormData(postForm);
       const tryoutDate = clean(fd.get("tryout_date"));
@@ -280,6 +283,14 @@ if (postForm) {
         postForm.querySelector('button[type="submit"]').disabled = true;
         return;
       }
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("membership_active,account_type")
+        .eq("id", session.user.id)
+        .single();
+      if (profileError) throw profileError;
+      coachProfile = profileData;
+
       const { data, error } = await supabase
         .from("teams")
         .select("id,team_name,organization_name,age_division,city,state,email")
@@ -291,6 +302,11 @@ if (postForm) {
       if (!team) {
         setText(postStatus, "Save your team profile above before posting a tryout.", true);
         return;
+      }
+      const canPost = coachProfile?.membership_active === true || coachProfile?.account_type === "admin";
+      if (!canPost) {
+        setText(postStatus, "Team profile saved. Activate membership to publish tryouts.", true);
+        postForm.querySelector('button[type="submit"]').disabled = true;
       }
       if (team.age_division) postForm.elements.age_division.value = team.age_division;
       if (team.city) postForm.elements.city.value = team.city;

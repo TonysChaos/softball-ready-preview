@@ -312,7 +312,44 @@
     ageFilter.addEventListener("change", render);
     statusFilter.addEventListener("change", render);
 
-    loadListings();
+    async function verifyTeamNeedsAccess() {
+      const access = document.querySelector("[data-team-needs-access]");
+      try {
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+        const session = sessionData.session;
+        if (!session) {
+          if (access) access.innerHTML = `Team opportunity listings are a member benefit. <a href="login.html">Log in</a> or <a href="membership.html">view membership</a>.`;
+          summary.textContent = "Membership required to view team opportunities";
+          grid.innerHTML = '<div class="empty-state"><h3>Team opportunities are locked</h3><p>Create your profile for free. Activate membership when you are ready to view team needs.</p></div>';
+          return false;
+        }
+        const { data: profile, error } = await supabase
+          .from("profiles")
+          .select("membership_active,account_type")
+          .eq("id", session.user.id)
+          .single();
+        if (error) throw error;
+        const allowed = profile?.membership_active === true || profile?.account_type === "admin";
+        if (!allowed) {
+          if (access) access.innerHTML = `Your profile is saved. Activate <a href="membership.html">Softball Ready membership</a> to view team needs.`;
+          summary.textContent = "Membership required to view team opportunities";
+          grid.innerHTML = '<div class="empty-state"><h3>Team opportunities are locked</h3><p>Membership unlocks active team needs and recruiting opportunities.</p></div>';
+          return false;
+        }
+        if (access) access.textContent = "Membership verified. Active team opportunities are unlocked.";
+        return true;
+      } catch (error) {
+        if (access) access.textContent = error.message || "We could not verify team-opportunity access.";
+        summary.textContent = "Access check unavailable";
+        grid.innerHTML = '<div class="error-state"><h3>We could not verify access.</h3><p>Please refresh and try again.</p></div>';
+        return false;
+      }
+    }
+
+    (async () => {
+      if (await verifyTeamNeedsAccess()) await loadListings();
+    })();
   </script>
 </body>
 </html>
