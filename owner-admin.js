@@ -88,6 +88,14 @@ async function loadData() {
   state.teams = teamsR.data || [];
   state.needs = needsR.data || [];
   state.interests = interestsR.data || [];
+
+  // Count only pickup tournaments that have not reached their final date.
+  const currentPickupCount = state.needs.filter(n => {
+    if (n.need_type !== "pickup_tournament" || !n.active) return false;
+    const lastTournamentDate = n.tournament_end_date || n.tournament_start_date || n.start_date;
+    return !lastTournamentDate || lastTournamentDate >= todayIso();
+  }).length;
+  setMetric("pickupNeeds", currentPickupCount);
 }
 
 function renderAccounts(filter="") {
@@ -135,7 +143,21 @@ function renderTeams(filter="") {
 function renderNeeds(filter="") {
   const tbody = document.querySelector('[data-table="needs"]');
   const q = filter.trim().toLowerCase();
-  const rows = state.needs.filter(n => !q || searchableText(n.title,n.need_type,n.age_division,Array.isArray(n.positions_needed)?n.positions_needed.join(" "):n.positions_needed,n.city,n.state,n.tournament_name).includes(q));
+  const rows = state.needs
+    .filter(n => {
+      if (n.need_type !== "pickup_tournament") return true;
+      const lastTournamentDate = n.tournament_end_date || n.tournament_start_date || n.start_date;
+      return !lastTournamentDate || lastTournamentDate >= todayIso();
+    })
+    .filter(n => !q || searchableText(
+      n.title,
+      n.need_type,
+      n.age_division,
+      Array.isArray(n.positions_needed) ? n.positions_needed.join(" ") : n.positions_needed,
+      n.city,
+      n.state,
+      n.tournament_name
+    ).includes(q));
   tbody.innerHTML = rows.length ? rows.map(n => {
     const type = n.need_type === "pickup_tournament" ? "Pickup" : "Season";
     const name = n.tournament_name || n.title || (Array.isArray(n.positions_needed) ? n.positions_needed.join(", ") : n.positions_needed) || "Team need";
@@ -189,7 +211,7 @@ function renderActivity() {
 }
 
 function renderAlerts() {
-  const expiredPickup = state.needs.filter(n => n.need_type==="pickup_tournament" && n.active && (n.tournament_start_date || n.start_date) && (n.tournament_start_date || n.start_date) < todayIso()).length;
+  const expiredPickup = 0;
   const newInterests = state.interests.filter(i => (i.status || "new")==="new").length;
   const nonMembers = state.profiles.filter(p => !p.membership_active).length;
   setAlert("expiredPickup",expiredPickup); setAlert("newInterests",newInterests); setAlert("nonMembers",nonMembers);
