@@ -91,11 +91,18 @@ if (coachProfileForm) {
       needsList.innerHTML = `<p>${error.message}</p>`;
       return;
     }
-    if (!data.length) {
-      needsList.innerHTML = "<p>No roster openings have been posted yet.</p>";
+    const today = new Date().toISOString().slice(0, 10);
+    const currentNeeds = (data || []).filter((need) => {
+      if (need.need_type !== "pickup_tournament") return true;
+      const lastTournamentDate = need.tournament_end_date || need.tournament_start_date || need.start_date;
+      return !lastTournamentDate || lastTournamentDate >= today;
+    });
+
+    if (!currentNeeds.length) {
+      needsList.innerHTML = "<p>No current player needs have been posted yet.</p>";
       return;
     }
-    needsList.innerHTML = data.map((need) => {
+    needsList.innerHTML = currentNeeds.map((need) => {
       const isPickup = need.need_type === "pickup_tournament";
       const dateRange = isPickup && need.tournament_start_date
         ? `${formatOpportunityDate(need.tournament_start_date)}${need.tournament_end_date ? ` – ${formatOpportunityDate(need.tournament_end_date)}` : ""}`
