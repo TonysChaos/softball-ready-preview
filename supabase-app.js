@@ -924,7 +924,16 @@ if (pickupMarketplaceForm) {
   const results = document.querySelector("[data-pickup-results]");
   const summary = document.querySelector("[data-pickup-summary]");
   const clearButton = document.querySelector("[data-pickup-clear]");
+  const searchButton = pickupMarketplaceForm.querySelector('button[type="submit"]');
+  const filterFields = pickupMarketplaceForm.querySelectorAll("input, select");
   let accessAllowed = false;
+
+  function setPickupLocked(locked) {
+    pickupMarketplaceForm.classList.toggle("is-locked", locked);
+    filterFields.forEach((field) => { field.disabled = locked; });
+    if (searchButton) searchButton.disabled = locked;
+    if (clearButton) clearButton.disabled = locked;
+  }
 
   function pickupDateRange(need) {
     const start = formatOpportunityDate(need.tournament_start_date);
@@ -1031,8 +1040,11 @@ if (pickupMarketplaceForm) {
     try {
       const session = await getSession();
       if (!session) {
-        accessStatus.innerHTML = `Please <a href="login.html">log in</a> to view pickup-player opportunities.`;
-        results.innerHTML = `<div class="pickup-empty">Log in to browse tournament pickup needs.</div>`;
+        accessAllowed = false;
+        setPickupLocked(true);
+        accessStatus.innerHTML = `Pickup opportunities are a Softball Ready member benefit. <a href="login.html">Log in</a> or <a href="membership.html">view membership</a>.`;
+        summary.textContent = "Membership required to search pickup opportunities.";
+        results.innerHTML = `<div class="pickup-empty"><h3>Pickup opportunities are locked</h3><p>Log in with an active player/family membership to search current tournament needs.</p></div>`;
         return false;
       }
 
@@ -1047,28 +1059,40 @@ if (pickupMarketplaceForm) {
       const isCoach = profile.account_type === "coach";
       accessAllowed = (profile.membership_active === true || isAdmin) && !isCoach;
       if (isCoach && !isAdmin) {
-        accessStatus.innerHTML = `Pickup Player Marketplace is a player/family opportunity directory. Coaches can post pickup needs from the Coach Dashboard.`;
-        results.innerHTML = `<div class="pickup-empty">Use the Coach Dashboard to post and manage pickup-player needs.</div>`;
+        accessAllowed = false;
+        setPickupLocked(true);
+        accessStatus.innerHTML = `Pickup Player Marketplace is for player/family members searching for tournament opportunities. Coaches should post and manage pickup needs from the Coach Dashboard.`;
+        summary.textContent = "Coach accounts do not search this directory.";
+        results.innerHTML = `<div class="pickup-empty"><h3>Coach tools are in your dashboard</h3><p>Use the pink <strong>Coaches: Post a Need</strong> button above to create or manage pickup-player needs.</p></div>`;
         return false;
       }
       if (!accessAllowed) {
+        setPickupLocked(true);
         accessStatus.innerHTML = `Pickup Player Marketplace access requires an active Softball Ready membership. <a href="membership.html">Activate membership</a>.`;
-        results.innerHTML = `<div class="pickup-empty">Activate membership to browse current tournament opportunities.</div>`;
+        summary.textContent = "Membership required to search pickup opportunities.";
+        results.innerHTML = `<div class="pickup-empty"><h3>Pickup opportunities are locked</h3><p>Your profile can be saved for free. Activate membership to search current tournament pickup needs.</p></div>`;
         return false;
       }
 
+      setPickupLocked(false);
       accessStatus.textContent = "Your membership is active. Current tournament pickup opportunities are unlocked.";
       return true;
     } catch (error) {
+      accessAllowed = false;
+      setPickupLocked(true);
       accessStatus.textContent = error.message || "We could not verify marketplace access.";
       accessStatus.style.color = "#8b1d3d";
+      summary.textContent = "Marketplace access could not be verified.";
       results.innerHTML = `<div class="pickup-error">The marketplace could not be opened.</div>`;
       return false;
     }
   }
 
   async function loadPickupOpportunities() {
-    if (!accessAllowed) return;
+    if (!accessAllowed) {
+      setStatus(formStatus, "An active player/family membership is required to search pickup opportunities.", true);
+      return;
+    }
     const button = pickupMarketplaceForm.querySelector('button[type="submit"]');
     button.disabled = true;
     setStatus(formStatus, "Searching pickup opportunities...");
