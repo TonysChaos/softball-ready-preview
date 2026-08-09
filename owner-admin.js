@@ -79,7 +79,7 @@ async function loadData() {
     supabase.from("profiles").select("id,full_name,email,account_type,membership_active").order("full_name",{ascending:true}),
     supabase.from("players").select("id,owner_id,first_name,last_name,age_division,primary_position,city,state,searchable_by_coaches,membership_active").order("last_name",{ascending:true}),
     supabase.from("teams").select("id,owner_id,team_name,organization_name,coach_name,age_division,city,state").order("team_name",{ascending:true}),
-    supabase.from("team_needs").select("id,owner_id,title,need_type,age_division,position_needed,city,state,active,tournament_name,tournament_start_date,tournament_end_date,player_needed_by").order("created_at",{ascending:false}),
+    supabase.from("team_needs").select("id,owner_id,title,need_type,age_division,positions_needed,city,state,active,tournament_name,tournament_start_date,tournament_end_date,start_date,details,created_at").order("created_at",{ascending:false}),
     supabase.from("pickup_interests").select("id,status,created_at,player_id,team_need_id,players(first_name,last_name,age_division,primary_position),team_needs(title,tournament_name)").order("created_at",{ascending:false})
   ]);
   for (const r of [profilesR,playersR,teamsR,needsR,interestsR]) if (r.error) throw r.error;
@@ -135,15 +135,15 @@ function renderTeams(filter="") {
 function renderNeeds(filter="") {
   const tbody = document.querySelector('[data-table="needs"]');
   const q = filter.trim().toLowerCase();
-  const rows = state.needs.filter(n => !q || searchableText(n.title,n.need_type,n.age_division,n.position_needed,n.city,n.state,n.tournament_name).includes(q));
+  const rows = state.needs.filter(n => !q || searchableText(n.title,n.need_type,n.age_division,Array.isArray(n.positions_needed)?n.positions_needed.join(" "):n.positions_needed,n.city,n.state,n.tournament_name).includes(q));
   tbody.innerHTML = rows.length ? rows.map(n => {
     const type = n.need_type === "pickup_tournament" ? "Pickup" : "Season";
-    const name = n.tournament_name || n.title || n.position_needed || "Team need";
-    const date = n.tournament_start_date || n.player_needed_by;
+    const name = n.tournament_name || n.title || (Array.isArray(n.positions_needed) ? n.positions_needed.join(", ") : n.positions_needed) || "Team need";
+    const date = n.tournament_start_date || n.start_date;
     const expired = n.need_type==="pickup_tournament" && n.active && date && date < todayIso();
     return `<tr>
       <td>${badge(type, n.need_type==="pickup_tournament"?"pink":"gray")}</td>
-      <td><strong>${escapeHtml(name)}</strong><br><span class="metric-note">${escapeHtml(n.position_needed || "")}</span></td>
+      <td><strong>${escapeHtml(name)}</strong><br><span class="metric-note">${escapeHtml(Array.isArray(n.positions_needed) ? n.positions_needed.join(", ") : (n.positions_needed || ""))}</span></td>
       <td>${escapeHtml(n.age_division || "—")}</td>
       <td>${escapeHtml([n.city,n.state].filter(Boolean).join(", ") || "—")}<br><span class="metric-note">${formatDate(date)}</span></td>
       <td>${n.active ? badge(expired?"Active • Past Date":"Active", expired?"gold":"green") : badge("Closed","gray")}</td>
@@ -189,7 +189,7 @@ function renderActivity() {
 }
 
 function renderAlerts() {
-  const expiredPickup = state.needs.filter(n => n.need_type==="pickup_tournament" && n.active && (n.tournament_start_date || n.player_needed_by) && (n.tournament_start_date || n.player_needed_by) < todayIso()).length;
+  const expiredPickup = state.needs.filter(n => n.need_type==="pickup_tournament" && n.active && (n.tournament_start_date || n.start_date) && (n.tournament_start_date || n.start_date) < todayIso()).length;
   const newInterests = state.interests.filter(i => (i.status || "new")==="new").length;
   const nonMembers = state.profiles.filter(p => !p.membership_active).length;
   setAlert("expiredPickup",expiredPickup); setAlert("newInterests",newInterests); setAlert("nonMembers",nonMembers);
