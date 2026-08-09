@@ -8,6 +8,7 @@ const threadSubtitle = document.querySelector("[data-thread-subtitle]");
 const threadAvatar = document.querySelector("[data-thread-avatar]");
 const threadBody = document.querySelector("[data-thread-body]");
 const messageForm = document.querySelector("[data-message-form]");
+const messageComposer = messageForm;
 const messageInput = messageForm?.elements.body;
 const sendButton = messageForm?.querySelector('button[type="submit"]');
 const messageStatus = document.querySelector("[data-message-status]");
@@ -215,6 +216,7 @@ async function openConversation(conversationId) {
     : "Private Softball Ready conversation";
   if (threadAvatar) threadAvatar.textContent = initials(conversation?.player_name || conversation?.subject);
 
+  if (messageComposer) messageComposer.hidden = false;
   messageInput.disabled = false;
   sendButton.disabled = false;
   setMessageStatus("");
@@ -297,6 +299,7 @@ window.addEventListener("beforeunload", () => {
     const memberActive = profile?.membership_active === true || profile?.account_type === "admin";
     if (!memberActive) {
       setPageStatus("Private messaging is a Softball Ready member benefit. Your profile can still be created and saved for free.");
+      if (messageComposer) messageComposer.hidden = true;
       if (messageInput) messageInput.disabled = true;
       if (sendButton) sendButton.disabled = true;
       if (conversationSearch) conversationSearch.disabled = true;
