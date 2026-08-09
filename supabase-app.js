@@ -123,6 +123,7 @@ if (coachProfileForm) {
     }
     const today = new Date().toISOString().slice(0, 10);
     const currentNeeds = (data || []).filter((need) => {
+      if (need.active === false) return false;
       if (need.need_type !== "pickup_tournament") return true;
       const lastTournamentDate = need.tournament_end_date || need.tournament_start_date || need.start_date;
       return !lastTournamentDate || lastTournamentDate >= today;
