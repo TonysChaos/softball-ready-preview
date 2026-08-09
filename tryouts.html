@@ -1,10 +1,68 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tryouts | SoftballReady.net</title><meta name="description" content="Softball Ready — The National Travel Softball Connection."><link rel="stylesheet" href="styles.css"></head><body><header class="header"><div class="container nav">
-<a class="brand" href="index.html" aria-label="Softball Ready home"><div class="logo-mark">S<span>R</span></div><div class="brand-copy"><strong>SOFTBALL <span style="color:var(--pink)">READY.NET</span></strong><small>The National Travel Softball Connection.</small></div></a>
-<button class="menu-btn" aria-expanded="false" aria-label="Open navigation">☰</button>
-<nav class="nav-links"><a href="index.html">Home</a><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a><a href="teams.html">Teams</a><a href="our-story.html">Our Story</a><a href="membership.html">Membership</a></nav><a class="btn btn-pink" href="login.html">Log In</a>
-</div></header><main><section class="page-hero"><div class="container"><div class="eyebrow" style="color:#ff72a7">Opportunities near and far</div><h1>Tryout Directory</h1><p>Search upcoming tryouts by state, age division, date, and organization. Full tryout access is included with yearly membership.</p></div></section><section class="section"><div class="container"><div class="form-panel"><div class="form-grid"><div class="field"><label>State</label><input placeholder="Georgia"></div><div class="field"><label>Age division</label><select><option>All divisions</option><option>10U</option><option>12U</option><option>14U</option><option>16U</option><option>18U</option></select></div><div class="field"><label>Date</label><input type="date"></div><div class="field"><label>Organization</label><input></div><div class="field full"><button class="btn btn-pink">Search Tryouts</button></div></div></div><div class="notice" style="margin-top:24px">The live directory will connect to the Softball Ready database during the application build.</div></div></section></main><footer class="footer"><div class="container"><div class="footer-grid">
-<div><div class="brand"><div class="logo-mark" style="color:white">S<span>R</span></div><div class="brand-copy"><strong style="color:white">SOFTBALL <span style="color:var(--pink)">READY.NET</span></strong><small style="color:white">The National Travel Softball Connection.</small></div></div><p style="color:rgba(255,255,255,.72);max-width:300px">Helping travel softball families, players, coaches, and teams find one another with less confusion and more confidence.</p></div>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tryouts | Softball Ready</title>
+  <meta name="description" content="Search upcoming travel softball tryouts by state, age division, date, and organization.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .tryout-results{display:grid;gap:18px;margin-top:24px}
+    .tryout-card{background:white;border:1px solid rgba(19,39,71,.12);border-radius:22px;padding:22px;box-shadow:0 10px 28px rgba(19,39,71,.07)}
+    .tryout-card h3{color:var(--navy);margin:8px 0}
+    .tryout-meta{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+    .tryout-pill{display:inline-flex;padding:7px 11px;border-radius:999px;background:#f5f7fb;font-weight:800;font-size:.9rem;color:var(--navy)}
+    .tryout-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .tryout-empty{background:white;border-radius:20px;padding:28px;text-align:center;border:1px solid rgba(19,39,71,.12)}
+    .member-lock{background:#fff6fa;border:1px solid rgba(255,74,135,.25);border-radius:20px;padding:22px;margin-top:24px}
+  </style>
+</head>
+<body>
+<header class="header"><div class="container nav">
+  <a class="brand" href="index.html" aria-label="Softball Ready home"><div class="logo-mark">S<span>R</span></div><div class="brand-copy"><strong>SOFTBALL <span style="color:var(--pink)">READY</span></strong><small>The National Travel Softball Connection.</small></div></a>
+  <button class="menu-btn" aria-expanded="false" aria-label="Open navigation">☰</button>
+  <nav class="nav-links"><a href="index.html">Home</a><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a><a href="teams.html">Teams</a><a href="pickup-players.html">Pickup Players</a><a href="tryouts.html" aria-current="page">Tryouts</a><a href="our-story.html">Our Story</a><a href="membership.html">Membership</a></nav>
+  <a class="btn btn-pink" href="login.html" data-tryout-login-link>Log In</a>
+</div></header>
+
+<main>
+<section class="page-hero"><div class="container">
+  <div class="eyebrow" style="color:#ff72a7">Opportunities near and far</div>
+  <h1>Tryout Directory</h1>
+  <p>Search upcoming tryouts by state, age division, date, and organization. Full tryout access is included with yearly membership.</p>
+</div></section>
+
+<section class="section"><div class="container">
+  <div class="notice" data-tryout-access-status>Checking your account...</div>
+
+  <form class="form-panel" id="tryout-search-form" style="margin-top:24px">
+    <div class="form-grid">
+      <div class="field"><label>State</label><input name="state" placeholder="Georgia or GA"></div>
+      <div class="field"><label>Age division</label><select name="age_division"><option value="">All divisions</option><option>8U</option><option>10U</option><option>12U</option><option>14U</option><option>16U</option><option>18U</option><option>College</option></select></div>
+      <div class="field"><label>Date</label><input name="tryout_date" type="date"></div>
+      <div class="field"><label>Organization or team</label><input name="organization" placeholder="Optional"></div>
+      <div class="field full"><button class="btn btn-pink" type="submit">Search Tryouts</button></div>
+    </div>
+    <p data-tryout-search-status style="font-weight:800;color:var(--navy)"></p>
+  </form>
+
+  <div data-tryout-member-lock class="member-lock" hidden>
+    <h3 style="color:var(--navy);margin-top:0">Membership required</h3>
+    <p>Tryout listings are a member benefit. Log in with an active Softball Ready membership to search upcoming tryouts.</p>
+    <div class="tryout-actions"><a class="btn btn-pink" href="membership.html">View Membership</a><a class="btn btn-outline" href="login.html">Log In</a></div>
+  </div>
+
+  <div class="tryout-results" data-tryout-results></div>
+</div></section>
+</main>
+
+<footer class="footer"><div class="container"><div class="footer-grid">
+<div><div class="brand"><div class="logo-mark" style="color:white">S<span>R</span></div><div class="brand-copy"><strong style="color:white">SOFTBALL <span style="color:var(--pink)">READY</span></strong><small style="color:white">The National Travel Softball Connection.</small></div></div><p style="color:rgba(255,255,255,.72);max-width:300px">Helping travel softball families, players, coaches, and teams find one another with less confusion and more confidence.</p></div>
 <div><h4>Quick Links</h4><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a><a href="teams.html">Teams</a><a href="membership.html">Membership</a></div>
 <div><h4>Resources</h4><a href="our-story.html">Our Story</a><a href="tryouts.html">Tryouts</a><a href="contact.html">We're Here to Help</a><a href="community-standards.html">Community Standards</a></div>
 <div><h4>Connect</h4><a href="mailto:info@softballready.net">info@softballready.net</a><a href="login.html">Member Login</a></div>
-</div><div class="footer-bottom"><div class="footer-motto">Where Opportunity Meets Preparation.</div><div>© 2026 SoftballReady.net. All rights reserved.</div></div></div></footer><script src="script.js"></script></body></html>
+</div><div class="footer-bottom"><div class="footer-motto">Where Opportunity Meets Preparation.</div><div>© 2026 Softball Ready. All rights reserved.</div></div></div></footer>
+
+<script src="script.js"></script>
+<script type="module" src="tryouts-app.js"></script>
+</body></html>
