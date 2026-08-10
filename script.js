@@ -15,3 +15,15 @@ document.querySelectorAll('form[data-demo-form]').forEach((form) => {
     form.reset();
   });
 });
+
+
+(function addLegalFooterLinks(){
+  const footer = document.querySelector(".footer");
+  if (!footer || footer.querySelector("[data-legal-links]")) return;
+  const container = footer.querySelector(".container:last-of-type") || footer.querySelector(".container") || footer;
+  const row = document.createElement("div");
+  row.setAttribute("data-legal-links", "");
+  row.style.cssText = "display:flex;gap:16px;flex-wrap:wrap;justify-content:center;padding:14px 0 2px;font-size:13px;";
+  row.innerHTML = '<a href="privacy.html" style="color:inherit">Privacy Policy</a><a href="terms.html" style="color:inherit">Terms of Service</a><a href="community-standards.html" style="color:inherit">Community Standards</a>';
+  container.appendChild(row);
+})();
