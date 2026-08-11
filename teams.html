@@ -279,22 +279,36 @@
         (teamsResult.data || []).map(team => [team.owner_id, team])
       );
 
-      listings = (needsResult.data || []).map(row => {
-        const team = teamByOwner.get(row.owner_id) || {};
-        return {
-          id: row.id,
-          teamName: team.team_name || "",
-          organizationName: team.organization_name || "",
-          title: row.title || "Roster opportunity",
-          age: row.age_division || "",
-          positions: row.positions_needed || "",
-          city: row.city || "",
-          state: row.state || "",
-          startDate: row.start_date || "",
-          details: row.details || "",
-          active: row.active !== false
-        };
-      });
+      const today = new Date().toISOString().slice(0, 10);
+
+      listings = (needsResult.data || [])
+        .filter(row => {
+          // Only truly active listings belong in the public directory.
+          if (row.active !== true) return false;
+
+          // A "player needed by" date acts as the public expiration date.
+          // If a coach wants to use the listing again later, they can edit
+          // the date and reopen it from the Coach Dashboard.
+          if (row.start_date && row.start_date < today) return false;
+
+          return true;
+        })
+        .map(row => {
+          const team = teamByOwner.get(row.owner_id) || {};
+          return {
+            id: row.id,
+            teamName: team.team_name || "",
+            organizationName: team.organization_name || "",
+            title: row.title || "Roster opportunity",
+            age: row.age_division || "",
+            positions: row.positions_needed || "",
+            city: row.city || "",
+            state: row.state || "",
+            startDate: row.start_date || "",
+            details: row.details || "",
+            active: true
+          };
+        });
 
       render();
     }
@@ -313,6 +327,14 @@
     statusFilter.addEventListener("change", render);
 
     loadListings();
+
+    window.addEventListener("pageshow", event => {
+      if (event.persisted) loadListings();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) loadListings();
+    });
   </script>
 </body>
 </html>
