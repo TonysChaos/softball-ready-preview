@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SoftballReady.net | The National Travel Softball Connection</title>
+  <title>Softball Ready | The National Travel Softball Connection</title>
   <meta name="description" content="Softball Ready helps travel softball players, families, and teams connect, discover opportunities, and take the next step with confidence.">
   <style>
     :root{
@@ -20,6 +20,15 @@
       --shadow:0 16px 38px rgba(23,52,95,.14);
     }
     .hero-logo{width:400px;height:auto;margin:0 auto 16px}
+    .launch-hero-wrap{position:relative;width:100%;max-width:520px;margin:0 auto 28px;padding:28px 22px 30px;text-align:center;isolation:isolate}
+    .launch-hero-logo{position:absolute;inset:0;margin:auto;width:min(92%,500px);height:auto;opacity:.10;z-index:-1;pointer-events:none}
+    .launch-message{position:relative;z-index:1;color:var(--navy)}
+    .launch-message h1{font-size:clamp(44px,5.8vw,68px);line-height:1.02;letter-spacing:-.035em;margin:0 0 24px;color:var(--navy)}
+    .launch-message h1 span{color:var(--pink)}
+    .launch-message p{font-size:26px;line-height:1.48;margin:0 auto 20px;max-width:760px;color:var(--navy);font-weight:700}
+    .launch-message .launch-thanks{font-size:28px;font-weight:900;margin-top:24px}
+    .launch-message .launch-founder{font-size:23px;font-weight:800;margin-top:4px}
+    .launch-message .launch-founder strong{display:block;font-size:26px}
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:#fff;line-height:1.65;font-size:18px}
@@ -106,6 +115,13 @@
     }
     @media(max-width:620px){
       body{font-size:17px}
+      .launch-hero-wrap{padding:20px 8px 24px;margin-bottom:16px}
+      .launch-hero-logo{width:96%;opacity:.09}
+      .launch-message h1{font-size:clamp(38px,11vw,52px);margin-bottom:20px}
+      .launch-message p{font-size:21px;line-height:1.45}
+      .launch-message .launch-thanks{font-size:23px}
+      .launch-message .launch-founder{font-size:19px}
+      .launch-message .launch-founder strong{font-size:22px}
       .brand-copy small{display:none}
       .brand-copy strong{font-size:18px}
       .hero,section{padding:56px 0}
@@ -121,7 +137,7 @@
     <a class="brand" href="index.html" aria-label="Softball Ready home">
       <div class="logo">SR</div>
       <div class="brand-copy">
-        <strong>SOFTBALL <span>READY.NET</span></strong>
+        <strong>SOFTBALL <span>READY</span></strong>
         <small>THE NATIONAL TRAVEL SOFTBALL CONNECTION.</small>
       </div>
     </a>
@@ -144,13 +160,20 @@
   <section class="hero">
     <div class="container hero-grid">
       <div class="hero-copy">
-      <img src="assets/IMG_5706.jpg" alt="Softball Ready Logo" class="hero-logo">  
-        <div class="eyebrow">The National Travel Softball Connection</div>
-        <h1>SOFTBALL <span>READY.NET</span></h1>
-        <p class="lead">Softball Ready helps travel softball players, families, and teams connect, discover opportunities, and take the next step with confidence.</p>
-        <div class="buttons">
-          <a class="btn btn-blue" href="players.html">Players Looking for Teams</a>
-          <a class="btn btn-outline" href="teams.html">Teams Looking for Players</a>
+        <div class="launch-hero-wrap">
+          <img src="assets/IMG_5706.jpg" alt="" class="launch-hero-logo" aria-hidden="true">
+          <div class="launch-message">
+            <h1>Welcome to the Grand Launch of <span>SoftballReady.net</span></h1>
+            <p>Thank you for taking the time to visit.</p>
+            <p>Become one of the founding members of <strong>SoftballReady.net</strong> and help us build a nationwide database of players, teams, tryouts, and opportunities as we prepare for the upcoming winter and spring seasons.</p>
+            <p>Every new player profile and team listing helps make <strong>SoftballReady.net</strong> more valuable for the entire travel softball community.</p>
+            <p class="launch-thanks">Thank you, and God bless!</p>
+            <p class="launch-founder"><strong>Tony Puleo</strong>Founder, SoftballReady.net</p>
+          </div>
+        </div>
+        <div class="buttons" style="justify-content:center">
+          <a class="btn btn-pink" href="membership.html">Become a Founding Member</a>
+          <a class="btn btn-outline" href="players.html">Create a Player Profile</a>
         </div>
       </div>
       <div class="hero-photo">
@@ -187,11 +210,11 @@
         <article class="card"><div class="icon">2</div><h3>Share the Details</h3><p>Complete the form with accurate information about the player or team.</p></article>
         <article class="card"><div class="icon">3</div><h3>Prepare to Connect</h3><p>Your information will be ready for matching and communication features.</p></article>
       </div>
-      <div style="margin-top:24px;text-align:center"><img src="team-photo-small.jpg" alt="Softball teammates" style="width:50%;max-width:500px;height:auto;object-fit:contain;display:block;margin:0 auto;border-radius:20px"></div>
+      <div style="margin-top:24px;text-align:center"><img src="team-photo-small.jpg" alt="Softball teammates" style="width:50%;max-width:500px;height:340px:auto;object-fit:contain;display:block;margin:0 auto;border-radius:20px"></div>
       
     </div>
   </section>
-  <div style="padding:64px 0;text-align:center"><div class="container"><div class="eyebrow">Softball Community</div><h2>More Than a Game</h2><p>Travel Softball builds friendships, confidence, and memories that last beyond the field.</p><img src="fun-photo.jpg" alt="Three softball teammates in red pants" style="width:60%;max-width:600px;height:auto;display:block;margin:24px auto 0;border-radius:20px"></div></div><div>
+  <div style="padding:64px 0;text-align:center"><div class="container"><div class="eybrow">Softball Community</div><h2>More Than a Game</h2><p>Travel Softball builds friendships, confidence, and memories that last beyond the field.</p><img src="fun-photo.jpg" alt="Three softball teammates in red pants" style="width:60%;max-width:600px;height:auto;display:block;margin:24px auto 0;border-radius:20px"></div></div><div>
 
   <section class="section-pink">
     <div class="container split">
@@ -235,7 +258,7 @@
   <div class="container">
     <div class="footer-grid">
       <div>
-        <div class="brand"><div class="logo">SR</div><div class="brand-copy"><strong style="color:#fff">SOFTBALL <span>READY.NET</span></strong><small style="color:#fff">THE NATIONAL TRAVEL SOFTBALL CONNECTION.</small></div></div>
+        <div class="brand"><div class="logo">SR</div><div class="brand-copy"><strong style="color:#fff">SOFTBALL <span>READY</span></strong><small style="color:#fff">THE NATIONAL TRAVEL SOFTBALL CONNECTION.</small></div></div>
         <p>Helping travel softball families, players, coaches, and teams find one another with less confusion and more confidence.</p>
       </div>
       <div><h4>Quick Links</h4><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a><a href="teams.html">Teams</a></div>
