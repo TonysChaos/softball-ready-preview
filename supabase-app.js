@@ -105,10 +105,109 @@ if (coachProfileForm) {
   const formStatus = coachProfileForm.querySelector("[data-form-status]");
   const needsForm = document.querySelector("#team-need-form");
   const needsList = document.querySelector("[data-team-needs-list]");
+  const closedNeedsList = document.querySelector("[data-closed-team-needs-list]");
+  const needSaveButton = needsForm?.querySelector("[data-need-save-button]") || needsForm?.querySelector('button[type="submit"]');
+  const cancelNeedEditButton = needsForm?.querySelector("[data-cancel-need-edit]");
 
   let currentSession = null;
   let currentTeam = null;
   let currentCoachProfile = null;
+
+  function needPositionsText(need) {
+    return Array.isArray(need?.positions_needed)
+      ? need.positions_needed.join(", ")
+      : String(need?.positions_needed || "");
+  }
+
+  function resetNeedEditor(message = "") {
+    if (!needsForm) return;
+    needsForm.reset();
+    if (needsForm.elements.need_id) needsForm.elements.need_id.value = "";
+    if (needSaveButton) needSaveButton.textContent = "Save Player Need";
+    if (cancelNeedEditButton) cancelNeedEditButton.hidden = true;
+    const typeField = needsForm.elements.need_type;
+    if (typeField) typeField.dispatchEvent(new Event("change", { bubbles: true }));
+    const status = needsForm.querySelector("[data-form-status]");
+    if (message) setStatus(status, message);
+  }
+
+  function editNeed(need) {
+    if (!needsForm || !need) return;
+    const set = (name, value) => {
+      const field = needsForm.elements[name];
+      if (field) field.value = value ?? "";
+    };
+
+    set("need_id", need.id);
+    set("need_type", need.need_type || "season_roster");
+    set("title", need.title || "");
+    set("age_division", need.age_division || "");
+    set("positions_needed_text", needPositionsText(need));
+    set("tournament_name", need.tournament_name || "");
+    set("tournament_start_date", need.tournament_start_date || "");
+    set("tournament_end_date", need.tournament_end_date || "");
+    set("tournament_city", need.tournament_city || "");
+    set("tournament_state", need.tournament_state || "");
+    set("start_date", need.start_date || "");
+    set("active", need.active === false ? "false" : "true");
+    set("details", need.details || "");
+
+    needsForm.elements.need_type?.dispatchEvent(new Event("change", { bubbles: true }));
+    if (needSaveButton) needSaveButton.textContent = "Update Player Need";
+    if (cancelNeedEditButton) cancelNeedEditButton.hidden = false;
+    setStatus(needsForm.querySelector("[data-form-status]"), "Editing saved roster need. Make your changes, then click Update Player Need.");
+    needsForm.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function setNeedActive(need, active) {
+    if (!currentSession || !need?.id) return;
+    const action = active ? "reopen" : "close";
+    const prompt = active
+      ? "Reopen this roster need? It will become visible to eligible members again."
+      : "Close this roster need? It will disappear from active team opportunities but remain saved here.";
+    if (!confirm(prompt)) return;
+
+    const { error } = await supabase
+      .from("team_needs")
+      .update({ active })
+      .eq("id", need.id)
+      .eq("owner_id", currentSession.user.id);
+
+    if (error) {
+      alert(error.message || `We could not ${action} this roster need.`);
+      return;
+    }
+    await loadNeeds();
+  }
+
+  function needCard(need, { closed = false } = {}) {
+    const isPickup = need.need_type === "pickup_tournament";
+    const dateRange = isPickup && need.tournament_start_date
+      ? `${formatOpportunityDate(need.tournament_start_date)}${need.tournament_end_date ? ` – ${formatOpportunityDate(need.tournament_end_date)}` : ""}`
+      : null;
+    const tournamentLocation = [need.tournament_city, need.tournament_state].filter(Boolean).join(", ");
+    const editLabel = closed ? "Edit Before Reopening" : "Edit";
+    const actionLabel = closed ? "Reopen Listing" : "Close Listing";
+
+    return `
+      <article class="listing-card" data-need-card="${escapeHtml(need.id)}">
+        <span class="badge">${isPickup ? "Pickup Player" : "Season Roster"} • ${escapeHtml(need.age_division || "Division not entered")} • ${closed ? "Closed" : "Active"}</span>
+        <h3>${escapeHtml(need.title || "Player opportunity")}</h3>
+        ${isPickup ? `
+          <div class="listing-meta"><strong>Tournament:</strong> ${escapeHtml(need.tournament_name || "Not entered")}</div>
+          ${dateRange ? `<div class="listing-meta"><strong>Dates:</strong> ${dateRange}</div>` : ""}
+          ${tournamentLocation ? `<div class="listing-meta"><strong>Location:</strong> ${escapeHtml(tournamentLocation)}</div>` : ""}
+        ` : ""}
+        <div class="listing-meta"><strong>Positions:</strong> ${escapeHtml(needPositionsText(need) || "Open to all positions")}</div>
+        ${need.start_date ? `<div class="listing-meta"><strong>Player needed by:</strong> ${formatOpportunityDate(need.start_date)}</div>` : ""}
+        <p>${escapeHtml(need.details || "No additional details.")}</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+          <button class="btn btn-outline" type="button" data-edit-need="${escapeHtml(need.id)}">${editLabel}</button>
+          <button class="btn ${closed ? "btn-pink" : "btn-outline"}" type="button" data-toggle-need="${escapeHtml(need.id)}" data-next-active="${closed ? "true" : "false"}">${actionLabel}</button>
+        </div>
+      </article>
+    `;
+  }
 
   async function loadNeeds() {
     if (!currentSession || !needsList) return;
@@ -117,44 +216,53 @@ if (coachProfileForm) {
       .select("*")
       .eq("owner_id", currentSession.user.id)
       .order("created_at", { ascending: false });
+
     if (error) {
-      needsList.innerHTML = `<p>${error.message}</p>`;
+      needsList.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
+      if (closedNeedsList) closedNeedsList.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
       return;
     }
+
     const today = new Date().toISOString().slice(0, 10);
-    const currentNeeds = (data || []).filter((need) => {
+    const allNeeds = data || [];
+
+    const activeNeeds = allNeeds.filter((need) => {
       if (need.active === false) return false;
       if (need.need_type !== "pickup_tournament") return true;
       const lastTournamentDate = need.tournament_end_date || need.tournament_start_date || need.start_date;
       return !lastTournamentDate || lastTournamentDate >= today;
     });
 
-    if (!currentNeeds.length) {
-      needsList.innerHTML = "<p>No current player needs have been posted yet.</p>";
-      return;
-    }
-    needsList.innerHTML = currentNeeds.map((need) => {
-      const isPickup = need.need_type === "pickup_tournament";
-      const dateRange = isPickup && need.tournament_start_date
-        ? `${formatOpportunityDate(need.tournament_start_date)}${need.tournament_end_date ? ` – ${formatOpportunityDate(need.tournament_end_date)}` : ""}`
-        : null;
-      const tournamentLocation = [need.tournament_city, need.tournament_state].filter(Boolean).join(", ");
+    // Season roster needs are reusable. Closed pickup-tournament listings are kept in
+    // history but intentionally not shown here because old tournaments should not be reopened.
+    const closedSeasonNeeds = allNeeds.filter(
+      (need) => need.active === false && need.need_type !== "pickup_tournament"
+    );
 
-      return `
-        <article class="listing-card">
-          <span class="badge">${isPickup ? "Pickup Player" : "Season Roster"} • ${need.age_division || "Division not entered"} • ${need.active ? "Active" : "Inactive"}</span>
-          <h3>${escapeHtml(need.title || "Player opportunity")}</h3>
-          ${isPickup ? `
-            <div class="listing-meta"><strong>Tournament:</strong> ${escapeHtml(need.tournament_name || "Not entered")}</div>
-            ${dateRange ? `<div class="listing-meta"><strong>Dates:</strong> ${dateRange}</div>` : ""}
-            ${tournamentLocation ? `<div class="listing-meta"><strong>Location:</strong> ${escapeHtml(tournamentLocation)}</div>` : ""}
-          ` : ""}
-          <div class="listing-meta"><strong>Positions:</strong> ${escapeHtml((need.positions_needed || []).join(", ") || "Open to all positions")}</div>
-          ${need.start_date ? `<div class="listing-meta"><strong>Player needed by:</strong> ${formatOpportunityDate(need.start_date)}</div>` : ""}
-          <p>${escapeHtml(need.details || "No additional details.")}</p>
-        </article>
-      `;
-    }).join("");
+    needsList.innerHTML = activeNeeds.length
+      ? activeNeeds.map((need) => needCard(need)).join("")
+      : "<p>No current player needs have been posted yet.</p>";
+
+    if (closedNeedsList) {
+      closedNeedsList.innerHTML = closedSeasonNeeds.length
+        ? closedSeasonNeeds.map((need) => needCard(need, { closed: true })).join("")
+        : "<p>No closed season roster needs yet.</p>";
+    }
+
+    const byId = new Map(allNeeds.map((need) => [String(need.id), need]));
+
+    document.querySelectorAll("[data-edit-need]").forEach((button) => {
+      button.addEventListener("click", () => editNeed(byId.get(String(button.dataset.editNeed))));
+    });
+
+    document.querySelectorAll("[data-toggle-need]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const need = byId.get(String(button.dataset.toggleNeed));
+        const nextActive = button.dataset.nextActive === "true";
+        button.disabled = true;
+        await setNeedActive(need, nextActive);
+      });
+    });
   }
 
   async function loadCoachDashboard() {
@@ -285,16 +393,29 @@ if (coachProfileForm) {
           throw new Error("The tournament end date cannot be before the start date.");
         }
       }
-      const { error } = await supabase.from("team_needs").insert(need);
-      if (error) throw error;
-      needsForm.reset();
-      setStatus(status, "Roster need saved successfully.");
+      const needId = String(form.get("need_id") || "").trim();
+      let saveResult;
+      if (needId) {
+        saveResult = await supabase
+          .from("team_needs")
+          .update(need)
+          .eq("id", needId)
+          .eq("owner_id", currentSession.user.id);
+      } else {
+        saveResult = await supabase.from("team_needs").insert(need);
+      }
+      if (saveResult.error) throw saveResult.error;
+      resetNeedEditor(needId ? "Player need updated successfully." : "Player need saved successfully.");
       await loadNeeds();
     } catch (error) {
       setStatus(status, error.message || "We could not save the roster need.", true);
     } finally {
       button.disabled = false;
     }
+  });
+
+  cancelNeedEditButton?.addEventListener("click", () => {
+    resetNeedEditor("Edit canceled.");
   });
 
   async function loadPickupInterests() {
