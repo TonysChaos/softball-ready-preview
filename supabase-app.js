@@ -418,6 +418,40 @@ if (coachProfileForm) {
     resetNeedEditor("Edit canceled.");
   });
 
+  const activeOpportunitySelect = needsForm?.querySelector("[data-active-opportunity]");
+  activeOpportunitySelect?.addEventListener("change", async () => {
+    const needId = String(needsForm?.elements.need_id?.value || "").trim();
+    const status = needsForm?.querySelector("[data-form-status]");
+    if (!needId) {
+      setStatus(status, 'This setting will be saved when you click "Save Player Need".');
+      return;
+    }
+
+    const active = activeOpportunitySelect.value === "true";
+    activeOpportunitySelect.disabled = true;
+    try {
+      const { error } = await supabase
+        .from("team_needs")
+        .update({ active })
+        .eq("id", needId)
+        .eq("owner_id", currentSession.user.id);
+
+      if (error) throw error;
+
+      if (active) {
+        setStatus(status, "Opportunity reopened. It is active again.");
+      } else {
+        setStatus(status, "Opportunity closed. It will no longer appear in active team opportunities.");
+      }
+
+      await loadNeeds();
+    } catch (error) {
+      setStatus(status, error.message || "We could not update the opportunity status.", true);
+    } finally {
+      activeOpportunitySelect.disabled = false;
+    }
+  });
+
   async function loadPickupInterests() {
     if (!currentSession || !currentTeam) return;
     let panel = document.querySelector("[data-pickup-interest-panel]");
