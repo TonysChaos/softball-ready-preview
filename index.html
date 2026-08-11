@@ -20,15 +20,15 @@
       --shadow:0 16px 38px rgba(23,52,95,.14);
     }
     .hero-logo{width:400px;height:auto;margin:0 auto 16px}
-    .launch-hero-wrap{position:relative;width:100%;max-width:520px;margin:0 auto 28px;padding:28px 22px 30px;text-align:center;isolation:isolate}
+    .launch-hero-wrap{position:relative;width:100%;max-width:100%;margin:0 auto 28px;padding:28px 24px 30px;text-align:center;isolation:isolate}
     .launch-hero-logo{position:absolute;inset:0;margin:auto;width:min(92%,500px);height:auto;opacity:.10;z-index:-1;pointer-events:none}
     .launch-message{position:relative;z-index:1;color:var(--navy)}
-    .launch-message h1{font-size:clamp(44px,5.8vw,68px);line-height:1.02;letter-spacing:-.035em;margin:0 0 24px;color:var(--navy)}
-    .launch-message h1 span{color:var(--pink)}
-    .launch-message p{font-size:26px;line-height:1.48;margin:0 auto 20px;max-width:760px;color:var(--navy);font-weight:700}
+    .launch-message h1{font-size:clamp(42px,5vw,64px);line-height:1.02;letter-spacing:-.035em;margin:0 0 24px;color:var(--navy);max-width:100%;overflow-wrap:anywhere}
+    .launch-message h1 span{color:var(--pink);display:block;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+    .launch-message p{font-size:26px;line-height:1.48;margin:0 auto 20px;max-width:100%;color:var(--navy);font-weight:700}
     .launch-message .launch-thanks{font-size:28px;font-weight:900;margin-top:24px}
     .launch-message .launch-founder{font-size:23px;font-weight:800;margin-top:4px}
-    .launch-message .launch-founder strong{display:block;font-size:26px}
+    .launch-message .launch-founder strong{display:block;font-size:26px}.launch-message .launch-founder span{display:block;margin-top:4px}
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:#fff;line-height:1.65;font-size:18px}
@@ -50,8 +50,8 @@
     .menu{display:none;border:0;background:var(--navy);color:#fff;border-radius:9px;padding:9px 12px;font-size:18px}
 
     .hero{padding:44px 0 72px;background:#fff}
-    .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;min-height:590px;align-items:stretch}
-    .hero-copy{padding:52px 56px 52px 10px;display:flex;flex-direction:column;justify-content:center}
+    .hero-grid{display:grid;grid-template-columns:minmax(0,1.14fr) minmax(320px,.86fr);min-height:590px;align-items:stretch;gap:34px}
+    .hero-copy{min-width:0;padding:52px 18px 52px 10px;display:flex;flex-direction:column;justify-content:center}
     .eyebrow{color:var(--blue);font-weight:900;letter-spacing:.08em;text-transform:uppercase;font-size:15px}
     h1,h2,h3{color:var(--navy);line-height:1.1}
     h1{font-size:clamp(58px,8vw,92px);letter-spacing:-.055em;margin:14px 0 22px}
@@ -117,7 +117,7 @@
       body{font-size:17px}
       .launch-hero-wrap{padding:20px 8px 24px;margin-bottom:16px}
       .launch-hero-logo{width:96%;opacity:.09}
-      .launch-message h1{font-size:clamp(38px,11vw,52px);margin-bottom:20px}
+      .launch-message h1{font-size:clamp(36px,10.5vw,50px);margin-bottom:20px}
       .launch-message p{font-size:21px;line-height:1.45}
       .launch-message .launch-thanks{font-size:23px}
       .launch-message .launch-founder{font-size:19px}
@@ -163,12 +163,12 @@
         <div class="launch-hero-wrap">
           <img src="assets/IMG_5706.jpg" alt="" class="launch-hero-logo" aria-hidden="true">
           <div class="launch-message">
-            <h1>Welcome to the Grand Launch of <span>SoftballReady.net™</span></h1>
+            <h1>Welcome to the Grand Launch of <span>SoftballReady.<wbr>net™</span></h1>
             <p>Thank you for taking the time to visit.</p>
-            <p>Become one of the founding members of <strong>SoftballReady.net™</strong> and help us build a nationwide database of players, teams, tryouts, and opportunities as we prepare for the upcoming winter and spring seasons.</p>
-            <p>Every new player profile and team listing helps make <strong>SoftballReady.net™</strong> more valuable for the entire travel softball community.</p>
+            <p>Become one of the founding members of <strong>SoftballReady.<wbr>net™</strong> and help us build a nationwide database of players, teams, tryouts, and opportunities as we prepare for the upcoming winter and spring seasons.</p>
+            <p>Every new player profile and team listing helps make <strong>SoftballReady.<wbr>net™</strong> more valuable for the entire travel softball community.</p>
             <p class="launch-thanks">Thank you, and God bless!</p>
-            <p class="launch-founder"><strong>Tony Puleo</strong>Founder, SoftballReady.net™</p>
+            <p class="launch-founder"><strong>Tony Puleo</strong><span>Founder, SoftballReady.<wbr>net™</span></p>
           </div>
         </div>
         <div class="buttons" style="justify-content:center">
