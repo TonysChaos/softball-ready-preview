@@ -88,14 +88,6 @@ async function loadData() {
   state.teams = teamsR.data || [];
   state.needs = needsR.data || [];
   state.interests = interestsR.data || [];
-
-  // Count only pickup tournaments that have not reached their final date.
-  const currentPickupCount = state.needs.filter(n => {
-    if (n.need_type !== "pickup_tournament" || !n.active) return false;
-    const lastTournamentDate = n.tournament_end_date || n.tournament_start_date || n.start_date;
-    return !lastTournamentDate || lastTournamentDate >= todayIso();
-  }).length;
-  setMetric("pickupNeeds", currentPickupCount);
 }
 
 function renderAccounts(filter="") {
@@ -109,6 +101,9 @@ function renderAccounts(filter="") {
     <td>${p.membership_active ? badge("Active","green") : badge("Inactive","gray")}</td>
     <td><div class="actions">
       <button class="owner-btn ${p.membership_active?"warn":"primary"}" data-membership-toggle="${escapeHtml(p.id)}" data-current="${p.membership_active?"1":"0"}">${p.membership_active?"Deactivate":"Activate"}</button>
+      ${p.account_type === "admin"
+        ? '<button class="owner-btn light" type="button" disabled title="The owner/admin account is protected">Protected</button>'
+        : `<button class="owner-btn danger" type="button" data-delete-test-account="${escapeHtml(p.id)}" data-account-name="${escapeHtml(p.full_name || p.email || "this test account")}">Delete Test Account</button>`}
     </div></td>
   </tr>`).join("") : `<tr><td colspan="5" class="empty">No accounts match that search.</td></tr>`;
 }
@@ -143,21 +138,7 @@ function renderTeams(filter="") {
 function renderNeeds(filter="") {
   const tbody = document.querySelector('[data-table="needs"]');
   const q = filter.trim().toLowerCase();
-  const rows = state.needs
-    .filter(n => {
-      if (n.need_type !== "pickup_tournament") return true;
-      const lastTournamentDate = n.tournament_end_date || n.tournament_start_date || n.start_date;
-      return !lastTournamentDate || lastTournamentDate >= todayIso();
-    })
-    .filter(n => !q || searchableText(
-      n.title,
-      n.need_type,
-      n.age_division,
-      Array.isArray(n.positions_needed) ? n.positions_needed.join(" ") : n.positions_needed,
-      n.city,
-      n.state,
-      n.tournament_name
-    ).includes(q));
+  const rows = state.needs.filter(n => !q || searchableText(n.title,n.need_type,n.age_division,Array.isArray(n.positions_needed)?n.positions_needed.join(" "):n.positions_needed,n.city,n.state,n.tournament_name).includes(q));
   tbody.innerHTML = rows.length ? rows.map(n => {
     const type = n.need_type === "pickup_tournament" ? "Pickup" : "Season";
     const name = n.tournament_name || n.title || (Array.isArray(n.positions_needed) ? n.positions_needed.join(", ") : n.positions_needed) || "Team need";
@@ -211,7 +192,7 @@ function renderActivity() {
 }
 
 function renderAlerts() {
-  const expiredPickup = 0;
+  const expiredPickup = state.needs.filter(n => n.need_type==="pickup_tournament" && n.active && (n.tournament_start_date || n.start_date) && (n.tournament_start_date || n.start_date) < todayIso()).length;
   const newInterests = state.interests.filter(i => (i.status || "new")==="new").length;
   const nonMembers = state.profiles.filter(p => !p.membership_active).length;
   setAlert("expiredPickup",expiredPickup); setAlert("newInterests",newInterests); setAlert("nonMembers",nonMembers);
@@ -250,6 +231,50 @@ document.addEventListener("click", async e => {
     membership.disabled = false;
     if (error) return toast(error.message,true);
     await reloadDashboard(`Membership ${next?"activated":"deactivated"}.`);
+    return;
+  }
+
+  const deleteTest = e.target.closest("[data-delete-test-account]");
+  if (deleteTest) {
+    const accountName = deleteTest.dataset.accountName || "this test account";
+    const targetUserId = deleteTest.dataset.deleteTestAccount;
+
+    const firstConfirm = confirm(
+      `PERMANENT TEST CLEANUP\n\nDelete ${accountName}?\n\nThis removes the account login and its SoftballReady.net player profile, team profile(s), roster/pickup needs, pickup responses, membership record, and stored player photos.\n\nStripe payment history will NOT be deleted.`
+    );
+    if (!firstConfirm) return;
+
+    const typed = prompt(`Type DELETE to permanently remove ${accountName}.`);
+    if (typed !== "DELETE") {
+      toast("Deletion cancelled. You must type DELETE exactly.");
+      return;
+    }
+
+    deleteTest.disabled = true;
+    deleteTest.textContent = "Deleting...";
+
+    try {
+      const { data:{ session }, error:sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) throw sessionError || new Error("Your owner session has expired. Log in again.");
+
+      const response = await fetch("/api/admin-delete-test-account", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ target_user_id: targetUserId })
+      });
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "The test account could not be deleted.");
+
+      await reloadDashboard(`${result.deleted_name || accountName} and its test data were permanently deleted.`);
+    } catch (error) {
+      deleteTest.disabled = false;
+      deleteTest.textContent = "Delete Test Account";
+      toast(error.message || "The test account could not be deleted.", true);
+    }
     return;
   }
 
@@ -293,7 +318,7 @@ document.querySelector("[data-owner-logout]")?.addEventListener("click", async (
     if (!session) return;
     await Promise.all([loadCounts(),loadData()]);
     renderAll();
-    setStatus("Owner access verified. Dashboard v2 is live.");
+    setStatus("Owner access verified. Dashboard cleanup controls are ready.");
   } catch (error) {
     setStatus(error.message || "Owner Dashboard could not be loaded.", true);
     toast(error.message || "Dashboard load failed.", true);

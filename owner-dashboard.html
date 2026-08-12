@@ -44,6 +44,8 @@
     .owner-btn.pink{background:var(--pink);color:#fff}
     .owner-btn.light{background:#eef3f9;color:var(--navy)}
     .owner-btn.warn{background:#fff4e5;color:#8a4b08}
+    .owner-btn.danger{background:#b42318;color:#fff}
+    .owner-btn.danger:hover{background:#8f1d14}
     .owner-btn:disabled{opacity:.55;cursor:not-allowed}
     .actions{display:flex;gap:8px;flex-wrap:wrap}
     .alerts-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
@@ -151,9 +153,10 @@
             <input class="owner-search" data-search="accounts" placeholder="Search name, email, or account type">
           </div>
           <div class="owner-table-wrap"><table class="owner-table">
-            <thead><tr><th>Name</th><th>Email</th><th>Type</th><th>Membership</th><th>Action</th></tr></thead>
+            <thead><tr><th>Name</th><th>Email</th><th>Type</th><th>Membership</th><th>Actions</th></tr></thead>
             <tbody data-table="accounts"><tr><td colspan="5">Loading accounts...</td></tr></tbody>
           </table></div>
+          <div class="private-note"><strong>Launch cleanup:</strong> use <em>Delete Test Account</em> only for test accounts you are certain you no longer need. It permanently removes that account and its SoftballReady.net player/team data. Stripe payment history is intentionally left untouched for accounting records.</div>
           <div class="private-note">Membership changes here are administrative corrections. Stripe remains the payment system of record for normal purchases.</div>
         </div>
       </section>
