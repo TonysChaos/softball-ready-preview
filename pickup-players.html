@@ -60,35 +60,38 @@
 
   const authLink = document.querySelector("[data-pickup-auth-link]");
 
-  async function syncPickupAuthButton() {
+  function applyPickupAuthButton(session) {
     if (!authLink) return;
 
-    const { data, error } = await supabase.auth.getSession();
-    if (error) return;
-
-    if (data.session) {
+    if (session) {
       authLink.textContent = "Log Out";
       authLink.href = "#";
       authLink.classList.remove("btn-pink", "btn-outline", "pickup-auth-logout");
       authLink.classList.add("pickup-coach-logout");
-
-      authLink.addEventListener("click", async (event) => {
+      authLink.onclick = async (event) => {
         event.preventDefault();
-        await supabase.auth.signOut();
-        window.location.href = "login.html";
-      }, { once: true });
+        authLink.style.pointerEvents = "none";
+        try {
+          await supabase.auth.signOut();
+          window.location.href = "login.html";
+        } finally {
+          authLink.style.pointerEvents = "";
+        }
+      };
     } else {
       authLink.textContent = "Log In";
       authLink.href = "login.html";
       authLink.classList.remove("btn-outline", "pickup-auth-logout", "pickup-coach-logout");
       authLink.classList.add("btn-pink");
+      authLink.onclick = null;
     }
   }
 
-  syncPickupAuthButton();
+  const { data: initialAuthData } = await supabase.auth.getSession();
+  applyPickupAuthButton(initialAuthData?.session || null);
 
-  supabase.auth.onAuthStateChange(() => {
-    syncPickupAuthButton();
+  supabase.auth.onAuthStateChange((_event, session) => {
+    applyPickupAuthButton(session);
   });
 </script>
 </body>
