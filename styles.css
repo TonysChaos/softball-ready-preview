@@ -163,3 +163,35 @@ textarea{min-height:120px;resize:vertical}
     font-size:1rem;
   }
 }
+
+
+/* Mobile-safe parent/guardian consent checkbox on player dashboard */
+#player-dashboard-form input[type="checkbox"]{
+  width:22px;
+  min-width:22px;
+  height:22px;
+  padding:0;
+  margin:2px 0 0;
+  flex:0 0 22px;
+  accent-color:var(--pink);
+}
+#player-dashboard-form label:has(input[type="checkbox"]){
+  display:flex;
+  flex-direction:row;
+  align-items:flex-start;
+  gap:12px;
+  width:100%;
+  max-width:100%;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  line-height:1.45;
+}
+#player-dashboard-form label:has(input[type="checkbox"]) span,
+#player-dashboard-form label:has(input[type="checkbox"]) a{
+  min-width:0;
+}
+@media(max-width:620px){
+  #player-dashboard-form label:has(input[type="checkbox"]){
+    font-size:1rem;
+  }
+}
