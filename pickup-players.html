@@ -54,45 +54,7 @@
 
 <footer class="footer"><div class="container"><div class="footer-grid"><div><div class="brand"><div class="logo-mark" style="color:white">S<span>R</span></div><div class="brand-copy"><strong style="color:white">SOFTBALL <span style="color:var(--pink)">READY</span></strong><small style="color:white">The National Travel Softball Connection.</small></div></div></div><div><h4>Quick Links</h4><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a><a href="teams.html">Teams</a></div><div><h4>Resources</h4><a href="pickup-players.html">Pickup Players</a><a href="tryouts.html">Tryouts</a><a href="membership.html">Membership</a></div><div><h4>Connect</h4><a href="contact.html">We're Here to Help</a><a href="community-standards.html">Community Standards</a><a href="login.html">Member Login</a></div></div><div class="footer-bottom"><div class="footer-motto">Where Opportunity Meets Preparation.</div><div>© 2026 Softball Ready. All rights reserved.</div></div></div></footer>
 <script src="script.js"></script>
-<script type="module" src="supabase-app.js"></script>
-<script type="module">
-  import { supabase } from "./supabase-config.js";
+<script type="module" src="pickup-marketplace.js"></script>
 
-  const authLink = document.querySelector("[data-pickup-auth-link]");
-
-  function applyPickupAuthButton(session) {
-    if (!authLink) return;
-
-    if (session) {
-      authLink.textContent = "Log Out";
-      authLink.href = "#";
-      authLink.classList.remove("btn-pink", "btn-outline", "pickup-auth-logout");
-      authLink.classList.add("pickup-coach-logout");
-      authLink.onclick = async (event) => {
-        event.preventDefault();
-        authLink.style.pointerEvents = "none";
-        try {
-          await supabase.auth.signOut();
-          window.location.href = "login.html";
-        } finally {
-          authLink.style.pointerEvents = "";
-        }
-      };
-    } else {
-      authLink.textContent = "Log In";
-      authLink.href = "login.html";
-      authLink.classList.remove("btn-outline", "pickup-auth-logout", "pickup-coach-logout");
-      authLink.classList.add("btn-pink");
-      authLink.onclick = null;
-    }
-  }
-
-  const { data: initialAuthData } = await supabase.auth.getSession();
-  applyPickupAuthButton(initialAuthData?.session || null);
-
-  supabase.auth.onAuthStateChange((_event, session) => {
-    applyPickupAuthButton(session);
-  });
-</script>
 </body>
 </html>
