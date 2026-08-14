@@ -60,7 +60,7 @@
       <button class="menu-btn" aria-expanded="false" aria-label="Open navigation">Menu</button>
       <nav class="nav-links" aria-label="Primary navigation">
         <a href="index.html">Home</a><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a>
-        <a href="teams.html" aria-current="page">Teams</a><a href="coach-dashboard.html">Coach Dashboard</a>
+        <a href="teams.html" aria-current="pages">Teams</a><a href="coach-dashboard.html">Coach Dashboard</a>
         <a href="player-search.html">Player Search</a><a href="our-story.html">Our Story</a>
         <a href="membership.html">Membership</a>
       </nav>
@@ -171,7 +171,7 @@
 
   <footer class="footer">
     <div class="container footer-grid">
-      <div><div class="brand"><div class="logo-mark">S<span>R</span></div><div class="brand-copy"><strong>SOFTBALL READY</strong><small>THE NATIONAL TRAVEL SOFTBALL CONNECTION.</small></div></div></div>
+      <div><div class="brand"><div class="logo-mark" style="color:white">S<span>R</span></div><div class="brand-copy"><strong style="color:white">SOFTBALL READY</strong><small style="color:white">THE NATIONAL TRAVEL SOFTBALL CONNECTION.</small></div></div></div>
       <div><h4>Quick Links</h4><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a><a href="teams.html">Teams</a></div>
       <div><h4>Resources</h4><a href="our-story.html">Our Story</a><a href="tryouts.html">Tryouts</a></div>
       <div><h4>Connect</h4><a href="mailto:info@softballready.net">info@softballready.net</a><a href="login.html">Member Login</a></div>
@@ -279,36 +279,22 @@
         (teamsResult.data || []).map(team => [team.owner_id, team])
       );
 
-      const today = new Date().toISOString().slice(0, 10);
-
-      listings = (needsResult.data || [])
-        .filter(row => {
-          // Only truly active listings belong in the public directory.
-          if (row.active !== true) return false;
-
-          // A "player needed by" date acts as the public expiration date.
-          // If a coach wants to use the listing again later, they can edit
-          // the date and reopen it from the Coach Dashboard.
-          if (row.start_date && row.start_date < today) return false;
-
-          return true;
-        })
-        .map(row => {
-          const team = teamByOwner.get(row.owner_id) || {};
-          return {
-            id: row.id,
-            teamName: team.team_name || "",
-            organizationName: team.organization_name || "",
-            title: row.title || "Roster opportunity",
-            age: row.age_division || "",
-            positions: row.positions_needed || "",
-            city: row.city || "",
-            state: row.state || "",
-            startDate: row.start_date || "",
-            details: row.details || "",
-            active: true
-          };
-        });
+      listings = (needsResult.data || []).map(row => {
+        const team = teamByOwner.get(row.owner_id) || {};
+        return {
+          id: row.id,
+          teamName: team.team_name || "",
+          organizationName: team.organization_name || "",
+          title: row.title || "Roster opportunity",
+          age: row.age_division || "",
+          positions: row.positions_needed || "",
+          city: row.city || "",
+          state: row.state || "",
+          startDate: row.start_date || "",
+          details: row.details || "",
+          active: row.active !== false
+        };
+      });
 
       render();
     }
@@ -327,14 +313,6 @@
     statusFilter.addEventListener("change", render);
 
     loadListings();
-
-    window.addEventListener("pageshow", event => {
-      if (event.persisted) loadListings();
-    });
-
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) loadListings();
-    });
   </script>
 </body>
 </html>
