@@ -163,3 +163,126 @@ textarea{min-height:120px;resize:vertical}
     font-size:1rem;
   }
 }
+
+
+/* Mobile-safe parent/guardian consent checkbox on player dashboard */
+#player-dashboard-form input[type="checkbox"]{
+  width:22px;
+  min-width:22px;
+  height:22px;
+  padding:0;
+  margin:2px 0 0;
+  flex:0 0 22px;
+  accent-color:var(--pink);
+}
+#player-dashboard-form label:has(input[type="checkbox"]){
+  display:flex;
+  flex-direction:row;
+  align-items:flex-start;
+  gap:12px;
+  width:100%;
+  max-width:100%;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  line-height:1.45;
+}
+#player-dashboard-form label:has(input[type="checkbox"]) span,
+#player-dashboard-form label:has(input[type="checkbox"]) a{
+  min-width:0;
+}
+@media(max-width:620px){
+  #player-dashboard-form label:has(input[type="checkbox"]){
+    font-size:1rem;
+  }
+}
+
+
+/* Global mobile checkbox safeguard
+   Prevents normal form input width rules from stretching checkboxes
+   and pushing consent text off-screen on Membership and other pages. */
+input[type="checkbox"]{
+  width:22px !important;
+  min-width:22px !important;
+  max-width:22px !important;
+  height:22px !important;
+  min-height:22px !important;
+  padding:0 !important;
+  margin:2px 0 0 !important;
+  flex:0 0 22px !important;
+  accent-color:var(--pink);
+}
+
+label:has(input[type="checkbox"]){
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:flex-start !important;
+  gap:12px !important;
+  width:100% !important;
+  max-width:100% !important;
+  white-space:normal !important;
+  overflow-wrap:anywhere !important;
+  line-height:1.45 !important;
+}
+
+label:has(input[type="checkbox"]) > span,
+label:has(input[type="checkbox"]) > a{
+  min-width:0 !important;
+}
+
+@media(max-width:640px){
+  label:has(input[type="checkbox"]){
+    font-size:1rem;
+  }
+}
+
+
+/* Mobile header login/action visibility fix */
+@media(max-width:900px){
+  .nav{
+    gap:10px !important;
+  }
+
+  .nav > .btn,
+  .nav > a.btn,
+  .nav > button.btn{
+    display:inline-flex !important;
+    flex:0 0 auto !important;
+    white-space:nowrap !important;
+    padding:11px 14px !important;
+    font-size:.9rem !important;
+  }
+
+  .nav > a[href="login.html"].btn,
+  .nav > [data-membership-login].btn{
+    background:var(--pink) !important;
+    color:#fff !important;
+    border:0 !important;
+    box-shadow:0 8px 18px rgba(238,23,101,.20) !important;
+  }
+
+  .menu-btn{
+    flex:0 0 auto !important;
+  }
+
+  .brand{
+    min-width:0 !important;
+    gap:9px !important;
+  }
+}
+
+@media(max-width:420px){
+  .nav > .btn,
+  .nav > a.btn,
+  .nav > button.btn{
+    padding:10px 12px !important;
+    font-size:.86rem !important;
+  }
+
+  .logo-mark{
+    font-size:1.85rem !important;
+  }
+
+  .brand-copy strong{
+    font-size:.95rem !important;
+  }
+}
