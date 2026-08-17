@@ -272,12 +272,14 @@ if (playerSearchForm) {
         .single();
       if (error) throw error;
 
-      accessAllowed = ["coach", "admin"].includes(profile.account_type) && profile.membership_active === true;
+      accessAllowed = ["coach", "admin"].includes(String(profile.account_type || "").toLowerCase()) && profile.membership_active === true;
       if (accessAllowed) {
         setStatus(accessStatus, "Player Search is unlocked for this coach account.");
       } else {
-        setStatus(accessStatus, "Player Search is locked until this account is a coach account with an active membership.", true);
-        playerSearchForm.querySelector('button[type="submit"]').disabled = true;
+        setStatus(accessStatus, "Player Search is available only to active coach accounts.", true);
+        const submitButton = playerSearchForm.querySelector('button[type="submit"]');
+        if (submitButton) submitButton.disabled = true;
+        playerSearchForm.querySelectorAll("input, select").forEach((field) => field.disabled = true);
       }
     } catch (error) {
       setStatus(accessStatus, error.message || "We could not verify search access.", true);
@@ -286,7 +288,10 @@ if (playerSearchForm) {
 
   playerSearchForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (!accessAllowed) return;
+    if (!accessAllowed) {
+      setStatus(formStatus, "Player Search is available only to active coach accounts.", true);
+      return;
+    }
     const button = playerSearchForm.querySelector('button[type="submit"]');
     button.disabled = true;
     setStatus(formStatus, "Searching eligible profiles...");
