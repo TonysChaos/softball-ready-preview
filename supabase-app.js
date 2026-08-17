@@ -66,14 +66,11 @@ async function ensureCoachProfile(session) {
     .single();
   if (error) throw error;
 
-  if (profile.account_type !== "coach" && profile.account_type !== "admin") {
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ account_type: "coach" })
-      .eq("id", session.user.id);
-    if (updateError) throw updateError;
-    profile.account_type = "coach";
+  const accountType = String(profile.account_type || "").toLowerCase();
+  if (!["coach", "admin"].includes(accountType)) {
+    throw new Error("This page is available only to coach accounts.");
   }
+
   return profile;
 }
 
