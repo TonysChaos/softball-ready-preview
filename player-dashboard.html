@@ -26,6 +26,38 @@
   white-space:normal !important;
   overflow-wrap:anywhere !important;
 }
+
+@media(max-width:700px){
+  .player-dashboard-consent-label{
+    display:grid !important;
+    grid-template-columns:28px minmax(0,1fr) !important;
+    gap:14px !important;
+    align-items:start !important;
+    padding:16px !important;
+    border:2px solid #ef4f83 !important;
+    border-radius:14px !important;
+    background:#fff7fa !important;
+  }
+  #player-dashboard-form input[name="player_guardian_consent"]{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    width:26px !important;
+    min-width:26px !important;
+    max-width:26px !important;
+    height:26px !important;
+    min-height:26px !important;
+    margin:0 !important;
+    position:static !important;
+  }
+  .player-dashboard-consent-text{
+    display:block !important;
+    min-width:0 !important;
+    font-size:1rem !important;
+    line-height:1.45 !important;
+  }
+}
+
 </style></head><body>
 <header class="header"><div class="container nav"><a class="brand" href="index.html"><div class="logo-mark">S<span>R</span></div><div class="brand-copy"><strong>SOFTBALL <span style="color:var(--pink)">READY</span></strong><small>The National Travel Softball Connection.</small></div></a><nav class="nav-links"><a href="index.html">Home</a><a href="players.html">Players</a><a href="teams.html">Teams</a><a href="coach-dashboard.html">Coach Dashboard</a><a href="player-search.html">Player Search</a><a href="our-story.html">Our Story</a><a href="membership.html">Membership</a></nav><button class="btn btn-outline" type="button" data-logout>Log Out</button></div></header>
 <main><section class="page-hero"><div class="container"><div class="eyebrow" style="color:#ff72a7">Player dashboard</div><h1>Complete Player Profile</h1><p>Only the basics are required. Everything else is optional and can be updated later.</p></div></section>
@@ -36,7 +68,7 @@
 <div class="field"><label>Parent or guardian name *</label><input name="parent_guardian_name" required></div><div class="field"><label>Parent email *</label><input name="parent_email" type="email" required></div><div class="field"><label>Parent phone</label><input name="parent_phone" type="tel"></div>
 <div class="field"><label>Player first name *</label><input name="first_name" required></div><div class="field"><label>Player last name *</label><input name="last_name" required></div>
 <div class="field"><label>Age division *</label><select name="age_division" required><option value="">Choose one</option><option>8U</option><option>10U</option><option>12U</option><option>14U</option><option>16U</option><option>18U</option><option>College</option></select></div>
-<div class="field"><label>City *</label><input name="city" required></div><div class="field"><label>State *</label><input name="state" maxlength="2" required></div><div class="field"><label>ZIP code</label><input name="zip_code"></div>
+<div class="field"><label>City *</label><input name="city" required></div><div class="field"><label>State *</label><input name="state" maxlength="2" minlength="2" pattern="[A-Za-z]{2}" placeholder="GA" autocapitalize="characters" oninput="this.value=this.value.replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase()" required></div><div class="field"><label>ZIP code</label><input name="zip_code"></div>
 <div class="field"><label>Primary position *</label><input name="primary_position" required></div><div class="field"><label>Secondary position</label><input name="secondary_position"></div></div>
 <hr style="margin:34px 0;border:0;border-top:1px solid #ddd"><div class="eyebrow">Optional details</div><h2 style="color:var(--navy)">Softball and School Information</h2>
 <div class="form-grid">
@@ -143,4 +175,11 @@
 </div>
 <hr style="margin:34px 0;border:0;border-top:1px solid #ddd"><div class="eyebrow">Optional measurements</div><h2 style="color:var(--navy)">Performance Measurements</h2><div class="notice" style="margin-bottom:22px">Optional — enter only if known. These measurements are family-supplied and are not verified by Softball Ready.</div>
 <div class="form-grid"><div class="field"><label>Bat speed (mph)</label><input name="bat_speed_mph" type="number" step="0.1"></div><div class="field"><label>Exit velocity (mph)</label><input name="exit_velocity_mph" type="number" step="0.1"></div><div class="field"><label>Throwing velocity (mph)</label><input name="throwing_velocity_mph" type="number" step="0.1"></div><div class="field"><label>Pitching velocity (mph)</label><input name="pitching_velocity_mph" type="number" step="0.1"></div><div class="field"><label>Catcher pop time (seconds)</label><input name="pop_time_seconds" type="number" step="0.01"></div><div class="field"><label>Home-to-first time (seconds)</label><input name="home_to_first_seconds" type="number" step="0.01"></div></div>
+<div class="notice" style="margin-top:24px;margin-bottom:14px">
+  <strong>Required before saving:</strong> confirm that you are authorized to manage this player profile.
+</div>
+<label class="player-dashboard-consent-label">
+  <input name="player_guardian_consent" type="checkbox" value="yes" required>
+  <span class="player-dashboard-consent-text"><strong>I confirm I am authorized to manage this player profile.</strong> I am the player if age 18+, the player’s parent/legal guardian, or an adult authorized by the parent/legal guardian.</span>
+</label>
 <button class="btn btn-pink" type="submit" style="margin-top:28px">Save Profile Changes</button><p data-form-status style="font-weight:800"></p></form></div></section></main><script src="script.js"></script><script type="module" src="supabase-app.js"></script></body></html>
