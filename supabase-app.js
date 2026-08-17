@@ -818,3 +818,44 @@ if (photoDashboardForm && document.querySelector("[data-photo-upload]")) {
 
   loadSavedPhotoPreviews();
 }
+
+
+async function syncRoleNavigation() {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("account_type")
+      .eq("id", session.user.id)
+      .maybeSingle();
+
+    const type = String(profile?.account_type || "").toLowerCase();
+
+    document.querySelectorAll(".nav-links").forEach((nav) => {
+      const ensureLink = (href, label) => {
+        if (nav.querySelector(`a[href="${href}"]`)) return;
+        const link = document.createElement("a");
+        link.href = href;
+        link.textContent = label;
+
+        const loginLink = nav.querySelector('a[href="login.html"]');
+        if (loginLink) nav.insertBefore(link, loginLink);
+        else nav.appendChild(link);
+      };
+
+      if (type === "coach" || type === "admin") {
+        ensureLink("coach-dashboard.html", "Coach Dashboard");
+      }
+      if (type === "admin") {
+        ensureLink("owner-dashboard.html", "Owner Dashboard");
+      }
+    });
+  } catch (error) {
+    console.warn("Navigation role check skipped:", error);
+  }
+}
+
+syncRoleNavigation();
+
