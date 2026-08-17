@@ -10,7 +10,7 @@ document.querySelectorAll("[data-logout]").forEach(b=>b.addEventListener("click"
 const pf=document.querySelector("#create-profile");if(pf)pf.addEventListener("submit",async e=>{e.preventDefault();const s=pf.querySelector("[data-form-status]"),f=new FormData(pf);try{const ses=await getSession();if(!ses)throw Error("Please log in first.");const {data:ownerProfile,error:ownerProfileError}=await supabase.from("profiles").select("membership_active").eq("id",ses.user.id).single();if(ownerProfileError)throw ownerProfileError;const memberActive=ownerProfile?.membership_active===true;const row={owner_id:ses.user.id,parent_guardian_name:String(f.get("parent_guardian_name")).trim(),parent_email:String(f.get("parent_email")).trim(),email:String(f.get("parent_email")).trim(),first_name:String(f.get("first_name")).trim(),last_name:String(f.get("last_name")).trim(),age_division:String(f.get("age_division")).trim(),primary_position:String(f.get("primary_position")).trim(),secondary_position:e2n(f.get("secondary_position")),city:String(f.get("city")).trim(),state:String(f.get("state")).trim().toUpperCase(),coach_notes:e2n(f.get("coach_notes")),looking_for_team:f.get("looking_for_team")==="true",available_immediately:f.get("available_immediately")==="true",searchable_by_coaches:memberActive&&f.get("looking_for_team")==="true",membership_active:memberActive};const {data:old,error:oe}=await supabase.from("players").select("id").eq("owner_id",ses.user.id).limit(1).maybeSingle();if(oe)throw oe;const r=old?await supabase.from("players").update(row).eq("id",old.id):await supabase.from("players").insert(row);if(r.error)throw r.error;setStatus(s,old?"Player profile updated successfully.":"Player profile saved successfully.");setTimeout(()=>location.href="player-dashboard.html",600)}catch(x){setStatus(s,x.message,true)}});
 const df=document.querySelector("#player-dashboard-form");if(df){const ps=document.querySelector("[data-dashboard-status]"),fs=df.querySelector("[data-form-status]"),btn=df.querySelector('button[type="submit"]');
 async function load(){try{const ses=await getSession();if(!ses)return location.href="login.html";const [{data:p,error},{data:ownerProfile,error:ownerProfileError}]=await Promise.all([supabase.from("players").select("*").eq("owner_id",ses.user.id).limit(1).maybeSingle(),supabase.from("profiles").select("membership_active").eq("id",ses.user.id).single()]);if(error)throw error;if(ownerProfileError)throw ownerProfileError;if(!p){df.elements.parent_email.value=ses.user.email||"";return setStatus(ps,"No profile exists yet. Complete the required fields and save.");}const memberActive=ownerProfile?.membership_active===true;const shouldSearch=memberActive&&p.looking_for_team===true;if(p.membership_active!==memberActive||p.searchable_by_coaches!==shouldSearch){const {error:syncError}=await supabase.from("players").update({membership_active:memberActive,searchable_by_coaches:shouldSearch}).eq("id",p.id).eq("owner_id",ses.user.id);if(syncError)throw syncError;p.membership_active=memberActive;p.searchable_by_coaches=shouldSearch;}df.elements.player_id.value=p.id;for(const [k,v] of Object.entries(p)){const el=df.elements[k];if(!el)continue;el.value=typeof v==="boolean"?String(v):(v??"");}setStatus(ps,"Your saved profile is loaded. Update anything and click Save Profile Changes.");}catch(x){setStatus(ps,x.message,true)}}
-df.addEventListener("submit",async e=>{e.preventDefault();btn.disabled=true;const f=new FormData(df);try{const ses=await getSession();if(!ses)throw Error("Please log in again.");const {data:ownerProfile,error:ownerProfileError}=await supabase.from("profiles").select("membership_active").eq("id",ses.user.id).single();if(ownerProfileError)throw ownerProfileError;const memberActive=ownerProfile?.membership_active===true;const id=n2n(f.get("player_id"));const wantsTeam=f.get("looking_for_team")==="true";const row={owner_id:ses.user.id,parent_guardian_name:String(f.get("parent_guardian_name")).trim(),parent_email:String(f.get("parent_email")).trim(),email:String(f.get("parent_email")).trim(),parent_phone:e2n(f.get("parent_phone")),first_name:String(f.get("first_name")).trim(),last_name:String(f.get("last_name")).trim(),age_division:String(f.get("age_division")).trim(),city:String(f.get("city")).trim(),state:String(f.get("state")).trim().toUpperCase(),zip_code:e2n(f.get("zip_code")),primary_position:String(f.get("primary_position")).trim(),secondary_position:e2n(f.get("secondary_position")),birth_year:n2n(f.get("birth_year")),graduation_year:n2n(f.get("graduation_year")),height_text:e2n(f.get("height_text")),bats:e2n(f.get("bats")),throws:e2n(f.get("throws")),jersey_number:e2n(f.get("jersey_number")),current_team:e2n(f.get("current_team")),current_coach:e2n(f.get("current_coach")),gpa:n2n(f.get("gpa")),recruiting_status:e2n(f.get("recruiting_status")),travel_willingness:e2n(f.get("travel_willingness")),max_travel_miles:n2n(f.get("max_travel_miles")),available_immediately:f.get("available_immediately")==="true",looking_for_team:wantsTeam,searchable_by_coaches:memberActive&&wantsTeam,membership_active:memberActive,highlight_video_url:e2n(f.get("highlight_video_url")),photo_url:e2n(f.get("photo_url")),coach_notes:e2n(f.get("coach_notes")),bat_speed_mph:n2n(f.get("bat_speed_mph")),exit_velocity_mph:n2n(f.get("exit_velocity_mph")),throwing_velocity_mph:n2n(f.get("throwing_velocity_mph")),pitching_velocity_mph:n2n(f.get("pitching_velocity_mph")),pop_time_seconds:n2n(f.get("pop_time_seconds")),home_to_first_seconds:n2n(f.get("home_to_first_seconds")),
+df.addEventListener("submit",async e=>{e.preventDefault();btn.disabled=true;const f=new FormData(df);try{const ses=await getSession();if(!ses)throw Error("Please log in again.");const {data:ownerProfile,error:ownerProfileError}=await supabase.from("profiles").select("membership_active").eq("id",ses.user.id).single();if(ownerProfileError)throw ownerProfileError;const memberActive=ownerProfile?.membership_active===true;const id=n2n(f.get("player_id"));const wantsTeam=f.get("looking_for_team")==="true";const row={owner_id:ses.user.id,parent_guardian_name:String(f.get("parent_guardian_name")).trim(),parent_email:String(f.get("parent_email")).trim(),email:String(f.get("parent_email")).trim(),parent_phone:e2n(f.get("parent_phone")),first_name:String(f.get("first_name")).trim(),last_name:String(f.get("last_name")).trim(),age_division:String(f.get("age_division")).trim(),city:String(f.get("city")).trim(),state:String(f.get("state")).trim().toUpperCase(),zip_code:e2n(f.get("zip_code")),primary_position:String(f.get("primary_position")).trim(),secondary_position:e2n(f.get("secondary_position")),birth_year:n2n(f.get("birth_year")),graduation_year:n2n(f.get("graduation_year")),height_text:e2n(f.get("height_text")),bats:e2n(f.get("bats")),throws:e2n(f.get("throws")),jersey_number:e2n(f.get("jersey_number")),current_team:e2n(f.get("current_team")),current_coach:e2n(f.get("current_coach")),gpa:n2n(f.get("gpa")),recruiting_status:e2n(f.get("recruiting_status")),travel_willingness:e2n(f.get("travel_willingness")),max_travel_miles:n2n(f.get("max_travel_miles")),available_immediately:f.get("available_immediately")==="true",looking_for_team:wantsTeam,searchable_by_coaches:memberActive&&wantsTeam,membership_active:memberActive,highlight_video_url:normalizeHighlightUrl(f.get("highlight_video_url")),photo_url:e2n(f.get("photo_url")),coach_notes:e2n(f.get("coach_notes")),bat_speed_mph:n2n(f.get("bat_speed_mph")),exit_velocity_mph:n2n(f.get("exit_velocity_mph")),throwing_velocity_mph:n2n(f.get("throwing_velocity_mph")),pitching_velocity_mph:n2n(f.get("pitching_velocity_mph")),pop_time_seconds:n2n(f.get("pop_time_seconds")),home_to_first_seconds:n2n(f.get("home_to_first_seconds")),
 academic_interests:e2n(f.get("academic_interests")),
 intended_major:e2n(f.get("intended_major")),
 awards_honors:e2n(f.get("awards_honors")),
@@ -24,15 +24,39 @@ photo_url_2:e2n(f.get("photo_url_2")),
 photo_url_3:e2n(f.get("photo_url_3")),
 photo_url_4:e2n(f.get("photo_url_4")),
 photo_url_5:e2n(f.get("photo_url_5")),
-highlight_video_url_2:e2n(f.get("highlight_video_url_2")),
-highlight_video_url_3:e2n(f.get("highlight_video_url_3")),
-highlight_video_url_4:e2n(f.get("highlight_video_url_4")),
-highlight_video_url_5:e2n(f.get("highlight_video_url_5"))};const r=id?await supabase.from("players").update(row).eq("id",id).eq("owner_id",ses.user.id).select("id").single():await supabase.from("players").insert(row).select("id").single();if(r.error)throw r.error;df.elements.player_id.value=r.data.id;setStatus(fs,"Profile changes saved successfully.");setStatus(ps,"Your player profile is current.");}catch(x){setStatus(fs,x.message,true)}finally{btn.disabled=false}});load();}
+highlight_video_url_2:normalizeHighlightUrl(f.get("highlight_video_url_2")),
+highlight_video_url_3:normalizeHighlightUrl(f.get("highlight_video_url_3")),
+highlight_video_url_4:normalizeHighlightUrl(f.get("highlight_video_url_4")),
+highlight_video_url_5:normalizeHighlightUrl(f.get("highlight_video_url_5"))};const r=id?await supabase.from("players").update(row).eq("id",id).eq("owner_id",ses.user.id).select("id").single():await supabase.from("players").insert(row).select("id").single();if(r.error)throw r.error;df.elements.player_id.value=r.data.id;setStatus(fs,"Profile changes saved successfully.");setStatus(ps,"Your player profile is current.");}catch(x){setStatus(fs,x.message,true)}finally{btn.disabled=false}});load();}
 
 function textOrNull(value) {
   const text = String(value ?? "").trim();
   return text === "" ? null : text;
 }
+
+
+function normalizeHighlightUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return null;
+  try {
+    const url = new URL(raw);
+    if (!["http:", "https:"].includes(url.protocol)) return null;
+    return url.href;
+  } catch {
+    return null;
+  }
+}
+
+function highlightProviderLabel(url) {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, "").toLowerCase();
+    if (host === "gc.com" || host.endsWith(".gc.com")) return "Watch on GameChanger";
+    if (host === "youtube.com" || host === "youtu.be") return "Watch on YouTube";
+    if (host === "vimeo.com" || host.endsWith(".vimeo.com")) return "Watch on Vimeo";
+  } catch {}
+  return "Watch Highlight";
+}
+
 
 async function ensureCoachProfile(session) {
   const { data: profile, error } = await supabase
@@ -532,6 +556,15 @@ if (playerProfileView) {
                   ${photos.map((url, index) => `<button type="button" data-gallery-photo="${url}" aria-label="Open player photo ${index + 1}"><img src="${url}" alt="Player photo ${index + 1}"></button>`).join("")}
                 </div>
               </section>` : ""}
+
+            ${videos.length ? `
+            <section class="pro-card">
+              <h2>GameChanger / Highlight Videos</h2>
+              <div style="display:grid;gap:10px">
+                ${videos.map((url, index) => `<a class="btn btn-outline" href="${url}" target="_blank" rel="noopener noreferrer">${highlightProviderLabel(url)}${videos.length > 1 ? ` ${index + 1}` : ""}</a>`).join("")}
+              </div>
+              <p style="color:#64748b;margin-bottom:0;margin-top:12px"><em>GameChanger shared clips open on GameChanger because their shared clip pages are not designed for direct third-party embedding.</em></p>
+            </section>` : ""}
 
             <section class="pro-card">
               <h2>Performance Measurements</h2>
