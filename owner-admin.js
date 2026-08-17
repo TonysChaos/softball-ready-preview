@@ -103,7 +103,7 @@ function renderAccounts(filter="") {
       <button class="owner-btn ${p.membership_active?"warn":"primary"}" data-membership-toggle="${escapeHtml(p.id)}" data-current="${p.membership_active?"1":"0"}">${p.membership_active?"Deactivate":"Activate"}</button>
       ${p.account_type === "admin"
         ? '<button class="owner-btn light" type="button" disabled title="The owner/admin account is protected">Protected</button>'
-        : `<button class="owner-btn danger" type="button" data-delete-test-account="${escapeHtml(p.id)}" data-account-name="${escapeHtml(p.full_name || p.email || "this test account")}">Delete Test Account</button>`}
+        : '<button class="owner-btn light" type="button" disabled title="Permanent deletion is disabled for live accounts">Live Account</button>'}
     </div></td>
   </tr>`).join("") : `<tr><td colspan="5" class="empty">No accounts match that search.</td></tr>`;
 }
@@ -234,50 +234,6 @@ document.addEventListener("click", async e => {
     return;
   }
 
-  const deleteTest = e.target.closest("[data-delete-test-account]");
-  if (deleteTest) {
-    const accountName = deleteTest.dataset.accountName || "this test account";
-    const targetUserId = deleteTest.dataset.deleteTestAccount;
-
-    const firstConfirm = confirm(
-      `PERMANENT TEST CLEANUP\n\nDelete ${accountName}?\n\nThis removes the account login and its SoftballReady.net player profile, team profile(s), roster/pickup needs, pickup responses, membership record, and stored player photos.\n\nStripe payment history will NOT be deleted.`
-    );
-    if (!firstConfirm) return;
-
-    const typed = prompt(`Type DELETE to permanently remove ${accountName}.`);
-    if (typed !== "DELETE") {
-      toast("Deletion cancelled. You must type DELETE exactly.");
-      return;
-    }
-
-    deleteTest.disabled = true;
-    deleteTest.textContent = "Deleting...";
-
-    try {
-      const { data:{ session }, error:sessionError } = await supabase.auth.getSession();
-      if (sessionError || !session) throw sessionError || new Error("Your owner session has expired. Log in again.");
-
-      const response = await fetch("/api/admin-delete-test-account", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({ target_user_id: targetUserId })
-      });
-
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.error || "The test account could not be deleted.");
-
-      await reloadDashboard(`${result.deleted_name || accountName} and its test data were permanently deleted.`);
-    } catch (error) {
-      deleteTest.disabled = false;
-      deleteTest.textContent = "Delete Test Account";
-      toast(error.message || "The test account could not be deleted.", true);
-    }
-    return;
-  }
-
   const need = e.target.closest("[data-need-toggle]");
   if (need) {
     const next = need.dataset.current !== "1";
@@ -318,7 +274,7 @@ document.querySelector("[data-owner-logout]")?.addEventListener("click", async (
     if (!session) return;
     await Promise.all([loadCounts(),loadData()]);
     renderAll();
-    setStatus("Owner access verified. Dashboard cleanup controls are ready.");
+    setStatus("Owner access verified. Live account protections are active.");
   } catch (error) {
     setStatus(error.message || "Owner Dashboard could not be loaded.", true);
     toast(error.message || "Dashboard load failed.", true);
