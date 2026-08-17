@@ -5,5 +5,14 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_WU2fcMzrNLO_s0K7G0lmdQ_lFo5rJbc
 
 export const supabase = createClient(
   SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
+  SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storage: window.localStorage,
+      storageKey: "softballready-auth"
+    }
+  }
 );
