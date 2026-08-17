@@ -318,7 +318,7 @@ if (playerSearchForm) {
               <div class="pro-player-body">
                 <div class="pro-mini-badges">
                   <span class="pro-mini-badge">${player.age_division || "Division not entered"}</span>
-                  ${player.available_immediately ? `<span class="pro-mini-badge pink">Available Now</span>` : ""}
+                  ${player.looking_for_team && player.available_immediately ? `<span class="pro-mini-badge pink">Available Now</span>` : ""}
                   ${player.highlight_video_url ? `<span class="pro-mini-badge pink">Video</span>` : ""}
                 </div>
                 <h3 class="pro-player-name">${player.first_name} ${player.last_name}</h3>
@@ -483,7 +483,7 @@ if (playerProfileView) {
             </p>
             <div class="pro-badges">
               ${player.looking_for_team ? `<span class="pro-badge pink">Looking for Team</span>` : ""}
-              ${player.available_immediately ? `<span class="pro-badge">Available Now</span>` : ""}
+              ${player.looking_for_team && player.available_immediately ? `<span class="pro-badge">Available Now</span>` : ""}
               ${videos.length ? `<span class="pro-badge blue">Video Available</span>` : ""}
               ${player.recruiting_status ? `<span class="pro-badge blue">${player.recruiting_status}</span>` : ""}
             </div>
@@ -514,7 +514,7 @@ if (playerProfileView) {
               <article class="pro-card">
                 <h3>Opportunity</h3>
                 <p><strong>Status:</strong> ${player.looking_for_team ? "Looking for a team" : "Not currently looking"}</p>
-                <p><strong>Availability:</strong> ${player.available_immediately ? "Available immediately" : "Not immediate"}</p>
+                <p><strong>Availability:</strong> ${player.looking_for_team ? (player.available_immediately ? "Available immediately" : "Not immediately available") : "Not seeking team opportunities"}</p>
                 <p><strong>Travel:</strong> ${player.travel_willingness || "Not entered"}</p>
                 <p><strong>Recruiting:</strong> ${player.recruiting_status || "Not entered"}</p>
               </article>
