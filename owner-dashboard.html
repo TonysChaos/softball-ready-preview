@@ -65,6 +65,54 @@
     .toast.error{background:#9f1d20}
     @media(max-width:900px){.metric-grid{grid-template-columns:repeat(2,1fr)}.alerts-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:560px){.metric-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr}.owner-panel{padding:16px}.owner-tab{flex:1 1 45%;text-align:center}}
+
+    @media(max-width:640px){
+      [data-owner-section="players"] .owner-table-wrap{overflow:visible;border:0}
+      [data-owner-section="players"] .owner-table{min-width:0;width:100%;display:block;background:transparent}
+      [data-owner-section="players"] .owner-table thead{display:none}
+      [data-owner-section="players"] .owner-table tbody{display:grid;gap:14px}
+      [data-owner-section="players"] .owner-table tr{
+        display:block;
+        background:#fff;
+        border:1px solid #e1e6ef;
+        border-radius:16px;
+        padding:14px;
+        box-shadow:0 4px 14px rgba(7,29,75,.05);
+      }
+      [data-owner-section="players"] .owner-table td{
+        display:flex;
+        justify-content:space-between;
+        gap:14px;
+        align-items:center;
+        padding:9px 0;
+        border-bottom:1px solid #edf0f4;
+        text-align:right;
+      }
+      [data-owner-section="players"] .owner-table td:last-child{border-bottom:0;padding-top:13px}
+      [data-owner-section="players"] .owner-table td::before{
+        font-size:.72rem;
+        text-transform:uppercase;
+        letter-spacing:.05em;
+        color:#667085;
+        font-weight:900;
+        text-align:left;
+        flex:0 0 38%;
+      }
+      [data-owner-section="players"] .owner-table td:nth-child(1)::before{content:"Player"}
+      [data-owner-section="players"] .owner-table td:nth-child(2)::before{content:"Age"}
+      [data-owner-section="players"] .owner-table td:nth-child(3)::before{content:"Position"}
+      [data-owner-section="players"] .owner-table td:nth-child(4)::before{content:"Location"}
+      [data-owner-section="players"] .owner-table td:nth-child(5)::before{content:"Searchable"}
+      [data-owner-section="players"] .owner-table td:nth-child(6)::before{content:"Profile"}
+      [data-owner-section="players"] .owner-table td:nth-child(6) .owner-btn{
+        width:100%;
+        min-height:46px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        font-size:.95rem;
+      }
+    }
   </style>
 </head>
 <body class="owner-page">
