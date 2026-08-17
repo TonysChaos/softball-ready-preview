@@ -1,4 +1,32 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Player Dashboard | Softball Ready</title><link rel="stylesheet" href="styles.css"></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Player Dashboard | Softball Ready</title><link rel="stylesheet" href="styles.css"><style>
+#player-dashboard-form input[name="player_guardian_consent"]{
+  width:22px !important;
+  min-width:22px !important;
+  max-width:22px !important;
+  height:22px !important;
+  min-height:22px !important;
+  padding:0 !important;
+  margin:2px 0 0 !important;
+  flex:0 0 22px !important;
+  box-sizing:border-box !important;
+}
+.player-dashboard-consent-label{
+  display:grid !important;
+  grid-template-columns:22px minmax(0,1fr) !important;
+  gap:12px !important;
+  align-items:start !important;
+  width:100% !important;
+  max-width:100% !important;
+  margin-top:24px !important;
+  line-height:1.5 !important;
+}
+.player-dashboard-consent-text{
+  min-width:0 !important;
+  max-width:100% !important;
+  white-space:normal !important;
+  overflow-wrap:anywhere !important;
+}
+</style></head><body>
 <header class="header"><div class="container nav"><a class="brand" href="index.html"><div class="logo-mark">S<span>R</span></div><div class="brand-copy"><strong>SOFTBALL <span style="color:var(--pink)">READY</span></strong><small>The National Travel Softball Connection.</small></div></a><nav class="nav-links"><a href="index.html">Home</a><a href="players.html">Players</a><a href="teams.html">Teams</a><a href="coach-dashboard.html">Coach Dashboard</a><a href="player-search.html">Player Search</a><a href="our-story.html">Our Story</a><a href="membership.html">Membership</a></nav><button class="btn btn-outline" type="button" data-logout>Log Out</button></div></header>
 <main><section class="page-hero"><div class="container"><div class="eyebrow" style="color:#ff72a7">Player dashboard</div><h1>Complete Player Profile</h1><p>Only the basics are required. Everything else is optional and can be updated later.</p></div></section>
 <section class="section"><div class="container"><div class="notice" data-dashboard-status>Loading your profile...</div>
@@ -8,7 +36,7 @@
 <div class="field"><label>Parent or guardian name *</label><input name="parent_guardian_name" required></div><div class="field"><label>Parent email *</label><input name="parent_email" type="email" required></div><div class="field"><label>Parent phone</label><input name="parent_phone" type="tel"></div>
 <div class="field"><label>Player first name *</label><input name="first_name" required></div><div class="field"><label>Player last name *</label><input name="last_name" required></div>
 <div class="field"><label>Age division *</label><select name="age_division" required><option value="">Choose one</option><option>8U</option><option>10U</option><option>12U</option><option>14U</option><option>16U</option><option>18U</option><option>College</option></select></div>
-<div class="field"><label>City *</label><input name="city" required></div><div class="field"><label>State *</label><input name="state" maxlength="2" minlength="2" pattern="[A-Za-z]{2}" placeholder="GA" autocapitalize="characters" oninput="this.value=this.value.replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase()" required></div><div class="field"><label>ZIP code</label><input name="zip_code"></div>
+<div class="field"><label>City *</label><input name="city" required></div><div class="field"><label>State *</label><input name="state" maxlength="2" required></div><div class="field"><label>ZIP code</label><input name="zip_code"></div>
 <div class="field"><label>Primary position *</label><input name="primary_position" required></div><div class="field"><label>Secondary position</label><input name="secondary_position"></div></div>
 <hr style="margin:34px 0;border:0;border-top:1px solid #ddd"><div class="eyebrow">Optional details</div><h2 style="color:var(--navy)">Softball and School Information</h2>
 <div class="form-grid">
