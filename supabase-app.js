@@ -1,46 +1,16 @@
-
-async function addOwnerDashboardLinkForAdmin() {
-  try {
-    const session = await getSession();
-    if (!session) return;
-
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("account_type")
-      .eq("id", session.user.id)
-      .single();
-
-    if (error || profile?.account_type !== "admin") return;
-
-    document.querySelectorAll(".nav-links").forEach((nav) => {
-      if (nav.querySelector('a[href="owner-dashboard.html"]')) return;
-
-      const link = document.createElement("a");
-      link.href = "owner-dashboard.html";
-      link.textContent = "Owner Dashboard";
-
-      const membership = nav.querySelector('a[href="membership.html"]');
-      membership ? membership.after(link) : nav.appendChild(link);
-    });
-  } catch (_) {
-    // Owner-link detection should never interrupt normal site behavior.
-  }
-}
-addOwnerDashboardLinkForAdmin();
-
 import { supabase } from "./supabase-config.js";
 function setStatus(el,msg,err=false){if(!el)return;el.textContent=msg;el.style.color=err?"#b42318":"var(--navy)";}
 async function getSession(){const {data,error}=await supabase.auth.getSession();if(error)throw error;return data.session;}
 const e2n=v=>{const t=String(v??"").trim();return t===""?null:t}; const n2n=v=>{const t=String(v??"").trim();return t===""?null:Number(t)};
-const sf=document.querySelector("#signup-form");if(sf)sf.addEventListener("submit",async e=>{e.preventDefault();const s=sf.querySelector("[data-form-status]"),b=sf.querySelector('button[type="submit"]'),f=new FormData(sf);b.disabled=true;try{if(f.get("adult_confirmed")!=="yes")throw Error("You must be at least 18 years old to create a Softball Ready account.");if(f.get("legal_consent")!=="yes")throw Error("Please agree to the Terms of Service and acknowledge the Privacy Policy.");const acceptedAt=new Date().toISOString();const {error}=await supabase.auth.signUp({email:String(f.get("email")).trim(),password:String(f.get("password")),options:{data:{full_name:String(f.get("full_name")).trim(),adult_confirmed:true,adult_confirmed_at:acceptedAt,terms_version:"2026-08-09",privacy_version:"2026-08-09",terms_accepted_at:acceptedAt,privacy_accepted_at:acceptedAt},emailRedirectTo:`${location.origin}/login.html`}});if(error)throw error;sf.reset();setStatus(s,"Account created. Check your email, confirm your account, then return here to log in.");}catch(x){setStatus(s,x.message,true)}finally{b.disabled=false}});
+const sf=document.querySelector("#signup-form");if(sf)sf.addEventListener("submit",async e=>{e.preventDefault();const s=sf.querySelector("[data-form-status]"),b=sf.querySelector('button[type="submit"]'),f=new FormData(sf);b.disabled=true;try{const {error}=await supabase.auth.signUp({email:String(f.get("email")).trim(),password:String(f.get("password")),options:{data:{full_name:String(f.get("full_name")).trim()},emailRedirectTo:`${location.origin}/login.html`}});if(error)throw error;sf.reset();setStatus(s,"Account created. Check your email, confirm your account, then return here to log in.");}catch(x){setStatus(s,x.message,true)}finally{b.disabled=false}});
 const lf=document.querySelector("#login-form");if(lf)lf.addEventListener("submit",async e=>{e.preventDefault();const s=lf.querySelector("[data-form-status]"),b=lf.querySelector('button[type="submit"]'),f=new FormData(lf);b.disabled=true;try{const {error}=await supabase.auth.signInWithPassword({email:String(f.get("email")).trim(),password:String(f.get("password"))});if(error)throw error;location.href="player-dashboard.html";}catch(x){setStatus(s,"The email or password is incorrect. Use Forgot Your Password below if needed.",true)}finally{b.disabled=false}});
 const ff=document.querySelector("#forgot-password-form");if(ff)ff.addEventListener("submit",async e=>{e.preventDefault();const s=ff.querySelector("[data-form-status]"),f=new FormData(ff);try{const {error}=await supabase.auth.resetPasswordForEmail(String(f.get("email")).trim(),{redirectTo:`${location.origin}/reset-password.html`});if(error)throw error;setStatus(s,"Check your email. Tap the reset link to choose a new password.");}catch(x){setStatus(s,x.message,true)}});
 const rf=document.querySelector("#reset-password-form");if(rf)rf.addEventListener("submit",async e=>{e.preventDefault();const s=rf.querySelector("[data-form-status]"),f=new FormData(rf),p=String(f.get("password")),c=String(f.get("confirm_password"));if(p.length<8)return setStatus(s,"Your password must be at least eight characters.",true);if(p!==c)return setStatus(s,"The two passwords do not match.",true);try{const {error}=await supabase.auth.updateUser({password:p});if(error)throw error;setStatus(s,"Password updated. Returning to Log In...");setTimeout(()=>location.href="login.html",800)}catch(x){setStatus(s,x.message,true)}});
 document.querySelectorAll("[data-logout]").forEach(b=>b.addEventListener("click",async()=>{await supabase.auth.signOut();location.href="login.html"}));
-const pf=document.querySelector("#create-profile");if(pf)pf.addEventListener("submit",async e=>{e.preventDefault();const s=pf.querySelector("[data-form-status]"),f=new FormData(pf);try{const ses=await getSession();if(!ses)throw Error("Please log in first.");if(f.get("player_guardian_consent")!=="yes")throw Error("Please confirm your authority to create and manage this player profile.");const {data:account,error:accountError}=await supabase.from("profiles").select("membership_active,account_type").eq("id",ses.user.id).single();if(accountError)throw accountError;const memberActive=account?.membership_active===true||account?.account_type==="admin";const row={owner_id:ses.user.id,parent_guardian_name:String(f.get("parent_guardian_name")).trim(),parent_email:String(f.get("parent_email")).trim(),email:String(f.get("parent_email")).trim(),first_name:String(f.get("first_name")).trim(),last_name:String(f.get("last_name")).trim(),age_division:String(f.get("age_division")).trim(),primary_position:String(f.get("primary_position")).trim(),secondary_position:e2n(f.get("secondary_position")),city:String(f.get("city")).trim(),state:String(f.get("state")).trim().toUpperCase(),coach_notes:e2n(f.get("coach_notes")),looking_for_team:true,searchable_by_coaches:memberActive,membership_active:memberActive,guardian_consent_at:new Date().toISOString(),guardian_consent_name:String(f.get("parent_guardian_name")).trim(),consent_version:"2026-08-09"};const {data:old,error:oe}=await supabase.from("players").select("id").eq("owner_id",ses.user.id).limit(1).maybeSingle();if(oe)throw oe;const r=old?await supabase.from("players").update(row).eq("id",old.id):await supabase.from("players").insert(row);if(r.error)throw r.error;setStatus(s,old?"Player profile updated successfully.":"Player profile saved successfully.");setTimeout(()=>location.href="player-dashboard.html",600)}catch(x){setStatus(s,x.message,true)}});
+const pf=document.querySelector("#create-profile");if(pf)pf.addEventListener("submit",async e=>{e.preventDefault();const s=pf.querySelector("[data-form-status]"),f=new FormData(pf);try{const ses=await getSession();if(!ses)throw Error("Please log in first.");const {data:ownerProfile,error:ownerProfileError}=await supabase.from("profiles").select("membership_active").eq("id",ses.user.id).single();if(ownerProfileError)throw ownerProfileError;const memberActive=ownerProfile?.membership_active===true;const row={owner_id:ses.user.id,parent_guardian_name:String(f.get("parent_guardian_name")).trim(),parent_email:String(f.get("parent_email")).trim(),email:String(f.get("parent_email")).trim(),first_name:String(f.get("first_name")).trim(),last_name:String(f.get("last_name")).trim(),age_division:String(f.get("age_division")).trim(),primary_position:String(f.get("primary_position")).trim(),secondary_position:e2n(f.get("secondary_position")),city:String(f.get("city")).trim(),state:String(f.get("state")).trim().toUpperCase(),coach_notes:e2n(f.get("coach_notes")),looking_for_team:true,searchable_by_coaches:memberActive,membership_active:memberActive};const {data:old,error:oe}=await supabase.from("players").select("id").eq("owner_id",ses.user.id).limit(1).maybeSingle();if(oe)throw oe;const r=old?await supabase.from("players").update(row).eq("id",old.id):await supabase.from("players").insert(row);if(r.error)throw r.error;setStatus(s,old?"Player profile updated successfully.":"Player profile saved successfully.");setTimeout(()=>location.href="player-dashboard.html",600)}catch(x){setStatus(s,x.message,true)}});
 const df=document.querySelector("#player-dashboard-form");if(df){const ps=document.querySelector("[data-dashboard-status]"),fs=df.querySelector("[data-form-status]"),btn=df.querySelector('button[type="submit"]');
-async function load(){try{const ses=await getSession();if(!ses)return location.href="login.html";const {data:p,error}=await supabase.from("players").select("*").eq("owner_id",ses.user.id).limit(1).maybeSingle();if(error)throw error;if(!p){df.elements.parent_email.value=ses.user.email||"";return setStatus(ps,"No profile exists yet. Complete the required fields and save.");}df.elements.player_id.value=p.id;for(const [k,v] of Object.entries(p)){const el=df.elements[k];if(!el)continue;el.value=typeof v==="boolean"?String(v):(v??"");}setStatus(ps,"Your saved profile is loaded. Update anything and click Save Profile Changes.");}catch(x){setStatus(ps,x.message,true)}}
-df.addEventListener("submit",async e=>{e.preventDefault();btn.disabled=true;const f=new FormData(df);try{if(f.get("player_guardian_consent")!=="yes")throw Error("Please confirm your authority to manage this player profile.");const ses=await getSession();if(!ses)throw Error("Please log in again.");const id=n2n(f.get("player_id"));const {data:account,error:accountError}=await supabase.from("profiles").select("membership_active,account_type").eq("id",ses.user.id).single();if(accountError)throw accountError;const memberActive=account?.membership_active===true||account?.account_type==="admin";const row={owner_id:ses.user.id,parent_guardian_name:String(f.get("parent_guardian_name")).trim(),parent_email:String(f.get("parent_email")).trim(),email:String(f.get("parent_email")).trim(),parent_phone:e2n(f.get("parent_phone")),first_name:String(f.get("first_name")).trim(),last_name:String(f.get("last_name")).trim(),age_division:String(f.get("age_division")).trim(),city:String(f.get("city")).trim(),state:String(f.get("state")).trim().toUpperCase(),zip_code:e2n(f.get("zip_code")),primary_position:String(f.get("primary_position")).trim(),secondary_position:e2n(f.get("secondary_position")),birth_year:n2n(f.get("birth_year")),graduation_year:n2n(f.get("graduation_year")),height_text:e2n(f.get("height_text")),bats:e2n(f.get("bats")),throws:e2n(f.get("throws")),jersey_number:e2n(f.get("jersey_number")),current_team:e2n(f.get("current_team")),current_coach:e2n(f.get("current_coach")),gpa:n2n(f.get("gpa")),recruiting_status:e2n(f.get("recruiting_status")),travel_willingness:e2n(f.get("travel_willingness")),max_travel_miles:n2n(f.get("max_travel_miles")),available_immediately:f.get("available_immediately")==="true",looking_for_team:f.get("looking_for_team")==="true",highlight_video_url:e2n(f.get("highlight_video_url")),photo_url:e2n(f.get("photo_url")),coach_notes:e2n(f.get("coach_notes")),bat_speed_mph:n2n(f.get("bat_speed_mph")),exit_velocity_mph:n2n(f.get("exit_velocity_mph")),throwing_velocity_mph:n2n(f.get("throwing_velocity_mph")),pitching_velocity_mph:n2n(f.get("pitching_velocity_mph")),pop_time_seconds:n2n(f.get("pop_time_seconds")),home_to_first_seconds:n2n(f.get("home_to_first_seconds")),
+async function load(){try{const ses=await getSession();if(!ses)return location.href="login.html";const [{data:p,error},{data:ownerProfile,error:ownerProfileError}]=await Promise.all([supabase.from("players").select("*").eq("owner_id",ses.user.id).limit(1).maybeSingle(),supabase.from("profiles").select("membership_active").eq("id",ses.user.id).single()]);if(error)throw error;if(ownerProfileError)throw ownerProfileError;if(!p){df.elements.parent_email.value=ses.user.email||"";return setStatus(ps,"No profile exists yet. Complete the required fields and save.");}const memberActive=ownerProfile?.membership_active===true;const shouldSearch=memberActive&&p.looking_for_team===true;if(p.membership_active!==memberActive||p.searchable_by_coaches!==shouldSearch){const {error:syncError}=await supabase.from("players").update({membership_active:memberActive,searchable_by_coaches:shouldSearch}).eq("id",p.id).eq("owner_id",ses.user.id);if(syncError)throw syncError;p.membership_active=memberActive;p.searchable_by_coaches=shouldSearch;}df.elements.player_id.value=p.id;for(const [k,v] of Object.entries(p)){const el=df.elements[k];if(!el)continue;el.value=typeof v==="boolean"?String(v):(v??"");}setStatus(ps,"Your saved profile is loaded. Update anything and click Save Profile Changes.");}catch(x){setStatus(ps,x.message,true)}}
+df.addEventListener("submit",async e=>{e.preventDefault();btn.disabled=true;const f=new FormData(df);try{const ses=await getSession();if(!ses)throw Error("Please log in again.");const {data:ownerProfile,error:ownerProfileError}=await supabase.from("profiles").select("membership_active").eq("id",ses.user.id).single();if(ownerProfileError)throw ownerProfileError;const memberActive=ownerProfile?.membership_active===true;const id=n2n(f.get("player_id"));const wantsTeam=f.get("looking_for_team")==="true";const row={owner_id:ses.user.id,parent_guardian_name:String(f.get("parent_guardian_name")).trim(),parent_email:String(f.get("parent_email")).trim(),email:String(f.get("parent_email")).trim(),parent_phone:e2n(f.get("parent_phone")),first_name:String(f.get("first_name")).trim(),last_name:String(f.get("last_name")).trim(),age_division:String(f.get("age_division")).trim(),city:String(f.get("city")).trim(),state:String(f.get("state")).trim().toUpperCase(),zip_code:e2n(f.get("zip_code")),primary_position:String(f.get("primary_position")).trim(),secondary_position:e2n(f.get("secondary_position")),birth_year:n2n(f.get("birth_year")),graduation_year:n2n(f.get("graduation_year")),height_text:e2n(f.get("height_text")),bats:e2n(f.get("bats")),throws:e2n(f.get("throws")),jersey_number:e2n(f.get("jersey_number")),current_team:e2n(f.get("current_team")),current_coach:e2n(f.get("current_coach")),gpa:n2n(f.get("gpa")),recruiting_status:e2n(f.get("recruiting_status")),travel_willingness:e2n(f.get("travel_willingness")),max_travel_miles:n2n(f.get("max_travel_miles")),available_immediately:f.get("available_immediately")==="true",looking_for_team:wantsTeam,searchable_by_coaches:memberActive&&wantsTeam,membership_active:memberActive,highlight_video_url:e2n(f.get("highlight_video_url")),photo_url:e2n(f.get("photo_url")),coach_notes:e2n(f.get("coach_notes")),bat_speed_mph:n2n(f.get("bat_speed_mph")),exit_velocity_mph:n2n(f.get("exit_velocity_mph")),throwing_velocity_mph:n2n(f.get("throwing_velocity_mph")),pitching_velocity_mph:n2n(f.get("pitching_velocity_mph")),pop_time_seconds:n2n(f.get("pop_time_seconds")),home_to_first_seconds:n2n(f.get("home_to_first_seconds")),
 academic_interests:e2n(f.get("academic_interests")),
 intended_major:e2n(f.get("intended_major")),
 awards_honors:e2n(f.get("awards_honors")),
@@ -57,27 +27,11 @@ photo_url_5:e2n(f.get("photo_url_5")),
 highlight_video_url_2:e2n(f.get("highlight_video_url_2")),
 highlight_video_url_3:e2n(f.get("highlight_video_url_3")),
 highlight_video_url_4:e2n(f.get("highlight_video_url_4")),
-highlight_video_url_5:e2n(f.get("highlight_video_url_5")),membership_active:memberActive,searchable_by_coaches:memberActive,guardian_consent_at:new Date().toISOString(),guardian_consent_name:String(f.get("parent_guardian_name")).trim(),consent_version:"2026-08-09"};const r=id?await supabase.from("players").update(row).eq("id",id).eq("owner_id",ses.user.id).select("id").single():await supabase.from("players").insert(row).select("id").single();if(r.error)throw r.error;df.elements.player_id.value=r.data.id;setStatus(fs,"Profile changes saved successfully.");setStatus(ps,"Your player profile is current.");}catch(x){setStatus(fs,x.message,true)}finally{btn.disabled=false}});load();}
+highlight_video_url_5:e2n(f.get("highlight_video_url_5"))};const r=id?await supabase.from("players").update(row).eq("id",id).eq("owner_id",ses.user.id).select("id").single():await supabase.from("players").insert(row).select("id").single();if(r.error)throw r.error;df.elements.player_id.value=r.data.id;setStatus(fs,"Profile changes saved successfully.");setStatus(ps,"Your player profile is current.");}catch(x){setStatus(fs,x.message,true)}finally{btn.disabled=false}});load();}
 
 function textOrNull(value) {
   const text = String(value ?? "").trim();
   return text === "" ? null : text;
-}
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function formatOpportunityDate(value) {
-  if (!value) return "";
-  const date = new Date(`${value}T12:00:00`);
-  if (Number.isNaN(date.getTime())) return escapeHtml(value);
-  return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
 async function ensureCoachProfile(session) {
@@ -105,109 +59,9 @@ if (coachProfileForm) {
   const formStatus = coachProfileForm.querySelector("[data-form-status]");
   const needsForm = document.querySelector("#team-need-form");
   const needsList = document.querySelector("[data-team-needs-list]");
-  const closedNeedsList = document.querySelector("[data-closed-team-needs-list]");
-  const needSaveButton = needsForm?.querySelector("[data-need-save-button]") || needsForm?.querySelector('button[type="submit"]');
-  const cancelNeedEditButton = needsForm?.querySelector("[data-cancel-need-edit]");
 
   let currentSession = null;
   let currentTeam = null;
-  let currentCoachProfile = null;
-
-  function needPositionsText(need) {
-    return Array.isArray(need?.positions_needed)
-      ? need.positions_needed.join(", ")
-      : String(need?.positions_needed || "");
-  }
-
-  function resetNeedEditor(message = "") {
-    if (!needsForm) return;
-    needsForm.reset();
-    if (needsForm.elements.need_id) needsForm.elements.need_id.value = "";
-    if (needSaveButton) needSaveButton.textContent = "Save Player Need";
-    if (cancelNeedEditButton) cancelNeedEditButton.hidden = true;
-    const typeField = needsForm.elements.need_type;
-    if (typeField) typeField.dispatchEvent(new Event("change", { bubbles: true }));
-    const status = needsForm.querySelector("[data-form-status]");
-    if (message) setStatus(status, message);
-  }
-
-  function editNeed(need) {
-    if (!needsForm || !need) return;
-    const set = (name, value) => {
-      const field = needsForm.elements[name];
-      if (field) field.value = value ?? "";
-    };
-
-    set("need_id", need.id);
-    set("need_type", need.need_type || "season_roster");
-    set("title", need.title || "");
-    set("age_division", need.age_division || "");
-    set("positions_needed_text", needPositionsText(need));
-    set("tournament_name", need.tournament_name || "");
-    set("tournament_start_date", need.tournament_start_date || "");
-    set("tournament_end_date", need.tournament_end_date || "");
-    set("tournament_city", need.tournament_city || "");
-    set("tournament_state", need.tournament_state || "");
-    set("start_date", need.start_date || "");
-    set("active", need.active === false ? "false" : "true");
-    set("details", need.details || "");
-
-    needsForm.elements.need_type?.dispatchEvent(new Event("change", { bubbles: true }));
-    if (needSaveButton) needSaveButton.textContent = "Update Player Need";
-    if (cancelNeedEditButton) cancelNeedEditButton.hidden = false;
-    setStatus(needsForm.querySelector("[data-form-status]"), "Editing saved roster need. Make your changes, then click Update Player Need.");
-    needsForm.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  async function setNeedActive(need, active) {
-    if (!currentSession || !need?.id) return;
-    const action = active ? "reopen" : "close";
-    const prompt = active
-      ? "Reopen this roster need? It will become visible to eligible members again."
-      : "Close this roster need? It will disappear from active team opportunities but remain saved here.";
-    if (!confirm(prompt)) return;
-
-    const { error } = await supabase
-      .from("team_needs")
-      .update({ active })
-      .eq("id", need.id)
-      .eq("owner_id", currentSession.user.id);
-
-    if (error) {
-      alert(error.message || `We could not ${action} this roster need.`);
-      return;
-    }
-    await loadNeeds();
-  }
-
-  function needCard(need, { closed = false } = {}) {
-    const isPickup = need.need_type === "pickup_tournament";
-    const dateRange = isPickup && need.tournament_start_date
-      ? `${formatOpportunityDate(need.tournament_start_date)}${need.tournament_end_date ? ` – ${formatOpportunityDate(need.tournament_end_date)}` : ""}`
-      : null;
-    const tournamentLocation = [need.tournament_city, need.tournament_state].filter(Boolean).join(", ");
-    const editLabel = closed ? "Edit Before Reopening" : "Edit";
-    const actionLabel = closed ? "Reopen Listing" : "Close Listing";
-
-    return `
-      <article class="listing-card" data-need-card="${escapeHtml(need.id)}">
-        <span class="badge">${isPickup ? "Pickup Player" : "Season Roster"} • ${escapeHtml(need.age_division || "Division not entered")} • ${closed ? "Closed" : "Active"}</span>
-        <h3>${escapeHtml(need.title || "Player opportunity")}</h3>
-        ${isPickup ? `
-          <div class="listing-meta"><strong>Tournament:</strong> ${escapeHtml(need.tournament_name || "Not entered")}</div>
-          ${dateRange ? `<div class="listing-meta"><strong>Dates:</strong> ${dateRange}</div>` : ""}
-          ${tournamentLocation ? `<div class="listing-meta"><strong>Location:</strong> ${escapeHtml(tournamentLocation)}</div>` : ""}
-        ` : ""}
-        <div class="listing-meta"><strong>Positions:</strong> ${escapeHtml(needPositionsText(need) || "Open to all positions")}</div>
-        ${need.start_date ? `<div class="listing-meta"><strong>Player needed by:</strong> ${formatOpportunityDate(need.start_date)}</div>` : ""}
-        <p>${escapeHtml(need.details || "No additional details.")}</p>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
-          <button class="btn btn-outline" type="button" data-edit-need="${escapeHtml(need.id)}">${editLabel}</button>
-          <button class="btn ${closed ? "btn-pink" : "btn-outline"}" type="button" data-toggle-need="${escapeHtml(need.id)}" data-next-active="${closed ? "true" : "false"}">${actionLabel}</button>
-        </div>
-      </article>
-    `;
-  }
 
   async function loadNeeds() {
     if (!currentSession || !needsList) return;
@@ -216,53 +70,22 @@ if (coachProfileForm) {
       .select("*")
       .eq("owner_id", currentSession.user.id)
       .order("created_at", { ascending: false });
-
     if (error) {
-      needsList.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
-      if (closedNeedsList) closedNeedsList.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
+      needsList.innerHTML = `<p>${error.message}</p>`;
       return;
     }
-
-    const today = new Date().toISOString().slice(0, 10);
-    const allNeeds = data || [];
-
-    const activeNeeds = allNeeds.filter((need) => {
-      if (need.active === false) return false;
-      if (need.need_type !== "pickup_tournament") return true;
-      const lastTournamentDate = need.tournament_end_date || need.tournament_start_date || need.start_date;
-      return !lastTournamentDate || lastTournamentDate >= today;
-    });
-
-    // Season roster needs are reusable. Closed pickup-tournament listings are kept in
-    // history but intentionally not shown here because old tournaments should not be reopened.
-    const closedSeasonNeeds = allNeeds.filter(
-      (need) => need.active === false && need.need_type !== "pickup_tournament"
-    );
-
-    needsList.innerHTML = activeNeeds.length
-      ? activeNeeds.map((need) => needCard(need)).join("")
-      : "<p>No current player needs have been posted yet.</p>";
-
-    if (closedNeedsList) {
-      closedNeedsList.innerHTML = closedSeasonNeeds.length
-        ? closedSeasonNeeds.map((need) => needCard(need, { closed: true })).join("")
-        : "<p>No closed season roster needs yet.</p>";
+    if (!data.length) {
+      needsList.innerHTML = "<p>No roster openings have been posted yet.</p>";
+      return;
     }
-
-    const byId = new Map(allNeeds.map((need) => [String(need.id), need]));
-
-    document.querySelectorAll("[data-edit-need]").forEach((button) => {
-      button.addEventListener("click", () => editNeed(byId.get(String(button.dataset.editNeed))));
-    });
-
-    document.querySelectorAll("[data-toggle-need]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        const need = byId.get(String(button.dataset.toggleNeed));
-        const nextActive = button.dataset.nextActive === "true";
-        button.disabled = true;
-        await setNeedActive(need, nextActive);
-      });
-    });
+    needsList.innerHTML = data.map((need) => `
+      <article class="listing-card">
+        <span class="badge">${need.age_division || "Division not entered"} • ${need.active ? "Active" : "Inactive"}</span>
+        <h3>${need.title}</h3>
+        <p>${need.details || "No additional details."}</p>
+        <div class="listing-meta">${(need.positions_needed || []).join(", ") || "Positions not entered"}</div>
+      </article>
+    `).join("");
   }
 
   async function loadCoachDashboard() {
@@ -273,7 +96,6 @@ if (coachProfileForm) {
         return;
       }
       const profile = await ensureCoachProfile(currentSession);
-      currentCoachProfile = profile;
 
       const { data: team, error } = await supabase
         .from("teams")
@@ -327,7 +149,6 @@ if (coachProfileForm) {
         travel_schedule: textOrNull(form.get("travel_schedule")),
         website_url: textOrNull(form.get("website_url")),
         description: textOrNull(form.get("description")),
-        membership_active: currentCoachProfile?.membership_active === true || currentCoachProfile?.account_type === "admin",
         active: true
       };
 
@@ -357,55 +178,25 @@ if (coachProfileForm) {
     try {
       if (!currentSession) currentSession = await getSession();
       if (!currentTeam?.id) throw new Error("Save the Team Profile first.");
-      if (!currentCoachProfile) currentCoachProfile = await ensureCoachProfile(currentSession);
-      const canPostNeeds = currentCoachProfile?.membership_active === true || currentCoachProfile?.account_type === "admin";
-      if (!canPostNeeds) throw new Error("An active Softball Ready membership is required to post player opportunities.");
       const form = new FormData(needsForm);
       const positions = String(form.get("positions_needed_text") || "")
         .split(",").map((value) => value.trim()).filter(Boolean);
-      const needType = String(form.get("need_type") || "season_roster").trim();
-      const isPickup = needType === "pickup_tournament";
-
       const need = {
         team_id: currentTeam.id,
         owner_id: currentSession.user.id,
-        need_type: needType,
         title: String(form.get("title") || "").trim(),
         age_division: textOrNull(form.get("age_division")) || currentTeam.age_division,
         positions_needed: positions,
-        city: isPickup ? String(form.get("tournament_city") || "").trim() : currentTeam.city,
-        state: isPickup ? String(form.get("tournament_state") || "").trim().toUpperCase() : currentTeam.state,
+        city: currentTeam.city,
+        state: currentTeam.state,
         start_date: textOrNull(form.get("start_date")),
-        tournament_name: isPickup ? textOrNull(form.get("tournament_name")) : null,
-        tournament_start_date: isPickup ? textOrNull(form.get("tournament_start_date")) : null,
-        tournament_end_date: isPickup ? textOrNull(form.get("tournament_end_date")) : null,
-        tournament_city: isPickup ? textOrNull(form.get("tournament_city")) : null,
-        tournament_state: isPickup ? String(form.get("tournament_state") || "").trim().toUpperCase() || null : null,
         details: textOrNull(form.get("details")),
         active: form.get("active") === "true"
       };
-
-      if (isPickup) {
-        if (!need.tournament_name) throw new Error("Enter the tournament name.");
-        if (!need.tournament_start_date) throw new Error("Enter the tournament start date.");
-        if (!need.tournament_city || !need.tournament_state) throw new Error("Enter the tournament city and state.");
-        if (need.tournament_end_date && need.tournament_end_date < need.tournament_start_date) {
-          throw new Error("The tournament end date cannot be before the start date.");
-        }
-      }
-      const needId = String(form.get("need_id") || "").trim();
-      let saveResult;
-      if (needId) {
-        saveResult = await supabase
-          .from("team_needs")
-          .update(need)
-          .eq("id", needId)
-          .eq("owner_id", currentSession.user.id);
-      } else {
-        saveResult = await supabase.from("team_needs").insert(need);
-      }
-      if (saveResult.error) throw saveResult.error;
-      resetNeedEditor(needId ? "Player need updated successfully." : "Player need saved successfully.");
+      const { error } = await supabase.from("team_needs").insert(need);
+      if (error) throw error;
+      needsForm.reset();
+      setStatus(status, "Roster need saved successfully.");
       await loadNeeds();
     } catch (error) {
       setStatus(status, error.message || "We could not save the roster need.", true);
@@ -414,130 +205,8 @@ if (coachProfileForm) {
     }
   });
 
-  cancelNeedEditButton?.addEventListener("click", () => {
-    resetNeedEditor("Edit canceled.");
-  });
-
-  const activeOpportunitySelect = needsForm?.querySelector("[data-active-opportunity]");
-  activeOpportunitySelect?.addEventListener("change", async () => {
-    const needId = String(needsForm?.elements.need_id?.value || "").trim();
-    const status = needsForm?.querySelector("[data-form-status]");
-    if (!needId) {
-      setStatus(status, 'This setting will be saved when you click "Save Player Need".');
-      return;
-    }
-
-    const active = activeOpportunitySelect.value === "true";
-    activeOpportunitySelect.disabled = true;
-    try {
-      const { error } = await supabase
-        .from("team_needs")
-        .update({ active })
-        .eq("id", needId)
-        .eq("owner_id", currentSession.user.id);
-
-      if (error) throw error;
-
-      if (active) {
-        setStatus(status, "Opportunity reopened. It is active again.");
-      } else {
-        setStatus(status, "Opportunity closed. It will no longer appear in active team opportunities.");
-      }
-
-      await loadNeeds();
-    } catch (error) {
-      setStatus(status, error.message || "We could not update the opportunity status.", true);
-    } finally {
-      activeOpportunitySelect.disabled = false;
-    }
-  });
-
-  async function loadPickupInterests() {
-    if (!currentSession || !currentTeam) return;
-    let panel = document.querySelector("[data-pickup-interest-panel]");
-    if (!panel) {
-      panel = document.createElement("div");
-      panel.className = "form-panel";
-      panel.style.marginTop = "28px";
-      panel.setAttribute("data-pickup-interest-panel", "");
-      panel.innerHTML = `<div class="eyebrow">Pickup responses</div><h2 style="color:var(--navy);margin-top:8px">Interested Players</h2><div data-pickup-interest-list><p>Loading responses...</p></div>`;
-      needsList?.closest(".form-panel")?.after(panel);
-    }
-    const list = panel.querySelector("[data-pickup-interest-list]");
-    const { data, error } = await supabase
-      .from("pickup_interests")
-      .select("id,message,status,created_at,team_need_id,team_needs!inner(id,title,owner_id,active,need_type,tournament_start_date,tournament_end_date,start_date),players(first_name,last_name,age_division,primary_position,city,state)")
-      .eq("team_needs.owner_id", currentSession.user.id)
-      .order("created_at", { ascending: false });
-    if (error) return list.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
-
-    const today = new Date().toISOString().slice(0, 10);
-    const currentResponses = (data || []).filter((item) => {
-      if (item.status === "closed") return false;
-      const need = Array.isArray(item.team_needs) ? item.team_needs[0] : item.team_needs;
-      if (!need || need.active === false) return false;
-      if (need.need_type === "pickup_tournament") {
-        const lastTournamentDate = need.tournament_end_date || need.tournament_start_date || need.start_date;
-        if (lastTournamentDate && lastTournamentDate < today) return false;
-      }
-      return true;
-    });
-
-    if (!currentResponses.length) return list.innerHTML = "<p>No current pickup responses need your attention.</p>";
-
-    list.innerHTML = currentResponses.map((item) => {
-      const player = Array.isArray(item.players) ? item.players[0] : item.players;
-      const need = Array.isArray(item.team_needs) ? item.team_needs[0] : item.team_needs;
-      return `<article class="listing-card">
-        <span class="badge">${escapeHtml(item.status || "new")}</span>
-        <h3>${escapeHtml(player ? `${player.first_name} ${player.last_name}` : "Player response")}</h3>
-        <p><strong>Opportunity:</strong> ${escapeHtml(need?.title || "Pickup need")}</p>
-        <p>${escapeHtml(item.message)}</p>
-        <div class="listing-meta">${escapeHtml([player?.age_division, player?.primary_position, [player?.city, player?.state].filter(Boolean).join(", ")].filter(Boolean).join(" • "))}</div>
-        <div style="margin-top:16px">
-          <button class="btn btn-outline" type="button" data-close-pickup-response="${escapeHtml(item.id)}">Close Response</button>
-        </div>
-      </article>`;
-    }).join("");
-
-    list.querySelectorAll("[data-close-pickup-response]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        if (!confirm("Close this pickup response? It will disappear from your active Interested Players list.")) return;
-        button.disabled = true;
-        try {
-          const { error: updateError } = await supabase
-            .from("pickup_interests")
-            .update({ status: "closed", updated_at: new Date().toISOString() })
-            .eq("id", button.dataset.closePickupResponse);
-          if (updateError) throw updateError;
-          await loadPickupInterests();
-        } catch (updateError) {
-          alert(updateError.message || "We could not close this pickup response.");
-          button.disabled = false;
-        }
-      });
-    });
-  }
-
-  const originalLoadNeeds = loadNeeds;
-  loadNeeds = async function() {
-    await originalLoadNeeds();
-    await loadPickupInterests();
-  };
-
   loadCoachDashboard();
 }
-
-// Add Pickup Players to navigation on pages using this application script.
-document.querySelectorAll(".nav-links").forEach((nav) => {
-  if (!nav.querySelector('a[href="pickup-players.html"]')) {
-    const link = document.createElement("a");
-    link.href = "pickup-players.html";
-    link.textContent = "Pickup Players";
-    const teamsLink = nav.querySelector('a[href="teams.html"]');
-    teamsLink?.after(link);
-  }
-});
 
 const playerSearchForm = document.querySelector("#player-search-form");
 if (playerSearchForm) {
@@ -1148,243 +817,4 @@ if (photoDashboardForm && document.querySelector("[data-photo-upload]")) {
   });
 
   loadSavedPhotoPreviews();
-}
-
-// Pickup Player Marketplace
-const pickupMarketplaceForm = document.querySelector("#pickup-marketplace-form");
-if (pickupMarketplaceForm) {
-  const accessStatus = document.querySelector("[data-pickup-access-status]");
-  const formStatus = pickupMarketplaceForm.querySelector("[data-form-status]");
-  const results = document.querySelector("[data-pickup-results]");
-  const summary = document.querySelector("[data-pickup-summary]");
-  const clearButton = document.querySelector("[data-pickup-clear]");
-  const searchButton = pickupMarketplaceForm.querySelector('button[type="submit"]');
-  const filterFields = pickupMarketplaceForm.querySelectorAll("input, select");
-  let accessAllowed = false;
-
-  function setPickupLocked(locked) {
-    pickupMarketplaceForm.classList.toggle("is-locked", locked);
-    filterFields.forEach((field) => { field.disabled = locked; });
-    if (searchButton) searchButton.disabled = locked;
-    if (clearButton) clearButton.disabled = locked;
-  }
-
-  function pickupDateRange(need) {
-    const start = formatOpportunityDate(need.tournament_start_date);
-    const end = formatOpportunityDate(need.tournament_end_date);
-    if (start && end && start !== end) return `${start} – ${end}`;
-    return start || end || "Date not entered";
-  }
-
-  function pickupTeamName(need) {
-    const team = Array.isArray(need.teams) ? need.teams[0] : need.teams;
-    return team?.team_name || team?.organization_name || "Travel softball team";
-  }
-
-  function renderPickupCards(data) {
-    if (!data.length) {
-      results.innerHTML = `<div class="pickup-empty"><h3>No pickup opportunities matched those filters.</h3><p>Try clearing one or more filters, or check back as coaches add new tournament needs.</p></div>`;
-      summary.textContent = "No active opportunities found.";
-      return;
-    }
-
-    results.innerHTML = data.map((need) => {
-      const positions = Array.isArray(need.positions_needed) ? need.positions_needed.join(", ") : (need.positions_needed || "Any position");
-      const locationText = [need.tournament_city, need.tournament_state].filter(Boolean).join(", ") || [need.city, need.state].filter(Boolean).join(", ") || "Location not entered";
-      return `
-        <article class="pickup-card">
-          <div class="pickup-card-top">
-            <div class="pickup-badges">
-              <span class="pickup-badge pink">Pickup Player</span>
-              <span class="pickup-badge">${escapeHtml(need.age_division || "Age not entered")}</span>
-            </div>
-            <h3>${escapeHtml(need.title || "Tournament player needed")}</h3>
-            <p>${escapeHtml(pickupTeamName(need))}</p>
-          </div>
-          <div class="pickup-card-body">
-            <div class="pickup-meta">
-              <div><strong>Tournament:</strong> ${escapeHtml(need.tournament_name || "Not entered")}</div>
-              <div><strong>Dates:</strong> ${escapeHtml(pickupDateRange(need))}</div>
-              <div><strong>Location:</strong> ${escapeHtml(locationText)}</div>
-              <div><strong>Position needed:</strong> ${escapeHtml(positions)}</div>
-              ${need.start_date ? `<div><strong>Player needed by:</strong> ${escapeHtml(formatOpportunityDate(need.start_date))}</div>` : ""}
-            </div>
-            <div class="pickup-details">${escapeHtml(need.details || "Contact the team through Softball Ready for additional tournament details.")}</div>
-            <div class="pickup-card-footer">
-              <button class="btn btn-pink" type="button"
-                data-pickup-interest
-                data-need-id="${need.id}"
-                data-need-title="${escapeHtml(need.title || "Tournament player needed")}">
-                I'm Interested
-              </button>
-              <p data-interest-status="${need.id}" style="font-weight:800;margin:10px 0 0"></p>
-            </div>
-          </div>
-        </article>`;
-    }).join("");
-    summary.textContent = `${data.length} active pickup opportunit${data.length === 1 ? "y" : "ies"} found.`;
-
-    results.querySelectorAll("[data-pickup-interest]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        const needId = button.dataset.needId;
-        const title = button.dataset.needTitle || "this pickup opportunity";
-        const status = results.querySelector(`[data-interest-status="${needId}"]`);
-        const message = window.prompt(
-          `Send the coach a private note about ${title}:`,
-          "Hello, my player is interested and available. Please contact us through Softball Ready."
-        );
-        if (message === null) return;
-        const body = message.trim();
-        if (!body) return setStatus(status, "Please enter a message before sending.", true);
-
-        button.disabled = true;
-        setStatus(status, "Sending your interest...");
-        try {
-          const session = await getSession();
-          if (!session) throw new Error("Please log in again.");
-          const { data: player, error: playerError } = await supabase
-            .from("players")
-            .select("id")
-            .eq("owner_id", session.user.id)
-            .limit(1)
-            .maybeSingle();
-          if (playerError) throw playerError;
-          if (!player) throw new Error("Create and save a player profile before responding.");
-
-          const { error } = await supabase.from("pickup_interests").upsert({
-            team_need_id: needId,
-            player_id: player.id,
-            player_owner_id: session.user.id,
-            message: body,
-            status: "new"
-          }, { onConflict: "team_need_id,player_id" });
-          if (error) throw error;
-          setStatus(status, "Interest sent privately to the coach.");
-          button.textContent = "Interest Sent";
-        } catch (error) {
-          setStatus(status, error.message || "Your interest could not be sent.", true);
-        } finally {
-          button.disabled = false;
-        }
-      });
-    });
-  }
-
-  async function verifyPickupAccess() {
-    try {
-      const session = await getSession();
-      if (!session) {
-        accessAllowed = false;
-        setPickupLocked(true);
-        accessStatus.innerHTML = `Pickup opportunities are a Softball Ready member benefit. <a href="login.html">Log in</a> or <a href="membership.html">view membership</a>.`;
-        summary.textContent = "Membership required to search pickup opportunities.";
-        results.innerHTML = `<div class="pickup-empty"><h3>Pickup opportunities are locked</h3><p>Log in with an active player/family membership to search current tournament needs.</p></div>`;
-        return false;
-      }
-
-      const { data: profile, error } = await supabase
-        .from("profiles")
-        .select("membership_active,account_type")
-        .eq("id", session.user.id)
-        .single();
-      if (error) throw error;
-
-      const isAdmin = profile.account_type === "admin";
-      const isCoach = profile.account_type === "coach";
-      accessAllowed = (profile.membership_active === true || isAdmin) && !isCoach;
-      if (isCoach && !isAdmin) {
-        accessAllowed = false;
-        setPickupLocked(true);
-        accessStatus.innerHTML = `Pickup Player Marketplace is for player/family members searching for tournament opportunities. Coaches should post and manage pickup needs from the Coach Dashboard.`;
-        summary.textContent = "Coach accounts do not search this directory.";
-        results.innerHTML = `<div class="pickup-empty"><h3>Coach tools are in your dashboard</h3><p>Use the pink <strong>Coaches: Post a Need</strong> button above to create or manage pickup-player needs.</p></div>`;
-        return false;
-      }
-      if (!accessAllowed) {
-        setPickupLocked(true);
-        accessStatus.innerHTML = `Pickup Player Marketplace access requires an active Softball Ready membership. <a href="membership.html">Activate membership</a>.`;
-        summary.textContent = "Membership required to search pickup opportunities.";
-        results.innerHTML = `<div class="pickup-empty"><h3>Pickup opportunities are locked</h3><p>Your profile can be saved for free. Activate membership to search current tournament pickup needs.</p></div>`;
-        return false;
-      }
-
-      setPickupLocked(false);
-      accessStatus.textContent = "Your membership is active. Current tournament pickup opportunities are unlocked.";
-      return true;
-    } catch (error) {
-      accessAllowed = false;
-      setPickupLocked(true);
-      accessStatus.textContent = error.message || "We could not verify marketplace access.";
-      accessStatus.style.color = "#8b1d3d";
-      summary.textContent = "Marketplace access could not be verified.";
-      results.innerHTML = `<div class="pickup-error">The marketplace could not be opened.</div>`;
-      return false;
-    }
-  }
-
-  async function loadPickupOpportunities() {
-    if (!accessAllowed) {
-      setStatus(formStatus, "An active player/family membership is required to search pickup opportunities.", true);
-      return;
-    }
-    const button = pickupMarketplaceForm.querySelector('button[type="submit"]');
-    button.disabled = true;
-    setStatus(formStatus, "Searching pickup opportunities...");
-    results.innerHTML = `<div class="pickup-empty">Loading tournament needs...</div>`;
-
-    try {
-      const form = new FormData(pickupMarketplaceForm);
-      let query = supabase
-        .from("team_needs")
-        .select("*,teams(team_name,organization_name,coach_name,team_level)")
-        .eq("need_type", "pickup_tournament")
-        .eq("active", true)
-        .order("tournament_start_date", { ascending: true, nullsFirst: false })
-        .limit(100);
-
-      const age = textOrNull(form.get("age_division"));
-      const state = textOrNull(form.get("state"));
-      const position = textOrNull(form.get("position"));
-      const dateFrom = textOrNull(form.get("date_from"));
-
-      if (age) query = query.eq("age_division", age);
-      if (state) query = query.eq("tournament_state", state.toUpperCase());
-      if (position) query = query.contains("positions_needed", [position]);
-      if (dateFrom) query = query.gte("tournament_start_date", dateFrom);
-
-      const { data, error } = await query;
-      if (error) throw error;
-
-      // Never show a pickup tournament after its final tournament date has passed.
-      // Keep the database row for historical reporting.
-      const today = new Date().toISOString().slice(0, 10);
-      const currentOpportunities = (data || []).filter(need => {
-        const lastTournamentDate = need.tournament_end_date || need.tournament_start_date;
-        return !lastTournamentDate || lastTournamentDate >= today;
-      });
-
-      renderPickupCards(currentOpportunities);
-      setStatus(formStatus, "Search complete.");
-    } catch (error) {
-      setStatus(formStatus, error.message || "The pickup search could not be completed.", true);
-      results.innerHTML = `<div class="pickup-error"><strong>Pickup opportunities could not be loaded.</strong><br>${escapeHtml(error.message || "Please try again.")}</div>`;
-      summary.textContent = "Search unavailable.";
-    } finally {
-      button.disabled = false;
-    }
-  }
-
-  pickupMarketplaceForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    await loadPickupOpportunities();
-  });
-
-  clearButton?.addEventListener("click", async () => {
-    pickupMarketplaceForm.reset();
-    await loadPickupOpportunities();
-  });
-
-  (async () => {
-    if (await verifyPickupAccess()) await loadPickupOpportunities();
-  })();
 }
