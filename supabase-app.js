@@ -296,9 +296,9 @@ if (playerSearchForm) {
       let query = supabase
         .from("players")
         .select("*")
-        .eq("looking_for_team", true)
         .eq("searchable_by_coaches", true)
         .eq("membership_active", true)
+        .or("looking_for_team.eq.true,available_immediately.eq.true")
         .order("updated_at", { ascending: false })
         .limit(50);
 
