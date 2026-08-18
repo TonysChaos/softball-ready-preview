@@ -102,8 +102,11 @@ function renderAccounts(filter="") {
     <td><div class="actions">
       <button class="owner-btn ${p.membership_active?"warn":"primary"}" data-membership-toggle="${escapeHtml(p.id)}" data-current="${p.membership_active?"1":"0"}">${p.membership_active?"Deactivate":"Activate"}</button>
       ${p.account_type === "admin"
-        ? '<button class="owner-btn light" type="button" disabled title="The owner/admin account is protected">Protected</button>'
-        : '<button class="owner-btn light" type="button" disabled title="Permanent deletion is disabled for live accounts">Live Account</button>'}
+        ? `<button class="owner-btn light" type="button" disabled>Protected</button>`
+        : `<button class="owner-btn warn" type="button"
+             data-delete-test-account="${escapeHtml(p.id)}"
+             data-delete-name="${escapeHtml(p.full_name || p.email || "this test account")}"
+             data-delete-type="${escapeHtml(p.account_type || "parent")}">Delete Test Account</button>`}
     </div></td>
   </tr>`).join("") : `<tr><td colspan="5" class="empty">No accounts match that search.</td></tr>`;
 }
@@ -234,6 +237,61 @@ document.addEventListener("click", async e => {
     return;
   }
 
+  const deleteAccount = e.target.closest("[data-delete-test-account]");
+  if (deleteAccount) {
+    const userId = deleteAccount.dataset.deleteTestAccount;
+    const name = deleteAccount.dataset.deleteName || "this test account";
+    const type = deleteAccount.dataset.deleteType || "account";
+
+    const ownedPlayers = state.players.filter(p => p.owner_id === userId).length;
+    const ownedTeams = state.teams.filter(t => t.owner_id === userId).length;
+    const ownedNeeds = state.needs.filter(n => n.owner_id === userId).length;
+
+    const details = [
+      ownedPlayers ? `${ownedPlayers} player profile${ownedPlayers === 1 ? "" : "s"}` : "",
+      ownedTeams ? `${ownedTeams} team profile${ownedTeams === 1 ? "" : "s"}` : "",
+      ownedNeeds ? `${ownedNeeds} team need${ownedNeeds === 1 ? "" : "s"}` : ""
+    ].filter(Boolean).join(", ");
+
+    const firstConfirm = confirm(
+      `Delete TEST ${type} account "${name}"?\n\n` +
+      `This permanently removes the SoftballReady.net login and associated site data${details ? ` (${details})` : ""}.\n\n` +
+      `Stripe payment history is not deleted.\n\n` +
+      `This cannot be undone.`
+    );
+    if (!firstConfirm) return;
+
+    const typed = prompt(`For safety, type DELETE to permanently remove "${name}".`);
+    if (typed !== "DELETE") {
+      toast("Deletion cancelled.");
+      return;
+    }
+
+    deleteAccount.disabled = true;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("Owner session expired. Please log in again.");
+
+      const response = await fetch("/api/owner-delete-test-account", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ user_id: userId })
+      });
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "The test account could not be deleted.");
+
+      await reloadDashboard(`Test account "${name}" deleted.`);
+    } catch (error) {
+      deleteAccount.disabled = false;
+      toast(error.message || "The test account could not be deleted.", true);
+    }
+    return;
+  }
+
   const need = e.target.closest("[data-need-toggle]");
   if (need) {
     const next = need.dataset.current !== "1";
@@ -274,7 +332,7 @@ document.querySelector("[data-owner-logout]")?.addEventListener("click", async (
     if (!session) return;
     await Promise.all([loadCounts(),loadData()]);
     renderAll();
-    setStatus("Owner access verified. Live account protections are active.");
+    setStatus("Owner access verified. Dashboard v2 is live.");
   } catch (error) {
     setStatus(error.message || "Owner Dashboard could not be loaded.", true);
     toast(error.message || "Dashboard load failed.", true);
