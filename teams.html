@@ -38,6 +38,10 @@
     .team-fact span:first-child{font-weight:800;color:#4d566a}
     .team-fact span:last-child{text-align:right;color:#111827}
     .team-description{color:#525b6e;line-height:1.6;margin:0}
+
+    .team-card-actions{padding:0 22px 22px;display:grid;gap:10px}
+    .team-card-actions a{display:block;text-align:center;text-decoration:none;border:1px solid #14244d;color:#14244d;background:#fff;border-radius:12px;padding:11px 14px;font-weight:900}
+    .team-card-actions a:hover{background:#f4f7fb}
     .empty-state,.error-state,.loading{grid-column:1/-1;text-align:center;background:#fff;border-radius:20px;padding:46px 24px}
     .empty-state{border:1px dashed #b8c0d0;color:#586174}
     .error-state{border:1px solid #efb7c3;background:#fff4f6;color:#8e2d48}
@@ -60,9 +64,9 @@
       <button class="menu-btn" aria-expanded="false" aria-label="Open navigation">Menu</button>
       <nav class="nav-links" aria-label="Primary navigation">
         <a href="index.html">Home</a><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a>
-        <a href="teams.html" aria-current="pages">Teams</a><a href="coach-dashboard.html">Coach Dashboard</a>
+        <a class="active" href="teams.html">Teams</a><a href="coach-dashboard.html">Coach Dashboard</a>
         <a href="player-search.html">Player Search</a><a href="our-story.html">Our Story</a>
-        <a href="membership.html">Membership</a>
+        <a href="membership.html">Membership</a><a class="nav-cta" href="dashboard.html">Dashboard</a>
       </nav>
     </div>
   </header>
@@ -71,7 +75,7 @@
     <section class="teams-hero">
       <div class="eyebrow">Players and families</div>
       <h1>Team Opportunities Directory</h1>
-      <p>Find travel softball teams currently looking for players. Coaches create and manage listings from their private Coach Dashboard.</p>
+      <p>Search travel softball teams by state and age division. Browse SoftballReady team profiles, current roster openings, and public team listings.</p>
     </section>
 
     <section class="directory-wrap">
@@ -159,11 +163,11 @@
         </div>
       </div>
 
-      <div class="directory-meta"><div><h2>Team Opportunities</h2><p id="resultSummary">Loading team listings…</p></div></div>
+      <div class="directory-meta"><div><h2>Teams &amp; Opportunities</h2><p id="resultSummary">Loading team listings…</p></div></div>
       <div id="teamGrid" class="team-grid" aria-live="polite"><div class="loading">Loading teams…</div></div>
 
       <div class="coach-note">
-        <div><h3>Are you a coach?</h3><p>Create, edit, or close your team listings from your Coach Dashboard.</p></div>
+        <div><h3>Are you a coach?</h3><p>Create or update your team profile and post roster openings from your Coach Dashboard.</p></div>
         <a href="coach-dashboard.html">Open Coach Dashboard</a>
       </div>
     </section>
@@ -171,7 +175,7 @@
 
   <footer class="footer">
     <div class="container footer-grid">
-      <div><div class="brand"><div class="logo-mark" style="color:white">S<span>R</span></div><div class="brand-copy"><strong style="color:white">SOFTBALL READY</strong><small style="color:white">THE NATIONAL TRAVEL SOFTBALL CONNECTION.</small></div></div></div>
+      <div><div class="brand"><div class="logo-mark">S<span>R</span></div><div class="brand-copy"><strong>SOFTBALL READY</strong><small>THE NATIONAL TRAVEL SOFTBALL CONNECTION.</small></div></div></div>
       <div><h4>Quick Links</h4><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a><a href="teams.html">Teams</a></div>
       <div><h4>Resources</h4><a href="our-story.html">Our Story</a><a href="tryouts.html">Tryouts</a></div>
       <div><h4>Connect</h4><a href="mailto:info@softballready.net">info@softballready.net</a><a href="login.html">Member Login</a></div>
@@ -193,58 +197,94 @@
     const clearButton = document.getElementById("clearButton");
     let listings = [];
 
-    const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[char]);
+    const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]);
+
+    const stateNames = {
+      AL:"alabama",AK:"alaska",AZ:"arizona",AR:"arkansas",CA:"california",CO:"colorado",
+      CT:"connecticut",DE:"delaware",FL:"florida",GA:"georgia",HI:"hawaii",ID:"idaho",
+      IL:"illinois",IN:"indiana",IA:"iowa",KS:"kansas",KY:"kentucky",LA:"louisiana",
+      ME:"maine",MD:"maryland",MA:"massachusetts",MI:"michigan",MN:"minnesota",MS:"mississippi",
+      MO:"missouri",MT:"montana",NE:"nebraska",NV:"nevada",NH:"new hampshire",NJ:"new jersey",
+      NM:"new mexico",NY:"new york",NC:"north carolina",ND:"north dakota",OH:"ohio",
+      OK:"oklahoma",OR:"oregon",PA:"pennsylvania",RI:"rhode island",SC:"south carolina",
+      SD:"south dakota",TN:"tennessee",TX:"texas",UT:"utah",VT:"vermont",VA:"virginia",
+      WA:"washington",WV:"west virginia",WI:"wisconsin",WY:"wyoming"
+    };
+
+    function normalizedState(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "";
+      const upper = raw.toUpperCase();
+      return stateNames[upper] || raw.toLowerCase();
+    }
+
+    function safeUrl(value) {
+      const url = String(value || "").trim();
+      return /^https?:\/\//i.test(url) ? url : "";
+    }
 
     function formatDate(value) {
-      if (!value) return "Flexible";
+      if (!value) return "";
       const date = new Date(value + "T00:00:00");
       return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString();
     }
 
     function render() {
       const query = searchInput.value.trim().toLowerCase();
-      const state = stateFilter.value;
-      const age = ageFilter.value;
-      const status = statusFilter.value;
+      const selectedState = stateFilter.value;
+      const selectedAge = ageFilter.value;
+      const lookingOnly = statusFilter.value === "active";
 
       const filtered = listings.filter(item => {
         const haystack = [
           item.teamName, item.organizationName, item.title, item.city,
-          item.state, item.age, item.positions, item.details
+          item.state, item.age, item.positions, item.details, item.teamLevel
         ].join(" ").toLowerCase();
 
         return (!query || haystack.includes(query))
-          && (!state || item.state.toLowerCase() === state)
-          && (!age || item.age.toLowerCase() === age)
-          && (!status || item.active);
+          && (!selectedState || normalizedState(item.state) === selectedState)
+          && (!selectedAge || String(item.age || "").toLowerCase() === selectedAge)
+          && (!lookingOnly || item.hasOpenNeed === true);
       });
 
-      summary.textContent = `${filtered.length} team opportunit${filtered.length === 1 ? "y" : "ies"} found`;
+      summary.textContent = `${filtered.length} team${filtered.length === 1 ? "" : "s"} found`;
 
       if (!filtered.length) {
-        grid.innerHTML = '<div class="empty-state"><h3>No matching team opportunities</h3><p>Try changing your search or filters. New listings will appear here as coaches post them.</p></div>';
+        grid.innerHTML = '<div class="empty-state"><h3>No matching teams</h3><p>Try changing the team name or filters. If “Looking for players” is selected, only teams with an active roster opening will appear.</p></div>';
         return;
       }
 
       grid.innerHTML = filtered.map(item => {
         const location = [item.city, item.state].filter(Boolean).join(", ") || "Location not listed";
         const teamLabel = item.teamName || item.organizationName || "Team name not listed";
+        const website = safeUrl(item.websiteUrl);
+        const typeLabel = item.source === "public"
+          ? "Public team listing"
+          : "SoftballReady team";
+        const description = item.details
+          || (item.source === "public"
+            ? "Public travel softball team listing."
+            : "This team has not added additional program details yet.");
+
         return `
           <article class="team-card">
             <div class="team-card-top">
               <h3>${escapeHtml(teamLabel)}</h3>
-              <p class="opportunity-title">${escapeHtml(item.title)}</p>
+              ${item.organizationName && item.organizationName !== teamLabel ? `<p class="opportunity-title">${escapeHtml(item.organizationName)}</p>` : ""}
               <div class="team-location">${escapeHtml(location)}</div>
               <div class="badge-row">
                 ${item.age ? `<span class="badge">${escapeHtml(item.age)}</span>` : ""}
-                ${item.active ? '<span class="badge open">Looking for players</span>' : ""}
+                <span class="badge">${escapeHtml(typeLabel)}</span>
+                ${item.hasOpenNeed ? '<span class="badge open">Looking for players</span>' : ""}
               </div>
             </div>
             <div class="team-card-body">
-              <div class="team-fact"><span>Positions needed</span><span>${escapeHtml(item.positions || "Contact coach")}</span></div>
-              <div class="team-fact"><span>Needed by</span><span>${escapeHtml(formatDate(item.startDate))}</span></div>
-              <p class="team-description">${escapeHtml(item.details || "No additional details have been posted yet.")}</p>
+              ${item.teamLevel ? `<div class="team-fact"><span>Team level</span><span>${escapeHtml(item.teamLevel)}</span></div>` : ""}
+              ${item.hasOpenNeed ? `<div class="team-fact"><span>Positions needed</span><span>${escapeHtml(item.positions || "Contact coach")}</span></div>` : ""}
+              ${item.hasOpenNeed && item.startDate ? `<div class="team-fact"><span>Needed by</span><span>${escapeHtml(formatDate(item.startDate))}</span></div>` : ""}
+              <p class="team-description">${escapeHtml(description)}</p>
             </div>
+            ${website ? `<div class="team-card-actions"><a href="${escapeHtml(website)}" target="_blank" rel="noopener noreferrer">Official Team Website</a></div>` : ""}
           </article>`;
       }).join("");
     }
@@ -253,54 +293,117 @@
       grid.innerHTML = '<div class="loading">Loading teams…</div>';
       summary.textContent = "Loading team listings…";
 
-      const [needsResult, teamsResult] = await Promise.all([
+      const [teamsResult, needsResult, publicResult] = await Promise.all([
+        supabase
+          .from("teams")
+          .select("id,owner_id,team_name,organization_name,age_division,team_level,city,state,website_url,description,active"),
         supabase
           .from("team_needs")
-          .select("id,owner_id,title,age_division,positions_needed,city,state,start_date,details,active,created_at")
+          .select("id,team_id,owner_id,title,age_division,positions_needed,city,state,start_date,details,active,created_at")
           .eq("active", true)
           .order("created_at", { ascending: false }),
         supabase
-          .from("teams")
-          .select("owner_id,team_name,organization_name")
+          .from("team_directory")
+          .select("id,team_name,organization_name,age_division,team_level,city,state,website_url,source_url,description,claimed_owner_id,active")
+          .eq("active", true)
       ]);
-
-      if (needsResult.error) {
-        console.error("Team needs error:", needsResult.error);
-        summary.textContent = "Team listings could not be loaded";
-        grid.innerHTML = `<div class="error-state"><h3>We could not load team opportunities.</h3><p>${escapeHtml(needsResult.error.message)}</p></div>`;
-        return;
-      }
 
       if (teamsResult.error) {
         console.error("Team profiles error:", teamsResult.error);
       }
+      if (needsResult.error) {
+        console.error("Team needs error:", needsResult.error);
+      }
+      if (publicResult.error) {
+        console.error("Public team directory error:", publicResult.error);
+      }
 
-      const teamByOwner = new Map(
-        (teamsResult.data || []).map(team => [team.owner_id, team])
+      if (teamsResult.error && needsResult.error && publicResult.error) {
+        summary.textContent = "Team listings could not be loaded";
+        grid.innerHTML = '<div class="error-state"><h3>We could not load the team directory.</h3><p>Please try again shortly.</p></div>';
+        return;
+      }
+
+      const needs = needsResult.data || [];
+      const openNeedByTeamId = new Map();
+      const openNeedByOwner = new Map();
+
+      needs.forEach(need => {
+        if (need.team_id && !openNeedByTeamId.has(String(need.team_id))) {
+          openNeedByTeamId.set(String(need.team_id), need);
+        }
+        if (need.owner_id && !openNeedByOwner.has(String(need.owner_id))) {
+          openNeedByOwner.set(String(need.owner_id), need);
+        }
+      });
+
+      const softReadyTeams = (teamsResult.data || [])
+        .filter(team => team.active !== false)
+        .map(team => {
+          const need = openNeedByTeamId.get(String(team.id))
+            || openNeedByOwner.get(String(team.owner_id))
+            || null;
+
+          return {
+            key: `team-${team.id}`,
+            teamName: team.team_name || "",
+            organizationName: team.organization_name || "",
+            age: team.age_division || need?.age_division || "",
+            teamLevel: team.team_level || "",
+            city: team.city || need?.city || "",
+            state: team.state || need?.state || "",
+            websiteUrl: team.website_url || "",
+            details: need?.details || team.description || "",
+            title: need?.title || "",
+            positions: need?.positions_needed || "",
+            startDate: need?.start_date || "",
+            hasOpenNeed: Boolean(need),
+            source: "softballready",
+            ownerId: team.owner_id || ""
+          };
+        });
+
+      const publicTeams = (publicResult.data || []).map(team => ({
+        key: `directory-${team.id}`,
+        teamName: team.team_name || "",
+        organizationName: team.organization_name || "",
+        age: team.age_division || "",
+        teamLevel: team.team_level || "",
+        city: team.city || "",
+        state: team.state || "",
+        websiteUrl: team.website_url || team.source_url || "",
+        details: team.description || "",
+        title: "",
+        positions: "",
+        startDate: "",
+        hasOpenNeed: false,
+        source: "public",
+        ownerId: team.claimed_owner_id || ""
+      }));
+
+      // Avoid showing the same team twice when a public directory listing
+      // already corresponds to a SoftballReady team.
+      const existingKeys = new Set(
+        softReadyTeams.map(team =>
+          `${String(team.teamName).trim().toLowerCase()}|${normalizedState(team.state)}|${String(team.age).trim().toLowerCase()}`
+        )
       );
 
-      listings = (needsResult.data || []).map(row => {
-        const team = teamByOwner.get(row.owner_id) || {};
-        return {
-          id: row.id,
-          teamName: team.team_name || "",
-          organizationName: team.organization_name || "",
-          title: row.title || "Roster opportunity",
-          age: row.age_division || "",
-          positions: row.positions_needed || "",
-          city: row.city || "",
-          state: row.state || "",
-          startDate: row.start_date || "",
-          details: row.details || "",
-          active: row.active !== false
-        };
+      const uniquePublicTeams = publicTeams.filter(team => {
+        const key = `${String(team.teamName).trim().toLowerCase()}|${normalizedState(team.state)}|${String(team.age).trim().toLowerCase()}`;
+        return !existingKeys.has(key);
       });
+
+      listings = [...softReadyTeams, ...uniquePublicTeams]
+        .sort((a, b) => String(a.teamName).localeCompare(String(b.teamName)));
 
       render();
     }
 
     searchButton.addEventListener("click", render);
-    searchInput.addEventListener("keydown", event => { if (event.key === "Enter") render(); });
+    searchInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") render();
+    });
     clearButton.addEventListener("click", () => {
       searchInput.value = "";
       stateFilter.value = "";
