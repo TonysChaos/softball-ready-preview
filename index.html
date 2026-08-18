@@ -152,7 +152,7 @@
       <a href="our-story.html">Our Story</a>
       <a href="membership.html">Membership</a>
       <a href="contact.html">Contact</a>
-      <a class="login" href="login.html">Log In</a>
+      <a class="login" href="login.html" data-home-account-link>Log In</a>
     </nav>
   </div>
 </header>
@@ -270,5 +270,56 @@
   </div>
 </footer>
   <script type="module" src="supabase-app.js"></script>
+
+<script type="module">
+  import { supabase } from "./supabase-config.js";
+
+  const accountLink = document.querySelector("[data-home-account-link]");
+
+  function dashboardFor(accountType) {
+    if (accountType === "admin") return "owner-dashboard.html";
+    if (accountType === "coach") return "coach-dashboard.html";
+    return "player-dashboard.html";
+  }
+
+  async function updateHomeAccountLink() {
+    if (!accountLink) return;
+
+    try {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+
+      const session = sessionData.session;
+
+      if (!session) {
+        accountLink.textContent = "Log In";
+        accountLink.href = "login.html";
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("account_type")
+        .eq("id", session.user.id)
+        .single();
+
+      if (profileError) throw profileError;
+
+      accountLink.textContent = "Dashboard";
+      accountLink.href = dashboardFor(profile?.account_type);
+    } catch (error) {
+      console.error("Home account link:", error);
+      accountLink.textContent = "Dashboard";
+      accountLink.href = "player-dashboard.html";
+    }
+  }
+
+  updateHomeAccountLink();
+
+  supabase.auth.onAuthStateChange(() => {
+    updateHomeAccountLink();
+  });
+</script>
+
 </body>
 </html>
