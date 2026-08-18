@@ -58,6 +58,15 @@
   }
 }
 
+
+@media(max-width:700px){
+  [data-paste-video]{
+    width:100% !important;
+  }
+  .field.full > div:has([data-paste-video]){
+    grid-template-columns:1fr !important;
+  }
+}
 </style></head><body>
 <header class="header"><div class="container nav"><a class="brand" href="index.html"><div class="logo-mark">S<span>R</span></div><div class="brand-copy"><strong>SOFTBALL <span style="color:var(--pink)">READY</span></strong><small>The National Travel Softball Connection.</small></div></a><nav class="nav-links"><a href="index.html">Home</a><a href="players.html">Players</a><a href="teams.html">Teams</a><a href="coach-dashboard.html">Coach Dashboard</a><a href="player-search.html">Player Search</a><a href="our-story.html">Our Story</a><a href="membership.html">Membership</a></nav><button class="btn btn-outline" type="button" data-logout>Log Out</button></div></header>
 <main><section class="page-hero"><div class="container"><div class="eyebrow" style="color:#ff72a7">Player dashboard</div><h1>Complete Player Profile</h1><p>Only the basics are required. Everything else is optional and can be updated later.</p></div></section>
@@ -165,13 +174,51 @@
 </div>
 
 <h3 style="color:var(--navy);margin-top:30px">Highlight Videos</h3>
-<p>Paste up to five YouTube, Hudl, Gamechanger, Vimeo, or other public video links below. Videos must be public or unlisted so coaches can view them. Don't have videos yet? You can add them later.</p>
+<p>Paste up to five YouTube, Hudl, GameChanger, Vimeo, or other public video links below. Videos must be public or unlisted so coaches can view them. Don't have videos yet? You can add them later.</p>
+<div class="notice" style="margin-bottom:18px">
+  <strong>iPhone tip:</strong> If a GameChanger link does not appear with normal Paste, tap the pink <strong>Paste Link</strong> button beside that video.
+</div>
 <div class="form-grid">
-  <div class="field full"><label>Video 1</label><input name="highlight_video_url" type="url"></div>
-  <div class="field full"><label>Video 2</label><input name="highlight_video_url_2" type="url"></div>
-  <div class="field full"><label>Video 3</label><input name="highlight_video_url_3" type="url"></div>
-  <div class="field full"><label>Video 4</label><input name="highlight_video_url_4" type="url"></div>
-  <div class="field full"><label>Video 5</label><input name="highlight_video_url_5" type="url"></div>
+  <div class="field full">
+    <label>Video 1</label>
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center">
+      <input name="highlight_video_url" type="text" inputmode="url" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="https://...">
+      <button class="btn btn-pink" type="button" data-paste-video="highlight_video_url">Paste Link</button>
+    </div>
+    <p data-video-paste-status="highlight_video_url" style="font-weight:800;margin:8px 0 0"></p>
+  </div>
+  <div class="field full">
+    <label>Video 2</label>
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center">
+      <input name="highlight_video_url_2" type="text" inputmode="url" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="https://...">
+      <button class="btn btn-pink" type="button" data-paste-video="highlight_video_url_2">Paste Link</button>
+    </div>
+    <p data-video-paste-status="highlight_video_url_2" style="font-weight:800;margin:8px 0 0"></p>
+  </div>
+  <div class="field full">
+    <label>Video 3</label>
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center">
+      <input name="highlight_video_url_3" type="text" inputmode="url" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="https://...">
+      <button class="btn btn-pink" type="button" data-paste-video="highlight_video_url_3">Paste Link</button>
+    </div>
+    <p data-video-paste-status="highlight_video_url_3" style="font-weight:800;margin:8px 0 0"></p>
+  </div>
+  <div class="field full">
+    <label>Video 4</label>
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center">
+      <input name="highlight_video_url_4" type="text" inputmode="url" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="https://...">
+      <button class="btn btn-pink" type="button" data-paste-video="highlight_video_url_4">Paste Link</button>
+    </div>
+    <p data-video-paste-status="highlight_video_url_4" style="font-weight:800;margin:8px 0 0"></p>
+  </div>
+  <div class="field full">
+    <label>Video 5</label>
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center">
+      <input name="highlight_video_url_5" type="text" inputmode="url" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="https://...">
+      <button class="btn btn-pink" type="button" data-paste-video="highlight_video_url_5">Paste Link</button>
+    </div>
+    <p data-video-paste-status="highlight_video_url_5" style="font-weight:800;margin:8px 0 0"></p>
+  </div>
 </div>
 <hr style="margin:34px 0;border:0;border-top:1px solid #ddd"><div class="eyebrow">Optional measurements</div><h2 style="color:var(--navy)">Performance Measurements</h2><div class="notice" style="margin-bottom:22px">Optional — enter only if known. These measurements are family-supplied and are not verified by Softball Ready.</div>
 <div class="form-grid"><div class="field"><label>Bat speed (mph)</label><input name="bat_speed_mph" type="number" step="0.1"></div><div class="field"><label>Exit velocity (mph)</label><input name="exit_velocity_mph" type="number" step="0.1"></div><div class="field"><label>Throwing velocity (mph)</label><input name="throwing_velocity_mph" type="number" step="0.1"></div><div class="field"><label>Pitching velocity (mph)</label><input name="pitching_velocity_mph" type="number" step="0.1"></div><div class="field"><label>Catcher pop time (seconds)</label><input name="pop_time_seconds" type="number" step="0.01"></div><div class="field"><label>Home-to-first time (seconds)</label><input name="home_to_first_seconds" type="number" step="0.01"></div></div>
@@ -182,4 +229,68 @@
   <input name="player_guardian_consent" type="checkbox" value="yes" required>
   <span class="player-dashboard-consent-text"><strong>I confirm I am authorized to manage this player profile.</strong> I am the player if age 18+, the player’s parent/legal guardian, or an adult authorized by the parent/legal guardian.</span>
 </label>
-<button class="btn btn-pink" type="submit" style="margin-top:28px">Save Profile Changes</button><p data-form-status style="font-weight:800"></p></form></div></section></main><script src="script.js"></script><script type="module" src="supabase-app.js"></script></body></html>
+<button class="btn btn-pink" type="submit" style="margin-top:28px">Save Profile Changes</button><p data-form-status style="font-weight:800"></p></form></div></section></main>
+<script>
+(() => {
+  const form = document.getElementById("player-dashboard-form");
+  if (!form) return;
+
+  const normalizeClipboardLink = (raw) => {
+    const value = String(raw || "").trim();
+    if (!value) return "";
+    const urlMatch = value.match(/https?:\/\/[^\s<>"']+/i);
+    return urlMatch ? urlMatch[0] : value;
+  };
+
+  const showPasteStatus = (name, message, isError = false) => {
+    const el = document.querySelector(`[data-video-paste-status="${name}"]`);
+    if (!el) return;
+    el.textContent = message;
+    el.style.color = isError ? "#b42318" : "var(--navy)";
+  };
+
+  document.querySelectorAll("[data-paste-video]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const name = button.dataset.pasteVideo;
+      const input = form.elements[name];
+      if (!input) return;
+
+      showPasteStatus(name, "Reading copied link...");
+      try {
+        if (!navigator.clipboard?.readText) {
+          throw new Error("Clipboard access is not available in this browser.");
+        }
+        const copied = await navigator.clipboard.readText();
+        const link = normalizeClipboardLink(copied);
+        if (!link) throw new Error("No copied link was found.");
+
+        input.value = link;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+        showPasteStatus(name, "Link pasted. Save Profile Changes when ready.");
+      } catch (error) {
+        showPasteStatus(name, "Tap inside the box, press and hold, then choose Paste. If iPhone asks, choose Allow Paste.", true);
+        input.focus();
+      }
+    });
+  });
+
+  // Some iOS clipboard shares expose the URL in URI-list rather than normal text.
+  form.querySelectorAll('input[name^="highlight_video_url"]').forEach((input) => {
+    input.addEventListener("paste", (event) => {
+      const data = event.clipboardData;
+      if (!data) return;
+      const uri = data.getData("text/uri-list");
+      const plain = data.getData("text/plain");
+      const link = normalizeClipboardLink(uri || plain);
+      if (!link) return;
+      event.preventDefault();
+      input.value = link;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      showPasteStatus(input.name, "Link pasted. Save Profile Changes when ready.");
+    });
+  });
+})();
+</script>
+<script src="script.js"></script><script type="module" src="supabase-app.js"></script></body></html>
