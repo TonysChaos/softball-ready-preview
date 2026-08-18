@@ -60,7 +60,8 @@
 
 
 @media(max-width:700px){
-  [data-paste-video]{
+  [data-paste-video],
+  [data-open-video]{
     width:100% !important;
   }
   .field.full > div:has([data-paste-video]){
@@ -176,46 +177,51 @@
 <h3 style="color:var(--navy);margin-top:30px">Highlight Videos</h3>
 <p>Paste up to five YouTube, Hudl, GameChanger, Vimeo, or other public video links below. Videos must be public or unlisted so coaches can view them. Don't have videos yet? You can add them later.</p>
 <div class="notice" style="margin-bottom:18px">
-  <strong>iPhone tip:</strong> If a GameChanger link does not appear with normal Paste, tap the pink <strong>Paste Link</strong> button beside that video.
+  <strong>iPhone tip:</strong> Tap <strong>Paste Link</strong> to add a GameChanger highlight, then tap <strong>Watch Video</strong> to open and test it.
 </div>
 <div class="form-grid">
   <div class="field full">
     <label>Video 1</label>
-    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center">
       <input name="highlight_video_url" type="text" inputmode="url" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="https://...">
       <button class="btn btn-pink" type="button" data-paste-video="highlight_video_url">Paste Link</button>
+      <button class="btn btn-outline" type="button" data-open-video="highlight_video_url">Watch Video</button>
     </div>
     <p data-video-paste-status="highlight_video_url" style="font-weight:800;margin:8px 0 0"></p>
   </div>
   <div class="field full">
     <label>Video 2</label>
-    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center">
       <input name="highlight_video_url_2" type="text" inputmode="url" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="https://...">
       <button class="btn btn-pink" type="button" data-paste-video="highlight_video_url_2">Paste Link</button>
+      <button class="btn btn-outline" type="button" data-open-video="highlight_video_url_2">Watch Video</button>
     </div>
     <p data-video-paste-status="highlight_video_url_2" style="font-weight:800;margin:8px 0 0"></p>
   </div>
   <div class="field full">
     <label>Video 3</label>
-    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center">
       <input name="highlight_video_url_3" type="text" inputmode="url" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="https://...">
       <button class="btn btn-pink" type="button" data-paste-video="highlight_video_url_3">Paste Link</button>
+      <button class="btn btn-outline" type="button" data-open-video="highlight_video_url_3">Watch Video</button>
     </div>
     <p data-video-paste-status="highlight_video_url_3" style="font-weight:800;margin:8px 0 0"></p>
   </div>
   <div class="field full">
     <label>Video 4</label>
-    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center">
       <input name="highlight_video_url_4" type="text" inputmode="url" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="https://...">
       <button class="btn btn-pink" type="button" data-paste-video="highlight_video_url_4">Paste Link</button>
+      <button class="btn btn-outline" type="button" data-open-video="highlight_video_url_4">Watch Video</button>
     </div>
     <p data-video-paste-status="highlight_video_url_4" style="font-weight:800;margin:8px 0 0"></p>
   </div>
   <div class="field full">
     <label>Video 5</label>
-    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center">
       <input name="highlight_video_url_5" type="text" inputmode="url" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="https://...">
       <button class="btn btn-pink" type="button" data-paste-video="highlight_video_url_5">Paste Link</button>
+      <button class="btn btn-outline" type="button" data-open-video="highlight_video_url_5">Watch Video</button>
     </div>
     <p data-video-paste-status="highlight_video_url_5" style="font-weight:800;margin:8px 0 0"></p>
   </div>
@@ -272,6 +278,20 @@
         showPasteStatus(name, "Tap inside the box, press and hold, then choose Paste. If iPhone asks, choose Allow Paste.", true);
         input.focus();
       }
+    });
+  });
+
+  document.querySelectorAll("[data-open-video]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const name = button.dataset.openVideo;
+      const input = form.elements[name];
+      const link = normalizeClipboardLink(input?.value);
+      if (!link || !/^https?:\/\//i.test(link)) {
+        showPasteStatus(name, "Paste a video link first, then tap Watch Video.", true);
+        input?.focus();
+        return;
+      }
+      window.open(link, "_blank", "noopener,noreferrer");
     });
   });
 
