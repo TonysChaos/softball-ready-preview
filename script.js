@@ -38,3 +38,27 @@ document.querySelectorAll('.nav-links').forEach((nav) => {
 
   nav.appendChild(pickupLink);
 });
+
+// Vercel Web Analytics for SoftballReady.net™
+(() => {
+  if (window.__softballReadyVercelAnalyticsLoaded) return;
+  window.__softballReadyVercelAnalyticsLoaded = true;
+
+  window.va = window.va || function () {
+    (window.vaq = window.vaq || []).push(arguments);
+  };
+
+  if (!document.querySelector('script[data-vercel-analytics]')) {
+    const analyticsScript = document.createElement('script');
+    analyticsScript.defer = true;
+    analyticsScript.src = '/_vercel/insights/script.js';
+    analyticsScript.setAttribute('data-vercel-analytics', 'true');
+    document.head.appendChild(analyticsScript);
+  }
+})();
+
+// Keep the mobile menu trigger consistent across SoftballReady.net™.
+document.querySelectorAll(".menu-btn").forEach((button) => {
+  button.textContent = "☰";
+  button.setAttribute("aria-label", "Open navigation");
+});

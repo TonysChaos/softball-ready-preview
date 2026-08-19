@@ -53,7 +53,6 @@
         <strong data-market-role-title>Pickup Player Marketplace</strong>
         <p data-market-role-copy></p>
       </div>
-      <a class="btn btn-outline" data-market-dashboard href="login.html">Dashboard</a>
     </div>
 
     <section class="market-section" data-coach-market hidden>
@@ -111,7 +110,6 @@
   const roleBanner = document.querySelector("[data-market-role-banner]");
   const roleTitle = document.querySelector("[data-market-role-title]");
   const roleCopy = document.querySelector("[data-market-role-copy]");
-  const marketDashboard = document.querySelector("[data-market-dashboard]");
   const coachMarket = document.querySelector("[data-coach-market]");
   const familyMarket = document.querySelector("[data-family-market]");
 
@@ -447,7 +445,6 @@
 
       accountLink.textContent = accountType === "admin" ? "Owner Dashboard" : "Dashboard";
       accountLink.href = dashboardFor(accountType);
-      marketDashboard.href = dashboardFor(accountType);
       roleBanner.hidden = false;
 
       if (!hasAccess) {
