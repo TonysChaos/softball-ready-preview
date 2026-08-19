@@ -73,6 +73,14 @@
           <option value="pickup_tournament">Pickup player for a tournament</option>
         </select>
       </div>
+      <div class="field full">
+        <label>Active opportunity?</label>
+        <select name="active" data-active-opportunity>
+          <option value="true">Yes — show this opportunity</option>
+          <option value="false">No — close this opportunity</option>
+        </select>
+        <small style="display:block;margin-top:7px;color:#667085">Choose No when you no longer need a player. You can reopen a closed need later.</small>
+      </div>
       <div class="field full"><label>Opportunity title *</label><input name="title" required placeholder="Example: 14U Pitcher Needed for Weekend Tournament"></div>
       <div class="field"><label>Age division</label><select name="age_division"><option value="">Use team division</option><option>8U</option><option>10U</option><option>12U</option><option>14U</option><option>16U</option><option>18U</option><option>College</option></select></div>
       <div class="field"><label>Positions needed</label><input name="positions_needed_text" placeholder="Pitcher, catcher, utility"></div>
@@ -89,7 +97,6 @@
       </div>
 
       <div class="field"><label>Player needed by</label><input name="start_date" type="date"></div>
-      <div class="field"><label>Active opportunity?</label><select name="active" data-active-opportunity><option value="true">Yes — show this opportunity</option><option value="false">No — close this opportunity</option></select><small style="display:block;margin-top:7px;color:#667085">When editing an existing listing, changing this setting saves immediately.</small></div>
       <div class="field full"><label>Details</label><textarea name="details" rows="5" placeholder="Include skill level, schedule, uniform information, fees, contact instructions, and anything families should know."></textarea></div>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">

@@ -80,33 +80,151 @@ if (coachProfileForm) {
   const formStatus = coachProfileForm.querySelector("[data-form-status]");
   const needsForm = document.querySelector("#team-need-form");
   const needsList = document.querySelector("[data-team-needs-list]");
+  const closedNeedsList = document.querySelector("[data-closed-team-needs-list]");
+  const cancelNeedEditButton = document.querySelector("[data-cancel-need-edit]");
+  const needSaveButton = document.querySelector("[data-need-save-button]");
+  const activeOpportunitySelect = needsForm?.querySelector("[data-active-opportunity]");
+  const needTypeSelect = needsForm?.querySelector('[name="need_type"]');
 
   let currentSession = null;
   let currentTeam = null;
+  let needsCache = [];
+
+  const escapeNeedHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  })[char]);
+
+  function positionsToText(value) {
+    if (Array.isArray(value)) return value.join(", ");
+    return String(value || "");
+  }
+
+  function formatOpportunityDate(value) {
+    if (!value) return "";
+    const date = new Date(`${value}T00:00:00`);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString();
+  }
+
+  function resetNeedForm() {
+    if (!needsForm) return;
+    needsForm.reset();
+    if (needsForm.elements.need_id) needsForm.elements.need_id.value = "";
+    if (activeOpportunitySelect) activeOpportunitySelect.value = "true";
+    if (needSaveButton) needSaveButton.textContent = "Save Player Need";
+    if (cancelNeedEditButton) cancelNeedEditButton.hidden = true;
+    needTypeSelect?.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  function populateNeedForm(need) {
+    if (!needsForm || !need) return;
+    needsForm.elements.need_id.value = need.id || "";
+    if (needsForm.elements.need_type) needsForm.elements.need_type.value = need.need_type || "season_roster";
+    if (needsForm.elements.title) needsForm.elements.title.value = need.title || "";
+    if (needsForm.elements.age_division) needsForm.elements.age_division.value = need.age_division || "";
+    if (needsForm.elements.positions_needed_text) needsForm.elements.positions_needed_text.value = positionsToText(need.positions_needed);
+    if (needsForm.elements.start_date) needsForm.elements.start_date.value = need.start_date || "";
+    if (needsForm.elements.active) needsForm.elements.active.value = need.active === false ? "false" : "true";
+    if (needsForm.elements.details) needsForm.elements.details.value = need.details || "";
+    if (needsForm.elements.tournament_name) needsForm.elements.tournament_name.value = need.tournament_name || "";
+    if (needsForm.elements.tournament_start_date) needsForm.elements.tournament_start_date.value = need.tournament_start_date || "";
+    if (needsForm.elements.tournament_end_date) needsForm.elements.tournament_end_date.value = need.tournament_end_date || "";
+    if (needsForm.elements.tournament_city) needsForm.elements.tournament_city.value = need.tournament_city || "";
+    if (needsForm.elements.tournament_state) needsForm.elements.tournament_state.value = need.tournament_state || "";
+    if (needSaveButton) needSaveButton.textContent = "Save Changes";
+    if (cancelNeedEditButton) cancelNeedEditButton.hidden = false;
+    needTypeSelect?.dispatchEvent(new Event("change", { bubbles: true }));
+    needsForm.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function needCard(need, isClosed = false) {
+    const isPickup = need.need_type === "pickup_tournament";
+    const positionText = positionsToText(need.positions_needed) || "Positions not entered";
+    const dateText = isPickup
+      ? [need.tournament_start_date, need.tournament_end_date].filter(Boolean).map(formatOpportunityDate).join(" – ")
+      : formatOpportunityDate(need.start_date);
+    const locationText = isPickup
+      ? [need.tournament_city, need.tournament_state].filter(Boolean).join(", ")
+      : [need.city, need.state].filter(Boolean).join(", ");
+    return `
+      <article class="listing-card" data-need-card="${escapeNeedHtml(need.id)}">
+        <span class="badge">${escapeNeedHtml(need.age_division || "Division not entered")} • ${isClosed ? "Closed" : "Active"}</span>
+        <h3>${escapeNeedHtml(need.title || "Player opportunity")}</h3>
+        <p>${escapeNeedHtml(need.details || "No additional details.")}</p>
+        <div class="listing-meta">${escapeNeedHtml(positionText)}</div>
+        ${dateText ? `<div class="listing-meta">${escapeNeedHtml(dateText)}</div>` : ""}
+        ${locationText ? `<div class="listing-meta">${escapeNeedHtml(locationText)}</div>` : ""}
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+          <button class="btn btn-outline" type="button" data-edit-need="${escapeNeedHtml(need.id)}">Edit</button>
+          <button class="btn ${isClosed ? "btn-pink" : "btn-outline"}" type="button" data-toggle-need="${escapeNeedHtml(need.id)}" data-next-active="${isClosed ? "true" : "false"}">
+            ${isClosed ? "Reopen Opportunity" : "Close Opportunity"}
+          </button>
+        </div>
+      </article>
+    `;
+  }
+
+  function bindNeedButtons() {
+    document.querySelectorAll("[data-edit-need]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const need = needsCache.find((item) => String(item.id) === String(button.dataset.editNeed));
+        if (need) populateNeedForm(need);
+      });
+    });
+
+    document.querySelectorAll("[data-toggle-need]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const nextActive = button.dataset.nextActive === "true";
+        button.disabled = true;
+        try {
+          if (!currentSession) currentSession = await getSession();
+          const { error } = await supabase
+            .from("team_needs")
+            .update({ active: nextActive })
+            .eq("id", button.dataset.toggleNeed)
+            .eq("owner_id", currentSession.user.id);
+          if (error) throw error;
+          await loadNeeds();
+          resetNeedForm();
+        } catch (error) {
+          setStatus(pageStatus, error.message || "We could not update this opportunity.", true);
+        } finally {
+          button.disabled = false;
+        }
+      });
+    });
+  }
 
   async function loadNeeds() {
-    if (!currentSession || !needsList) return;
+    if (!currentSession) return;
     const { data, error } = await supabase
       .from("team_needs")
       .select("*")
       .eq("owner_id", currentSession.user.id)
       .order("created_at", { ascending: false });
+
     if (error) {
-      needsList.innerHTML = `<p>${error.message}</p>`;
+      if (needsList) needsList.innerHTML = `<p>${escapeNeedHtml(error.message)}</p>`;
+      if (closedNeedsList) closedNeedsList.innerHTML = `<p>${escapeNeedHtml(error.message)}</p>`;
       return;
     }
-    if (!data.length) {
-      needsList.innerHTML = "<p>No roster openings have been posted yet.</p>";
-      return;
+
+    needsCache = data || [];
+    const activeNeeds = needsCache.filter((need) => need.active !== false);
+    const closedSeasonNeeds = needsCache.filter((need) => need.active === false && need.need_type !== "pickup_tournament");
+
+    if (needsList) {
+      needsList.innerHTML = activeNeeds.length
+        ? activeNeeds.map((need) => needCard(need, false)).join("")
+        : "<p>No active player opportunities are posted right now.</p>";
     }
-    needsList.innerHTML = data.map((need) => `
-      <article class="listing-card">
-        <span class="badge">${need.age_division || "Division not entered"} • ${need.active ? "Active" : "Inactive"}</span>
-        <h3>${need.title}</h3>
-        <p>${need.details || "No additional details."}</p>
-        <div class="listing-meta">${(need.positions_needed || []).join(", ") || "Positions not entered"}</div>
-      </article>
-    `).join("");
+
+    if (closedNeedsList) {
+      closedNeedsList.innerHTML = closedSeasonNeeds.length
+        ? closedSeasonNeeds.map((need) => needCard(need, true)).join("")
+        : "<p>No closed season roster needs are saved.</p>";
+    }
+
+    bindNeedButtons();
   }
 
   async function loadCoachDashboard() {
@@ -139,6 +257,7 @@ if (coachProfileForm) {
         coachProfileForm.elements.email.value = currentSession.user.email || "";
         setStatus(pageStatus, "Create your team profile. Player Search will unlock after membership activation.");
       }
+      resetNeedForm();
       await loadNeeds();
     } catch (error) {
       setStatus(pageStatus, error.message || "We could not load the coach dashboard.", true);
@@ -175,7 +294,13 @@ if (coachProfileForm) {
 
       let response;
       if (currentTeam?.id) {
-        response = await supabase.from("teams").update(team).eq("id", currentTeam.id).eq("owner_id", currentSession.user.id).select("*").single();
+        response = await supabase
+          .from("teams")
+          .update(team)
+          .eq("id", currentTeam.id)
+          .eq("owner_id", currentSession.user.id)
+          .select("*")
+          .single();
       } else {
         response = await supabase.from("teams").insert(team).select("*").single();
       }
@@ -190,37 +315,103 @@ if (coachProfileForm) {
     }
   });
 
+  cancelNeedEditButton?.addEventListener("click", () => {
+    resetNeedForm();
+    setStatus(needsForm?.querySelector("[data-form-status]"), "");
+  });
+
+  activeOpportunitySelect?.addEventListener("change", async () => {
+    const needId = needsForm?.elements.need_id?.value;
+    if (!needId) return;
+    const status = needsForm.querySelector("[data-form-status]");
+    const nextActive = activeOpportunitySelect.value === "true";
+    try {
+      activeOpportunitySelect.disabled = true;
+      setStatus(status, nextActive ? "Reopening opportunity..." : "Closing opportunity...");
+      const { error } = await supabase
+        .from("team_needs")
+        .update({ active: nextActive })
+        .eq("id", needId)
+        .eq("owner_id", currentSession.user.id);
+      if (error) throw error;
+      setStatus(status, nextActive ? "Opportunity reopened." : "Opportunity closed.");
+      await loadNeeds();
+    } catch (error) {
+      setStatus(status, error.message || "We could not update the opportunity.", true);
+    } finally {
+      activeOpportunitySelect.disabled = false;
+    }
+  });
+
   needsForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
     const button = needsForm.querySelector('button[type="submit"]');
     const status = needsForm.querySelector("[data-form-status]");
     button.disabled = true;
-    setStatus(status, "Saving roster need...");
+    setStatus(status, "Saving player opportunity...");
     try {
       if (!currentSession) currentSession = await getSession();
       if (!currentTeam?.id) throw new Error("Save the Team Profile first.");
+
       const form = new FormData(needsForm);
+      const needId = String(form.get("need_id") || "").trim();
       const positions = String(form.get("positions_needed_text") || "")
-        .split(",").map((value) => value.trim()).filter(Boolean);
+        .split(",")
+        .map((value) => value.trim())
+        .filter(Boolean);
+      const needType = String(form.get("need_type") || "season_roster").trim();
+      const isPickup = needType === "pickup_tournament";
+
       const need = {
         team_id: currentTeam.id,
         owner_id: currentSession.user.id,
+        need_type: needType,
         title: String(form.get("title") || "").trim(),
         age_division: textOrNull(form.get("age_division")) || currentTeam.age_division,
         positions_needed: positions,
-        city: currentTeam.city,
-        state: currentTeam.state,
+        city: isPickup ? String(form.get("tournament_city") || "").trim() : currentTeam.city,
+        state: isPickup ? String(form.get("tournament_state") || "").trim().toUpperCase() : currentTeam.state,
         start_date: textOrNull(form.get("start_date")),
+        tournament_name: isPickup ? textOrNull(form.get("tournament_name")) : null,
+        tournament_start_date: isPickup ? textOrNull(form.get("tournament_start_date")) : null,
+        tournament_end_date: isPickup ? textOrNull(form.get("tournament_end_date")) : null,
+        tournament_city: isPickup ? textOrNull(form.get("tournament_city")) : null,
+        tournament_state: isPickup ? String(form.get("tournament_state") || "").trim().toUpperCase() || null : null,
         details: textOrNull(form.get("details")),
         active: form.get("active") === "true"
       };
-      const { error } = await supabase.from("team_needs").insert(need);
-      if (error) throw error;
-      needsForm.reset();
-      setStatus(status, "Roster need saved successfully.");
+
+      if (!need.title) throw new Error("Enter an opportunity title.");
+      if (!needType) throw new Error("Choose a need type.");
+      if (isPickup) {
+        if (!need.tournament_name) throw new Error("Enter the tournament name.");
+        if (!need.tournament_start_date) throw new Error("Enter the tournament start date.");
+        if (!need.tournament_city || !need.tournament_state) throw new Error("Enter the tournament city and state.");
+        if (need.tournament_end_date && need.tournament_end_date < need.tournament_start_date) {
+          throw new Error("The tournament end date cannot be before the start date.");
+        }
+      }
+
+      let response;
+      if (needId) {
+        response = await supabase
+          .from("team_needs")
+          .update(need)
+          .eq("id", needId)
+          .eq("owner_id", currentSession.user.id)
+          .select("*")
+          .single();
+      } else {
+        response = await supabase.from("team_needs").insert(need).select("*").single();
+      }
+
+      if (response.error) throw response.error;
+
+      setStatus(status, needId ? "Player opportunity updated successfully." : "Player opportunity saved successfully.");
+      resetNeedForm();
       await loadNeeds();
     } catch (error) {
-      setStatus(status, error.message || "We could not save the roster need.", true);
+      setStatus(status, error.message || "We could not save the player opportunity.", true);
     } finally {
       button.disabled = false;
     }
