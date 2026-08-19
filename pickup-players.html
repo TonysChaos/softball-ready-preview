@@ -14,8 +14,20 @@
     .pickup-actions{display:flex;gap:10px}.pickup-actions button{min-height:50px;border-radius:12px;padding:0 18px;font:inherit;font-weight:900;cursor:pointer}.pickup-search{border:0;background:#ef5d95;color:#fff}.pickup-clear{border:1px solid #cbd5e1;background:#fff;color:#17345f}
     .pickup-summary{display:flex;justify-content:space-between;gap:20px;align-items:end;margin:34px 0 18px}.pickup-summary h2{margin:0 0 6px;color:#17345f}.pickup-summary p{margin:0;color:#64748b}
     .pickup-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}.pickup-card{background:#fff;border:1px solid #e2e8f0;border-radius:22px;overflow:hidden;box-shadow:0 12px 30px rgba(23,52,95,.08);display:flex;flex-direction:column}.pickup-card-top{background:#17345f;color:#fff;padding:22px}.pickup-card-top h3{margin:10px 0 6px;color:#fff;font-size:1.34rem}.pickup-card-top p{margin:0;color:#dce8f8}.pickup-badges{display:flex;gap:8px;flex-wrap:wrap}.pickup-badge{display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;background:#fff;color:#17345f;font-size:.82rem;font-weight:900}.pickup-badge.pink{background:#ffb5d0;color:#6b1638}.pickup-card-body{padding:22px;display:flex;flex-direction:column;gap:14px;flex:1}.pickup-meta{display:grid;gap:9px;color:#334155}.pickup-meta strong{color:#17345f}.pickup-details{line-height:1.65;color:#475569;white-space:pre-wrap}.pickup-card-footer{margin-top:auto;padding-top:4px}.pickup-card-footer .btn{width:100%;text-align:center}.pickup-empty,.pickup-error{grid-column:1/-1;background:#fff;border-radius:18px;padding:30px;text-align:center;border:1px solid #e2e8f0}.pickup-error{background:#fff4f6;border-color:#ffc6d4;color:#8b1d3d}.pickup-lock{background:#fff7fb;border:1px solid #ffc9dd;border-radius:18px;padding:22px;margin-bottom:24px;color:#6b1638;font-weight:800}.pickup-lock a{color:#17345f}
+
+    .market-role-banner{display:flex;justify-content:space-between;align-items:center;gap:18px;background:#fff;border:1px solid #dfe5ef;border-radius:22px;padding:22px 24px;margin-bottom:22px;box-shadow:0 12px 30px rgba(7,29,75,.06)}
+    .market-role-banner strong{display:block;color:var(--navy);font-size:1.18rem;margin-bottom:4px}
+    .market-role-banner p{margin:0;color:var(--muted)}
+    .market-section[hidden]{display:none!important}
+    .market-heading{margin:0 0 18px}
+    .market-heading h2{margin:0 0 7px;color:var(--navy);font-size:clamp(1.8rem,4vw,2.55rem)}
+    .market-heading p{margin:0;color:var(--muted)}
+    .player-match-card{background:#fff;border:1px solid #e2e8f0;border-radius:22px;padding:22px;box-shadow:0 12px 30px rgba(23,52,95,.08);display:flex;flex-direction:column;gap:13px}
+    .player-match-card h3{margin:0;color:var(--navy);font-size:1.35rem}
+    .player-match-card p{margin:0;color:#64748b}
+    .player-match-card .btn{margin-top:auto}
     @media(max-width:980px){.pickup-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pickup-actions{grid-column:1/-1}.pickup-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:640px){.pickup-hero{padding:50px 20px}.pickup-hero h1{font-size:clamp(42px,12vw,58px)}.pickup-wrap{padding:34px 0 56px}.pickup-panel{padding:18px}.pickup-filter-grid,.pickup-grid{grid-template-columns:1fr}.pickup-actions{flex-direction:column}.pickup-actions button{width:100%}.pickup-summary{align-items:flex-start;flex-direction:column}}
+    @media(max-width:640px){.market-role-banner{align-items:flex-start;flex-direction:column}.pickup-hero{padding:50px 20px}.pickup-hero h1{font-size:clamp(42px,12vw,58px)}.pickup-wrap{padding:34px 0 56px}.pickup-panel{padding:18px}.pickup-filter-grid,.pickup-grid{grid-template-columns:1fr}.pickup-actions{flex-direction:column}.pickup-actions button{width:100%}.pickup-summary{align-items:flex-start;flex-direction:column}}
   </style>
 </head>
 <body>
@@ -23,37 +35,456 @@
   <a class="brand" href="index.html" aria-label="Softball Ready home"><div class="logo-mark">S<span>R</span></div><div class="brand-copy"><strong>SOFTBALL <span style="color:var(--pink)">READY</span></strong><small>The National Travel Softball Connection.</small></div></a>
   <button class="menu-btn" aria-expanded="false" aria-label="Open navigation">☰</button>
   <nav class="nav-links"><a href="index.html">Home</a><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a><a href="teams.html">Teams</a><a href="pickup-players.html" aria-current="page">Pickup Players</a><a href="our-story.html">Our Story</a><a href="membership.html">Membership</a></nav>
-  <a class="btn btn-pink" href="login.html">Log In</a>
+  <a class="btn btn-pink" href="login.html" data-pickup-account-link>Log In</a>
 </div></header>
 
 <main>
   <section class="pickup-hero"><div class="container">
     <div class="eyebrow" style="color:#ff9fc4">Last-minute tournament opportunities</div>
     <h1>Pickup Player Marketplace</h1>
-    <p>Find teams that need an extra player for an upcoming tournament. Search by age division, location, position, and date, then send the coach a private interest message through Softball Ready.</p>
+    <p>One marketplace for both sides of the last-minute tournament need. Coaches can search available pickup players, while players and families can find teams that need an extra athlete.</p>
   </div></section>
 
   <section class="pickup-wrap"><div class="container">
-    <div data-pickup-access-status class="pickup-lock">Checking your membership and loading current opportunities...</div>
+    <div data-pickup-access-status class="pickup-lock">Checking your account...</div>
 
-    <form id="pickup-marketplace-form" class="pickup-panel">
-      <div class="pickup-filter-grid">
-        <div><label for="pickup-age">Age division</label><select id="pickup-age" name="age_division"><option value="">All ages</option><option>8U</option><option>10U</option><option>12U</option><option>14U</option><option>16U</option><option>18U</option><option>College</option></select></div>
-        <div><label for="pickup-state">State</label><input id="pickup-state" name="state" maxlength="2" placeholder="GA"></div>
-        <div><label for="pickup-position">Position</label><input id="pickup-position" name="position" placeholder="Pitcher, catcher..."></div>
-        <div><label for="pickup-date">Tournament on or after</label><input id="pickup-date" name="date_from" type="date"></div>
-        <div class="pickup-actions"><button class="pickup-search" type="submit">Search</button><button class="pickup-clear" type="button" data-pickup-clear>Clear</button></div>
+    <div class="market-role-banner" data-market-role-banner hidden>
+      <div>
+        <strong data-market-role-title>Pickup Player Marketplace</strong>
+        <p data-market-role-copy></p>
       </div>
-      <p data-form-status style="font-weight:800;color:var(--navy);margin-bottom:0"></p>
-    </form>
+      <a class="btn btn-outline" data-market-dashboard href="login.html">Dashboard</a>
+    </div>
 
-    <div class="pickup-summary"><div><h2>Current Pickup Opportunities</h2><p data-pickup-summary>Loading tournament needs...</p></div><a class="btn btn-outline" href="coach-dashboard.html">Coaches: Post a Need</a></div>
-    <div class="pickup-grid" data-pickup-results aria-live="polite"><div class="pickup-empty">Loading pickup opportunities...</div></div>
+    <section class="market-section" data-coach-market hidden>
+      <div class="market-heading">
+        <h2>Search Available Pickup Players</h2>
+        <p>For coaches: search players who have tournament pickup availability turned on.</p>
+      </div>
+
+      <form id="coach-pickup-player-search" class="pickup-panel">
+        <div class="pickup-filter-grid" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+          <div><label for="coach-pickup-age">Age division</label><select id="coach-pickup-age" name="age_division"><option value="">All ages</option><option>8U</option><option>10U</option><option>12U</option><option>14U</option><option>16U</option><option>18U</option><option>College</option></select></div>
+          <div><label for="coach-pickup-state">Player state</label><input id="coach-pickup-state" name="state" maxlength="2" placeholder="GA"></div>
+          <div><label for="coach-pickup-position">Position needed</label><input id="coach-pickup-position" name="position" placeholder="Pitcher, catcher..."></div>
+          <div class="pickup-actions"><button class="pickup-search" type="submit">Search Players</button><button class="pickup-clear" type="button" data-coach-pickup-clear>Clear</button></div>
+        </div>
+        <p data-coach-player-status style="font-weight:800;color:var(--navy);margin-bottom:0"></p>
+      </form>
+
+      <div class="pickup-summary">
+        <div><h2>Available Pickup Players</h2><p data-coach-player-summary>Ready to search.</p></div>
+        <a class="btn btn-outline" href="coach-dashboard.html">Post Tournament Need</a>
+      </div>
+      <div class="pickup-grid" data-coach-player-results aria-live="polite"></div>
+    </section>
+
+    <section class="market-section" data-family-market hidden>
+      <div class="market-heading">
+        <h2>Find Teams Needing Pickup Players</h2>
+        <p>For players and families: search active tournament needs posted by teams.</p>
+      </div>
+
+      <form id="family-pickup-team-search" class="pickup-panel">
+        <div class="pickup-filter-grid">
+          <div><label for="family-pickup-age">Age division</label><select id="family-pickup-age" name="age_division"><option value="">All ages</option><option>8U</option><option>10U</option><option>12U</option><option>14U</option><option>16U</option><option>18U</option><option>College</option></select></div>
+          <div><label for="family-pickup-state">Tournament state</label><input id="family-pickup-state" name="state" maxlength="2" placeholder="GA"></div>
+          <div><label for="family-pickup-position">Position</label><input id="family-pickup-position" name="position" placeholder="Pitcher, catcher..."></div>
+          <div><label for="family-pickup-date">Tournament on or after</label><input id="family-pickup-date" name="date_from" type="date"></div>
+          <div class="pickup-actions"><button class="pickup-search" type="submit">Search Teams</button><button class="pickup-clear" type="button" data-family-pickup-clear>Clear</button></div>
+        </div>
+        <p data-family-team-status style="font-weight:800;color:var(--navy);margin-bottom:0"></p>
+      </form>
+
+      <div class="pickup-summary"><div><h2>Current Pickup Opportunities</h2><p data-family-team-summary>Ready to search.</p></div></div>
+      <div class="pickup-grid" data-family-team-results aria-live="polite"></div>
+    </section>
   </div></section>
 </main>
 
 <footer class="footer"><div class="container"><div class="footer-grid"><div><div class="brand"><div class="logo-mark" style="color:white">S<span>R</span></div><div class="brand-copy"><strong style="color:white">SOFTBALL <span style="color:var(--pink)">READY</span></strong><small style="color:white">The National Travel Softball Connection.</small></div></div></div><div><h4>Quick Links</h4><a href="how-it-works.html">How It Works</a><a href="players.html">Players</a><a href="teams.html">Teams</a></div><div><h4>Resources</h4><a href="pickup-players.html">Pickup Players</a><a href="tryouts.html">Tryouts</a><a href="membership.html">Membership</a></div><div><h4>Connect</h4><a href="contact.html">We're Here to Help</a><a href="community-standards.html">Community Standards</a><a href="login.html">Member Login</a></div></div><div class="footer-bottom"><div class="footer-motto">Where Opportunity Meets Preparation.</div><div>© 2026 Softball Ready. All rights reserved.</div></div></div></footer>
+<script type="module">
+  import { supabase } from "./supabase-config.js";
+
+  const accountLink = document.querySelector("[data-pickup-account-link]");
+  const accessStatus = document.querySelector("[data-pickup-access-status]");
+  const roleBanner = document.querySelector("[data-market-role-banner]");
+  const roleTitle = document.querySelector("[data-market-role-title]");
+  const roleCopy = document.querySelector("[data-market-role-copy]");
+  const marketDashboard = document.querySelector("[data-market-dashboard]");
+  const coachMarket = document.querySelector("[data-coach-market]");
+  const familyMarket = document.querySelector("[data-family-market]");
+
+  const coachForm = document.querySelector("#coach-pickup-player-search");
+  const coachStatus = document.querySelector("[data-coach-player-status]");
+  const coachSummary = document.querySelector("[data-coach-player-summary]");
+  const coachResults = document.querySelector("[data-coach-player-results]");
+
+  const familyForm = document.querySelector("#family-pickup-team-search");
+  const familyStatus = document.querySelector("[data-family-team-status]");
+  const familySummary = document.querySelector("[data-family-team-summary]");
+  const familyResults = document.querySelector("[data-family-team-results]");
+
+  let currentSession = null;
+  let currentProfile = null;
+  let currentPlayer = null;
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    })[char]);
+  }
+
+  function dashboardFor(accountType) {
+    if (accountType === "admin") return "owner-dashboard.html";
+    if (accountType === "coach") return "coach-dashboard.html";
+    return "player-dashboard.html";
+  }
+
+  function setStatus(element, message, isError = false) {
+    if (!element) return;
+    element.textContent = message || "";
+    element.style.color = isError ? "#b42318" : "var(--navy)";
+  }
+
+  function normalized(value) {
+    return String(value || "").trim().toLowerCase();
+  }
+
+  function positionMatch(player, requested) {
+    if (!requested) return true;
+    const wanted = normalized(requested);
+    const positions = [player.primary_position, player.secondary_position].map(normalized).filter(Boolean);
+    return positions.some((position) =>
+      position === wanted || position.includes(wanted) || wanted.includes(position)
+    );
+  }
+
+  function needPositionMatch(need, requested) {
+    if (!requested) return true;
+    const wanted = normalized(requested);
+    const positions = Array.isArray(need.positions_needed)
+      ? need.positions_needed
+      : String(need.positions_needed || "").split(",");
+    if (!positions.length) return true;
+    return positions.map(normalized).some((position) =>
+      position === wanted || position.includes(wanted) || wanted.includes(position)
+    );
+  }
+
+  function formatDate(value) {
+    if (!value) return "";
+    const date = new Date(`${value}T12:00:00`);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString();
+  }
+
+  async function signedPhoto(value) {
+    if (!value) return null;
+    if (/^https?:\/\//i.test(value)) return value;
+    const { data, error } = await supabase.storage
+      .from("player-photos")
+      .createSignedUrl(value, 60 * 60);
+    return error ? null : data?.signedUrl;
+  }
+
+  async function loadCoachPlayers(filters = {}) {
+    coachResults.innerHTML = '<div class="pickup-empty">Searching available pickup players...</div>';
+    setStatus(coachStatus, "Searching...");
+    coachSummary.textContent = "Searching available players...";
+
+    try {
+      let query = supabase
+        .from("players")
+        .select("id,owner_id,first_name,last_name,age_division,primary_position,secondary_position,city,state,graduation_year,photo_url,available_immediately,searchable_by_coaches,membership_active")
+        .eq("available_immediately", true)
+        .eq("searchable_by_coaches", true)
+        .eq("membership_active", true)
+        .limit(100);
+
+      if (filters.age_division) query = query.eq("age_division", filters.age_division);
+      if (filters.state) query = query.eq("state", String(filters.state).trim().toUpperCase());
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      const matched = (data || []).filter((player) => positionMatch(player, filters.position));
+      if (!matched.length) {
+        coachSummary.textContent = "0 available players matched those filters.";
+        coachResults.innerHTML = '<div class="pickup-empty">No available pickup players matched those filters.</div>';
+        setStatus(coachStatus, "Search complete.");
+        return;
+      }
+
+      const cards = await Promise.all(matched.map(async (player) => {
+        const photo = await signedPhoto(player.photo_url);
+        const positions = [player.primary_position, player.secondary_position].filter(Boolean).join(" / ") || "Position not listed";
+        const location = [player.city, player.state].filter(Boolean).join(", ") || "Location not listed";
+        return `
+          <article class="player-match-card">
+            ${photo ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(`${player.first_name || ""} ${player.last_name || ""}`.trim())}" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:15px">` : ""}
+            <div class="pickup-badges">
+              <span class="pickup-badge pink">Available for Pickup</span>
+              <span class="pickup-badge">${escapeHtml(player.age_division || "Age not listed")}</span>
+            </div>
+            <h3>${escapeHtml(`${player.first_name || ""} ${player.last_name || ""}`.trim() || "Player")}</h3>
+            <p><strong>${escapeHtml(positions)}</strong></p>
+            <p>${escapeHtml(location)}${player.graduation_year ? ` • Class of ${escapeHtml(player.graduation_year)}` : ""}</p>
+            <a class="btn btn-pink" href="player-profile.html?id=${encodeURIComponent(player.id)}">View Player Profile</a>
+          </article>`;
+      }));
+
+      coachResults.innerHTML = cards.join("");
+      coachSummary.textContent = `${matched.length} available pickup player${matched.length === 1 ? "" : "s"} found.`;
+      setStatus(coachStatus, "Search complete.");
+    } catch (error) {
+      coachSummary.textContent = "Search unavailable.";
+      coachResults.innerHTML = `<div class="pickup-error">${escapeHtml(error.message || "The player search could not be completed.")}</div>`;
+      setStatus(coachStatus, error.message || "The search could not be completed.", true);
+    }
+  }
+
+  async function ensureCurrentPlayer() {
+    if (currentPlayer || !currentSession) return currentPlayer;
+    const { data, error } = await supabase
+      .from("players")
+      .select("id,owner_id,first_name,last_name")
+      .eq("owner_id", currentSession.user.id)
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+    currentPlayer = data || null;
+    return currentPlayer;
+  }
+
+  async function sendInterest(needId, button) {
+    try {
+      button.disabled = true;
+      const player = await ensureCurrentPlayer();
+      if (!player) throw new Error("Create your player profile before sending interest.");
+
+      const message = window.prompt(
+        "Add a short message for the coach:",
+        "We are interested in this tournament pickup opportunity."
+      );
+      if (message === null) return;
+
+      const { error } = await supabase.from("pickup_interests").insert({
+        team_need_id: needId,
+        player_id: player.id,
+        player_owner_id: currentSession.user.id,
+        message: String(message || "").trim() || "Interested in this pickup opportunity.",
+        status: "new"
+      });
+
+      if (error) {
+        if (error.code === "23505") throw new Error("You already sent interest for this opportunity.");
+        throw error;
+      }
+
+      button.textContent = "Interest Sent";
+    } catch (error) {
+      window.alert(error.message || "Interest could not be sent.");
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  async function loadFamilyNeeds(filters = {}) {
+    familyResults.innerHTML = '<div class="pickup-empty">Searching tournament pickup opportunities...</div>';
+    setStatus(familyStatus, "Searching...");
+    familySummary.textContent = "Searching team tournament needs...";
+
+    try {
+      let query = supabase
+        .from("team_needs")
+        .select("*")
+        .eq("active", true)
+        .in("need_type", ["pickup_tournament", "pickup"])
+        .order("tournament_start_date", { ascending: true })
+        .limit(100);
+
+      if (filters.age_division) query = query.eq("age_division", filters.age_division);
+
+      const { data: needs, error } = await query;
+      if (error) throw error;
+
+      let matched = (needs || []).filter((need) => {
+        const needState = String(need.tournament_state || need.state || "").toUpperCase();
+        const stateOkay = !filters.state || needState === String(filters.state).trim().toUpperCase();
+        const dateValue = need.tournament_start_date || need.start_date || "";
+        const dateOkay = !filters.date_from || !dateValue || dateValue >= filters.date_from;
+        return stateOkay && dateOkay && needPositionMatch(need, filters.position);
+      });
+
+      const teamIds = [...new Set(matched.map((need) => need.team_id).filter(Boolean))];
+      let teamsById = {};
+      if (teamIds.length) {
+        const { data: teams } = await supabase
+          .from("teams")
+          .select("id,team_name,organization_name,city,state")
+          .in("id", teamIds);
+        teamsById = Object.fromEntries((teams || []).map((team) => [String(team.id), team]));
+      }
+
+      if (!matched.length) {
+        familySummary.textContent = "0 current pickup opportunities matched those filters.";
+        familyResults.innerHTML = '<div class="pickup-empty">No teams currently match those filters.</div>';
+        setStatus(familyStatus, "Search complete.");
+        return;
+      }
+
+      familyResults.innerHTML = matched.map((need) => {
+        const team = teamsById[String(need.team_id)] || {};
+        const name = team.team_name || team.organization_name || "SoftballReady Team";
+        const location = [need.tournament_city || need.city, need.tournament_state || need.state].filter(Boolean).join(", ");
+        const dates = [need.tournament_start_date || need.start_date, need.tournament_end_date].filter(Boolean).map(formatDate).join(" – ");
+        const positions = Array.isArray(need.positions_needed) && need.positions_needed.length
+          ? need.positions_needed.join(", ")
+          : "Open to all positions";
+
+        return `
+          <article class="pickup-card">
+            <div class="pickup-card-top">
+              <div class="pickup-badges">
+                <span class="pickup-badge pink">Pickup Player Needed</span>
+                <span class="pickup-badge">${escapeHtml(need.age_division || "Age not listed")}</span>
+              </div>
+              <h3>${escapeHtml(name)}</h3>
+              <p>${escapeHtml(need.tournament_name || need.title || "Tournament opportunity")}</p>
+            </div>
+            <div class="pickup-card-body">
+              <div class="pickup-meta">
+                ${dates ? `<div><strong>Dates:</strong> ${escapeHtml(dates)}</div>` : ""}
+                ${location ? `<div><strong>Location:</strong> ${escapeHtml(location)}</div>` : ""}
+                <div><strong>Positions:</strong> ${escapeHtml(positions)}</div>
+              </div>
+              ${need.details ? `<div class="pickup-details">${escapeHtml(need.details)}</div>` : ""}
+              <div class="pickup-card-footer">
+                <button class="btn btn-pink" type="button" data-interest-need="${escapeHtml(need.id)}">I'm Interested</button>
+              </div>
+            </div>
+          </article>`;
+      }).join("");
+
+      familyResults.querySelectorAll("[data-interest-need]").forEach((button) => {
+        button.addEventListener("click", () => sendInterest(button.dataset.interestNeed, button));
+      });
+
+      familySummary.textContent = `${matched.length} current pickup opportunit${matched.length === 1 ? "y" : "ies"} found.`;
+      setStatus(familyStatus, "Search complete.");
+    } catch (error) {
+      familySummary.textContent = "Search unavailable.";
+      familyResults.innerHTML = `<div class="pickup-error">${escapeHtml(error.message || "Tournament opportunities could not be loaded.")}</div>`;
+      setStatus(familyStatus, error.message || "The search could not be completed.", true);
+    }
+  }
+
+  function coachFilters() {
+    const form = new FormData(coachForm);
+    return {
+      age_division: String(form.get("age_division") || "").trim(),
+      state: String(form.get("state") || "").trim(),
+      position: String(form.get("position") || "").trim()
+    };
+  }
+
+  function familyFilters() {
+    const form = new FormData(familyForm);
+    return {
+      age_division: String(form.get("age_division") || "").trim(),
+      state: String(form.get("state") || "").trim(),
+      position: String(form.get("position") || "").trim(),
+      date_from: String(form.get("date_from") || "").trim()
+    };
+  }
+
+  coachForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    loadCoachPlayers(coachFilters());
+  });
+
+  document.querySelector("[data-coach-pickup-clear]")?.addEventListener("click", () => {
+    coachForm.reset();
+    loadCoachPlayers({});
+  });
+
+  familyForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    loadFamilyNeeds(familyFilters());
+  });
+
+  document.querySelector("[data-family-pickup-clear]")?.addEventListener("click", () => {
+    familyForm.reset();
+    loadFamilyNeeds({});
+  });
+
+  async function initializeMarketplace() {
+    try {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      currentSession = sessionData.session;
+
+      if (!currentSession) {
+        accountLink.textContent = "Log In";
+        accountLink.href = "login.html";
+        accessStatus.innerHTML = 'Log in to use the Pickup Player Marketplace. <a href="login.html"><strong>Log In</strong></a>';
+        coachMarket.hidden = true;
+        familyMarket.hidden = true;
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("account_type,membership_active")
+        .eq("id", currentSession.user.id)
+        .single();
+      if (profileError) throw profileError;
+      currentProfile = profile;
+
+      const accountType = String(profile?.account_type || "parent").toLowerCase();
+      const isCoach = accountType === "coach" || accountType === "admin";
+      const hasAccess = profile?.membership_active === true || accountType === "admin";
+
+      accountLink.textContent = accountType === "admin" ? "Owner Dashboard" : "Dashboard";
+      accountLink.href = dashboardFor(accountType);
+      marketDashboard.href = dashboardFor(accountType);
+      roleBanner.hidden = false;
+
+      if (!hasAccess) {
+        accessStatus.innerHTML = 'An active SoftballReady membership is required to use the Pickup Player Marketplace. <a href="membership.html"><strong>View Membership</strong></a>';
+        coachMarket.hidden = true;
+        familyMarket.hidden = true;
+        roleTitle.textContent = "Membership Required";
+        roleCopy.textContent = "Activate membership to unlock tournament pickup searches.";
+        return;
+      }
+
+      accessStatus.textContent = "Your membership is active. Pickup marketplace tools are unlocked.";
+
+      if (isCoach) {
+        roleTitle.textContent = "Coach Pickup Player Search";
+        roleCopy.textContent = "Search players who have marked themselves available for tournament pickup.";
+        coachMarket.hidden = false;
+        familyMarket.hidden = true;
+        await loadCoachPlayers({});
+      } else {
+        roleTitle.textContent = "Player & Family Pickup Opportunities";
+        roleCopy.textContent = "Find teams that currently need an extra player for a tournament.";
+        coachMarket.hidden = true;
+        familyMarket.hidden = false;
+        await loadFamilyNeeds({});
+      }
+    } catch (error) {
+      accessStatus.textContent = error.message || "The Pickup Player Marketplace could not be loaded.";
+      accessStatus.style.color = "#b42318";
+      coachMarket.hidden = true;
+      familyMarket.hidden = true;
+    }
+  }
+
+  initializeMarketplace();
+  supabase.auth.onAuthStateChange(() => initializeMarketplace());
+</script>
 <script src="script.js"></script>
-<script type="module" src="supabase-app.js"></script>
 </body>
 </html>
