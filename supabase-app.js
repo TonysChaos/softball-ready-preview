@@ -3,7 +3,51 @@ function setStatus(el,msg,err=false){if(!el)return;el.textContent=msg;el.style.c
 async function getSession(){const {data,error}=await supabase.auth.getSession();if(error)throw error;return data.session;}
 const e2n=v=>{const t=String(v??"").trim();return t===""?null:t}; const n2n=v=>{const t=String(v??"").trim();return t===""?null:Number(t)};
 const sf=document.querySelector("#signup-form");if(sf)sf.addEventListener("submit",async e=>{e.preventDefault();const s=sf.querySelector("[data-form-status]"),b=sf.querySelector('button[type="submit"]'),f=new FormData(sf);b.disabled=true;try{const {error}=await supabase.auth.signUp({email:String(f.get("email")).trim(),password:String(f.get("password")),options:{data:{full_name:String(f.get("full_name")).trim()},emailRedirectTo:`${location.origin}/login.html`}});if(error)throw error;sf.reset();setStatus(s,"Account created. Check your email, confirm your account, then return here to log in.");}catch(x){setStatus(s,x.message,true)}finally{b.disabled=false}});
-const lf=document.querySelector("#login-form");if(lf)lf.addEventListener("submit",async e=>{e.preventDefault();const s=lf.querySelector("[data-form-status]"),b=lf.querySelector('button[type="submit"]'),f=new FormData(lf);b.disabled=true;try{const {data:authData,error}=await supabase.auth.signInWithPassword({email:String(f.get("email")).trim(),password:String(f.get("password"))});if(error)throw error;const userId=authData?.user?.id;if(!userId)throw new Error("Login succeeded but the account could not be identified.");const {data:profile,error:profileError}=await supabase.from("profiles").select("account_type").eq("id",userId).single();if(profileError)throw profileError;const type=String(profile?.account_type||"player").toLowerCase();if(type==="admin"){location.href="owner-dashboard.html";return;}if(type==="coach"){location.href="coach-dashboard.html";return;}location.href="player-dashboard.html";}catch(x){setStatus(s,x.message||"The email or password is incorrect. Use Forgot Your Password below if needed.",true)}finally{b.disabled=false}});
+const lf=document.querySelector("#login-form");if(lf)lf.addEventListener("submit",async e=>{e.preventDefault();const s=lf.querySelector("[data-form-status]"),b=lf.querySelector('button[type="submit"]'),f=new FormData(lf);b.disabled=true;try{const {data:authData,error}=await supabase.auth.signInWithPassword({email:String(f.get("email")).trim(),password:String(f.get("password"))});if(error)throw error;const userId=authData?.user?.id;if(!userId)throw new Error("Login succeeded but the account could not be identified.");const {data:profile,error:profileError}=await supabase.from("profiles").select("account_type").eq("id",userId).single();if(profileError)throw profileError;const type=String(profile?.account_type||"player").toLowerCase();if(type==="admin"){location.href="owner-dashboard.html";return;}if(type==="coach"){location.href="coach-dashboard.html";return;}location.href="player-dashboard.html";}catch(x){
+  const message=String(x?.message||"");
+  if(/email not confirmed/i.test(message)){
+    setStatus(s,"Your email address has not been confirmed yet. Tap Resend Confirmation Email below, then check your inbox and spam/junk folder.",true);
+  }else{
+    setStatus(s,message||"The email or password is incorrect. Use Forgot Your Password below if needed.",true);
+  }
+}finally{b.disabled=false}});
+const resendConfirmationButton=document.querySelector("[data-resend-confirmation]");
+if(resendConfirmationButton){
+  resendConfirmationButton.addEventListener("click",async()=>{
+    const loginForm=document.querySelector("#login-form");
+    const emailField=loginForm?.elements?.email;
+    const status=document.querySelector("[data-resend-status]");
+    const email=String(emailField?.value||"").trim();
+
+    if(!email){
+      setStatus(status,"Enter your email address in the Log In box first.",true);
+      emailField?.focus();
+      return;
+    }
+
+    resendConfirmationButton.disabled=true;
+    setStatus(status,"Sending a new confirmation email...");
+    try{
+      const {error}=await supabase.auth.resend({
+        type:"signup",
+        email,
+        options:{emailRedirectTo:`${location.origin}/login.html`}
+      });
+      if(error)throw error;
+      setStatus(status,"Confirmation email sent. Check your inbox and spam/junk folder, then tap the confirmation link before logging in.");
+    }catch(x){
+      const message=String(x?.message||"");
+      if(/rate limit/i.test(message)){
+        setStatus(status,"A confirmation email was sent recently. Wait a little while, then try again.",true);
+      }else{
+        setStatus(status,message||"We could not resend the confirmation email. Please try again.",true);
+      }
+    }finally{
+      resendConfirmationButton.disabled=false;
+    }
+  });
+}
+
 const ff=document.querySelector("#forgot-password-form");if(ff)ff.addEventListener("submit",async e=>{e.preventDefault();const s=ff.querySelector("[data-form-status]"),f=new FormData(ff);try{const {error}=await supabase.auth.resetPasswordForEmail(String(f.get("email")).trim(),{redirectTo:`${location.origin}/reset-password.html`});if(error)throw error;setStatus(s,"Check your email. Tap the reset link to choose a new password.");}catch(x){setStatus(s,x.message,true)}});
 const rf=document.querySelector("#reset-password-form");if(rf)rf.addEventListener("submit",async e=>{e.preventDefault();const s=rf.querySelector("[data-form-status]"),f=new FormData(rf),p=String(f.get("password")),c=String(f.get("confirm_password"));if(p.length<8)return setStatus(s,"Your password must be at least eight characters.",true);if(p!==c)return setStatus(s,"The two passwords do not match.",true);try{const {error}=await supabase.auth.updateUser({password:p});if(error)throw error;setStatus(s,"Password updated. Returning to Log In...");setTimeout(()=>location.href="login.html",800)}catch(x){setStatus(s,x.message,true)}});
 document.querySelectorAll("[data-logout]").forEach(b=>b.addEventListener("click",async()=>{await supabase.auth.signOut();location.href="login.html"}));
