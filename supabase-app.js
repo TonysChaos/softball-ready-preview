@@ -85,6 +85,9 @@ if (coachProfileForm) {
   const needSaveButton = document.querySelector("[data-need-save-button]");
   const activeOpportunitySelect = needsForm?.querySelector("[data-active-opportunity]");
   const needTypeSelect = needsForm?.querySelector('[name="need_type"]');
+  const pickupMatchPanel = document.querySelector("[data-pickup-match-panel]");
+  const pickupMatchSummary = document.querySelector("[data-pickup-match-summary]");
+  const pickupMatchResults = document.querySelector("[data-pickup-match-results]");
 
   let currentSession = null;
   let currentTeam = null;
@@ -194,6 +197,99 @@ if (coachProfileForm) {
     });
   }
 
+  function normalizedPosition(value) {
+    return String(value || "").trim().toLowerCase();
+  }
+
+  function positionMatches(player, need) {
+    const requested = Array.isArray(need.positions_needed)
+      ? need.positions_needed.map(normalizedPosition).filter(Boolean)
+      : String(need.positions_needed || "").split(",").map(normalizedPosition).filter(Boolean);
+
+    if (!requested.length) return true;
+
+    const playerPositions = [
+      normalizedPosition(player.primary_position),
+      normalizedPosition(player.secondary_position)
+    ].filter(Boolean);
+
+    return requested.some((wanted) =>
+      playerPositions.some((have) =>
+        have === wanted || have.includes(wanted) || wanted.includes(have)
+      )
+    );
+  }
+
+  function pickupMatchCard(player, need) {
+    const sameState = String(player.state || "").toUpperCase() === String(need.tournament_state || need.state || "").toUpperCase();
+    const positions = [player.primary_position, player.secondary_position].filter(Boolean).join(" / ") || "Position not listed";
+    const location = [player.city, player.state].filter(Boolean).join(", ") || "Location not listed";
+
+    return `
+      <article style="border:1px solid #e4e9f1;border-radius:16px;padding:16px;background:#fff">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:9px">
+          <span class="badge">${escapeNeedHtml(player.age_division || "Age not listed")}</span>
+          <span class="badge">${escapeNeedHtml(positions)}</span>
+          ${sameState ? '<span class="badge" style="background:#ffe8ef;color:#a5224a">Same State</span>' : ""}
+        </div>
+        <h3 style="margin:0 0 6px;color:var(--navy)">${escapeNeedHtml(`${player.first_name || ""} ${player.last_name || ""}`.trim() || "Player")}</h3>
+        <p style="margin:0 0 12px;color:#667085">${escapeNeedHtml(location)}</p>
+        <a class="btn btn-pink" style="width:100%" href="player-profile.html?id=${encodeURIComponent(player.id)}">View Player Profile</a>
+      </article>
+    `;
+  }
+
+  async function showPickupMatches(need) {
+    if (!pickupMatchPanel || !pickupMatchSummary || !pickupMatchResults) return;
+
+    if (!need || need.need_type !== "pickup_tournament" || need.active === false) {
+      pickupMatchPanel.hidden = true;
+      pickupMatchResults.innerHTML = "";
+      return;
+    }
+
+    pickupMatchPanel.hidden = false;
+    pickupMatchSummary.textContent = "Searching available tournament pickup players...";
+    pickupMatchResults.innerHTML = "";
+
+    try {
+      let query = supabase
+        .from("players")
+        .select("id,first_name,last_name,age_division,primary_position,secondary_position,city,state,available_immediately,searchable_by_coaches,membership_active")
+        .eq("available_immediately", true)
+        .eq("searchable_by_coaches", true)
+        .eq("membership_active", true)
+        .limit(100);
+
+      if (need.age_division) query = query.eq("age_division", need.age_division);
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      const eligible = (data || [])
+        .filter((player) => positionMatches(player, need))
+        .sort((a, b) => {
+          const state = String(need.tournament_state || need.state || "").toUpperCase();
+          const aSame = String(a.state || "").toUpperCase() === state ? 1 : 0;
+          const bSame = String(b.state || "").toUpperCase() === state ? 1 : 0;
+          if (aSame !== bSame) return bSame - aSame;
+          return String(a.last_name || "").localeCompare(String(b.last_name || ""));
+        })
+        .slice(0, 24);
+
+      pickupMatchSummary.textContent = eligible.length
+        ? `${eligible.length} available pickup player${eligible.length === 1 ? "" : "s"} matched this tournament need. Players in the tournament state are shown first.`
+        : "No eligible pickup players currently match this age group and position. The tournament need is still posted and will remain available to families.";
+
+      pickupMatchResults.innerHTML = eligible.length
+        ? eligible.map((player) => pickupMatchCard(player, need)).join("")
+        : '<div class="notice">No matching pickup players are available right now.</div>';
+    } catch (error) {
+      pickupMatchSummary.textContent = "We could not load automatic pickup matches.";
+      pickupMatchResults.innerHTML = `<div class="notice">${escapeNeedHtml(error.message || "Please try again.")}</div>`;
+    }
+  }
+
   async function loadNeeds() {
     if (!currentSession) return;
     const { data, error } = await supabase
@@ -225,6 +321,13 @@ if (coachProfileForm) {
     }
 
     bindNeedButtons();
+
+    const newestActivePickup = activeNeeds.find((need) => need.need_type === "pickup_tournament");
+    if (newestActivePickup) {
+      await showPickupMatches(newestActivePickup);
+    } else if (pickupMatchPanel) {
+      pickupMatchPanel.hidden = true;
+    }
   }
 
   async function loadCoachDashboard() {
@@ -336,6 +439,10 @@ if (coachProfileForm) {
       if (error) throw error;
       setStatus(status, nextActive ? "Opportunity reopened." : "Opportunity closed.");
       await loadNeeds();
+      const changedNeed = needsCache.find((item) => String(item.id) === String(needId));
+      if (changedNeed && changedNeed.need_type === "pickup_tournament" && nextActive) {
+        await showPickupMatches({ ...changedNeed, active: true });
+      }
     } catch (error) {
       setStatus(status, error.message || "We could not update the opportunity.", true);
     } finally {
@@ -408,8 +515,12 @@ if (coachProfileForm) {
       if (response.error) throw response.error;
 
       setStatus(status, needId ? "Player opportunity updated successfully." : "Player opportunity saved successfully.");
+      const savedNeed = response.data;
       resetNeedForm();
       await loadNeeds();
+      if (savedNeed?.need_type === "pickup_tournament" && savedNeed.active !== false) {
+        await showPickupMatches(savedNeed);
+      }
     } catch (error) {
       setStatus(status, error.message || "We could not save the player opportunity.", true);
     } finally {
