@@ -19,16 +19,10 @@
       --soft:#f8fafc;
       --shadow:0 16px 38px rgba(23,52,95,.14);
     }
-    .hero-logo{width:400px;height:auto;margin:0 auto 16px}
-    .launch-hero-wrap{position:relative;width:100%;max-width:100%;margin:0 auto 28px;padding:28px 24px 30px;text-align:center;isolation:isolate}
-    .launch-hero-logo{position:absolute;inset:0;margin:auto;width:min(92%,500px);height:auto;opacity:.10;z-index:-1;pointer-events:none}
-    .launch-message{position:relative;z-index:1;color:var(--navy)}
-    .launch-message h1{font-size:clamp(42px,5vw,64px);line-height:1.02;letter-spacing:-.035em;margin:0 0 24px;color:var(--navy);max-width:100%;overflow-wrap:anywhere}
-    .launch-message h1 span{color:var(--pink);display:block;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
-    .launch-message p{font-size:26px;line-height:1.48;margin:0 auto 20px;max-width:100%;color:var(--navy);font-weight:700}
-    .launch-message .launch-thanks{font-size:28px;font-weight:900;margin-top:24px}
-    .launch-message .launch-founder{font-size:23px;font-weight:800;margin-top:4px}
-    .launch-message .launch-founder strong{display:block;font-size:26px}.launch-message .launch-founder span{display:block;margin-top:4px}
+    .hero-brand-panel{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px 10px 10px}
+    .hero-brand-logo{display:block;width:min(100%,620px);height:auto;filter:drop-shadow(0 18px 28px rgba(10,35,80,.16))}
+    .hero-brand-kicker{margin:12px 0 0;color:var(--navy);font-size:clamp(18px,2vw,24px);font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+    .hero-brand-sub{margin:8px auto 0;max-width:560px;color:#5d6c83;font-size:clamp(16px,1.8vw,20px);line-height:1.55;font-weight:700}
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:#fff;line-height:1.65;font-size:18px}
@@ -48,6 +42,7 @@
     .nav-links a:hover{color:var(--pink)}
     .login{background:var(--pink);color:#fff!important;padding:11px 17px;border-radius:10px}
     .menu{display:none;border:0;background:var(--navy);color:#fff;border-radius:9px;padding:9px 12px;font-size:18px}
+    .mobile-account-link{display:none}
 
     .hero{padding:44px 0 72px;background:#fff}
     .hero-grid{display:grid;grid-template-columns:minmax(0,1.14fr) minmax(320px,.86fr);min-height:590px;align-items:stretch;gap:34px}
@@ -105,6 +100,8 @@
       .nav-links{display:none;position:absolute;top:80px;left:0;right:0;background:#fff;padding:18px 4%;border-bottom:1px solid var(--line);flex-direction:column;align-items:flex-start}
       .nav-links.open{display:flex}
       .menu{display:block}
+      .mobile-account-link{display:inline-flex;align-items:center;justify-content:center;margin-left:auto;white-space:nowrap}
+      .nav-links .login{display:none}
       .hero-grid,.split,.membership-grid{grid-template-columns:1fr}
       .hero-copy{padding:34px 8px}
       .hero-photo{border-radius:28px;min-height:450px}
@@ -115,13 +112,10 @@
     }
     @media(max-width:620px){
       body{font-size:17px}
-      .launch-hero-wrap{padding:20px 8px 24px;margin-bottom:16px}
-      .launch-hero-logo{width:96%;opacity:.09}
-      .launch-message h1{font-size:clamp(36px,10.5vw,50px);margin-bottom:20px}
-      .launch-message p{font-size:21px;line-height:1.45}
-      .launch-message .launch-thanks{font-size:23px}
-      .launch-message .launch-founder{font-size:19px}
-      .launch-message .launch-founder strong{font-size:22px}
+      .hero-brand-panel{padding:8px 0 12px}
+      .hero-brand-logo{width:min(100%,520px)}
+      .hero-brand-kicker{font-size:17px;letter-spacing:.055em}
+      .hero-brand-sub{font-size:16px}
       .brand-copy small{display:none}
       .brand-copy strong{font-size:18px}
       .hero,section{padding:56px 0}
@@ -142,6 +136,7 @@
       </div>
     </a>
     <button class="menu" aria-label="Open navigation" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <a class="login mobile-account-link" href="login.html" data-home-account-link-mobile>Log In</a>
     <nav class="nav-links">
       <a href="index.html">Home</a>
       <a href="how-it-works.html">How It Works</a>
@@ -162,19 +157,13 @@
   <section class="hero">
     <div class="container hero-grid">
       <div class="hero-copy">
-        <div class="launch-hero-wrap">
-          <img src="assets/IMG_5706.jpg" alt="" class="launch-hero-logo" aria-hidden="true">
-          <div class="launch-message">
-            <h1>Welcome to the Grand Launch of <span>SoftballReady.<wbr>net™</span></h1>
-            <p>Thank you for taking the time to visit.</p>
-            <p>Become one of the founding members of <strong>SoftballReady.<wbr>net™</strong> and help us build a nationwide database of players, teams, tryouts, and opportunities as we prepare for the upcoming winter and spring seasons.</p>
-            <p>Every new player profile and team listing helps make <strong>SoftballReady.<wbr>net™</strong> more valuable for the entire travel softball community.</p>
-            <p class="launch-thanks">Thank you, and God bless!</p>
-            <p class="launch-founder"><strong>Tony Puleo</strong><span>Founder, SoftballReady.<wbr>net™</span></p>
-          </div>
+        <div class="hero-brand-panel">
+          <img src="assets/softballready-sr-logo.png" alt="SoftballReady.net — The National Travel Softball Connection" class="hero-brand-logo">
+          <div class="hero-brand-kicker">Where Opportunity Meets Preparation.</div>
+          <p class="hero-brand-sub">Players. Teams. Tryouts. Pickup opportunities. One national softball connection.</p>
         </div>
         <div class="buttons" style="justify-content:center">
-          <a class="btn btn-pink" href="membership.html">Become a Founding Member</a>
+          <a class="btn btn-pink" href="membership.html">Join SoftballReady.net™</a>
           <a class="btn btn-outline" href="players.html">Create a Player Profile</a>
         </div>
       </div>
@@ -276,12 +265,24 @@
   import { supabase } from "./supabase-config.js";
 
   const accountLink = document.querySelector("[data-home-account-link]");
+  const mobileAccountLink = document.querySelector("[data-home-account-link-mobile]");
   const nav = document.querySelector(".nav-links");
 
   function dashboardFor(accountType) {
     if (accountType === "admin") return "owner-dashboard.html";
     if (accountType === "coach") return "coach-dashboard.html";
     return "player-dashboard.html";
+  }
+
+  function setAccountLinks(text, href) {
+    if (accountLink) {
+      accountLink.textContent = text;
+      accountLink.href = href;
+    }
+    if (mobileAccountLink) {
+      mobileAccountLink.textContent = text;
+      mobileAccountLink.href = href;
+    }
   }
 
   function cleanDuplicateRoleLinks(accountType) {
@@ -304,8 +305,7 @@
       const session = sessionData.session;
 
       if (!session) {
-        accountLink.textContent = "Log In";
-        accountLink.href = "login.html";
+        setAccountLinks("Log In", "login.html");
         return;
       }
 
@@ -318,8 +318,9 @@
       if (profileError) throw profileError;
 
       const accountType = profile?.account_type || "parent";
-      accountLink.href = dashboardFor(accountType);
-      accountLink.textContent = accountType === "admin" ? "Owner Dashboard" : "Dashboard";
+      const roleHref = dashboardFor(accountType);
+      const roleText = accountType === "admin" ? "Owner Dashboard" : "Dashboard";
+      setAccountLinks(roleText, roleHref);
 
       cleanDuplicateRoleLinks(accountType);
 
@@ -329,8 +330,7 @@
       setTimeout(() => cleanDuplicateRoleLinks(accountType), 1000);
     } catch (error) {
       console.error("Home account link:", error);
-      accountLink.textContent = "Dashboard";
-      accountLink.href = "player-dashboard.html";
+      setAccountLinks("Dashboard", "player-dashboard.html");
     }
   }
 
