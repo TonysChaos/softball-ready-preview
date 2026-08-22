@@ -1,1 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Softball Ready | The National Travel Softball Connection</title>
+  <meta name="description" content="Softball Ready helps travel softball players, families, and teams connect, discover opportunities, and take the next step with confidence.">
+  <style>
+    :root{
+      --navy:#102a43;
+      --blue:#1f6feb;
+      --sky:#eaf4ff;
+      --gold:#f4b942;
+      --white:#ffffff;
+      --text:#243b53;
+      --muted:#526d82;
+      --border:#d9e6f2;
+      --shadow:0 14px 35px rgba(16,42,67,.14);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      color:var(--text);
+      background:#fff;
+      line-height:1.6;
+      font-size:18px;
+    }
+    a{text-decoration:none}
+    img{max-width:100%;display:block}
+    .container{width:min(1120px,92%);margin:auto}
+    .site-header{
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:rgba(255,255,255,.96);
+      border-bottom:1px solid var(--border);
+      backdrop-filter:blur(8px);
+    }
+    .nav{
+      min-height:78px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      color:var(--navy);
+      font-weight:800;
+      font-size:24px;
+    }
+    .logo{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      background:var(--navy);
+      color:#fff;
+      font-weight:900;
+      letter-spacing:-2px;
+      box-shadow:var(--shadow);
+    }
+    .nav-links{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+      gap:18px;
+    }
+    .nav-links a{
+      color:var(--navy);
+      font-weight:700;
+      font-size:16px;
+    }
+    .nav-links .login{
+      background:var(--blue);
+      color:#fff;
+      padding:10px 17px;
+      border-radius:10px;
+    }
+    .hero{
+      background:linear-gradient(135deg,#f7fbff 0%,#eaf4ff 58%,#fff8e7 100%);
+      padding:70px 0;
+      overflow:hidden;
+    }
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      align-items:center;
+      gap:48px;
+    }
+    .eyebrow{
+      display:inline-block;
+      color:var(--blue);
+      font-weight:900;
+      letter-spacing:.08em;
+      font-size:15px;
+      margin-bottom:12px;
+    }
+    h1{
+      margin:0 0 18px;
+      color:var(--navy);
+      font-size:clamp(48px,8vw,88px);
+      line-height:.96;
+      letter-spacing:-.045em;
+    }
+    .hero-copy{
+      font-size:clamp(20px,2.4vw,26px);
+      color:var(--muted);
+      max-width:720px;
+      margin:0 0 30px;
+    }
+    .button-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:54px;
+      padding:14px 22px;
+      border-radius:12px;
+      font-weight:800;
+      font-size:17px;
+      transition:.2s ease;
+    }
+    .btn:hover{transform:translateY(-2px)}
+    .btn-primary{background:var(--blue);color:#fff;box-shadow:var(--shadow)}
+    .btn-secondary{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+    .hero-card{
+      position:relative;
+      border-radius:24px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      min-height:520px;
+      background:#dbeafe;
+    }
+    .hero-card img{
+      width:100%;
+      height:100%;
+      min-height:520px;
+      object-fit:cover;
+      object-position:center;
+    }
+    .hero-badge{
+      position:absolute;
+      left:20px;
+      right:20px;
+      bottom:20px;
+      background:rgba(16,42,67,.9);
+      color:#fff;
+      padding:15px 18px;
+      border-radius:14px;
+      font-weight:800;
+      text-align:center;
+    }
+    section{padding:76px 0}
+    .section-heading{text-align:center;max-width:800px;margin:0 auto 42px}
+    .section-heading h2{
+      color:var(--navy);
+      font-size:clamp(34px,5vw,52px);
+      line-height:1.08;
+      margin:0 0 14px;
+    }
+    .section-heading p{font-size:20px;color:var(--muted);margin:0}
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:22px;
+    }
+    .card{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:30px;
+      box-shadow:0 8px 24px rgba(16,42,67,.08);
+    }
+    .card-number{
+      width:46px;
+      height:46px;
+      border-radius:50%;
+      background:var(--sky);
+      color:var(--blue);
+      display:grid;
+      place-items:center;
+      font-weight:900;
+      margin-bottom:16px;
+    }
+    .card h3{font-size:25px;color:var(--navy);margin:0 0 10px}
+    .card p{margin:0;color:var(--muted)}
+    .how{background:var(--sky)}
+    .membership{
+      background:var(--navy);
+      color:#fff;
+    }
+    .membership-grid{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:34px;
+      align-items:center;
+    }
+    .membership h2{
+      font-size:clamp(34px,5vw,52px);
+      line-height:1.08;
+      margin:0 0 14px;
+    }
+    .membership p{font-size:20px;color:#d9e6f2;max-width:760px;margin:0}
+    .price{
+      background:#fff;
+      color:var(--navy);
+      padding:24px 30px;
+      border-radius:18px;
+      min-width:220px;
+      text-align:center;
+      box-shadow:var(--shadow);
+    }
+    .price strong{display:block;font-size:42px;line-height:1}
+    .price span{font-weight:700;color:var(--muted)}
+    .cta{text-align:center}
+    .cta-box{
+      background:linear-gradient(135deg,#fff8e7,#f3f8ff);
+      border:1px solid var(--border);
+      border-radius:24px;
+      padding:48px 28px;
+    }
+    .cta h2{font-size:clamp(34px,5vw,50px);color:var(--navy);margin:0 0 12px}
+    .cta p{font-size:20px;color:var(--muted);margin:0 auto 26px;max-width:760px}
+    footer{
+      background:#0b1f33;
+      color:#d9e6f2;
+      padding:34px 0;
+    }
+    .footer-grid{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:center;
+      gap:18px;
+    }
+    .footer-links{display:flex;flex-wrap:wrap;gap:18px}
+    footer a{color:#fff;font-weight:700}
+    .motto{font-weight:800;color:var(--gold)}
+    @media (max-width:820px){
+      .nav{align-items:flex-start;padding:14px 0}
+      .nav-links{gap:12px}
+      .hero{padding:48px 0}
+      .hero-grid,.membership-grid{grid-template-columns:1fr}
+      .hero-card{min-height:420px}
+      .hero-card img{min-height:420px}
+      .cards{grid-template-columns:1fr}
+      .price{width:100%}
+    }
+    @media (max-width:560px){
+      body{font-size:17px}
+      .brand span{display:none}
+      .nav-links a{font-size:14px}
+      .hero-card,.hero-card img{min-height:360px}
+      section{padding:58px 0}
+      .btn{width:100%}
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="index.html" aria-label="Softball Ready home">
+        <span class="logo">SR</span>
+        <span>Softball Ready</span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#how-it-works">How It Works</a>
+        <a href="tryouts.html">Tryouts</a>
+        <a href="our-promise.html">Our Promise</a>
+        <a href="contact.html">Contact</a>
+        <a class="login" href="login.html">Log In</a>
+      </nav>
+    </div>
+  </header>
 
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">THE NATIONAL TRAVEL SOFTBALL CONNECTION</span>
+          <h1>SOFTBALL READY</h1>
+          <p class="hero-copy">Softball Ready helps travel softball players, families, and teams connect, discover opportunities, and take the next step with confidence.</p>
+          <div class="button-row">
+            <a class="btn btn-primary" href="login.html">Players Looking for Teams</a>
+            <a class="btn btn-secondary" href="login.html">Teams Looking for Players</a>
+          </div>
+        </div>
+        <div class="hero-card">
+          <img src="home-photo.jpeg" alt="Travel softball player on the field">
+          <div class="hero-badge">Find Your Team • Post Openings • Discover Opportunity</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-heading">
+          <h2>Built for Every Athlete and Program</h2>
+          <p>A simple nationwide starting point for players, families, coaches, and teams.</p>
+        </div>
+        <div class="cards">
+          <article class="card">
+            <div class="card-number">1</div>
+            <h3>Player Exposure</h3>
+            <p>Create a detailed player profile and share the information teams need to evaluate a potential fit.</p>
+          </article>
+          <article class="card">
+            <div class="card-number">2</div>
+            <h3>Team Recruiting</h3>
+            <p>Describe your program, age division, location, and open roster needs in one clear listing.</p>
+          </article>
+          <article class="card">
+            <div class="card-number">3</div>
+            <h3>Growing Opportunity</h3>
+            <p>Build a stronger softball community by making connections easier to start and easier to understand.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="how" id="how-it-works">
+      <div class="container">
+        <div class="section-heading">
+          <h2>How Softball Ready Works</h2>
+          <p>Three clear steps help players and teams prepare to connect.</p>
+        </div>
+        <div class="cards">
+          <article class="card">
+            <div class="card-number">1</div>
+            <h3>Choose Your Path</h3>
+            <p>Select player registration or team registration from the home page.</p>
+          </article>
+          <article class="card">
+            <div class="card-number">2</div>
+            <h3>Share the Details</h3>
+            <p>Complete the form with accurate information about the player or team.</p>
+          </article>
+          <article class="card">
+            <div class="card-number">3</div>
+            <h3>Prepare to Connect</h3>
+            <p>Your information will be ready for matching and connection features as they become available.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="membership">
+      <div class="container membership-grid">
+        <div>
+          <h2>A Full Year of Opportunity</h2>
+          <p>Membership is $4.99 per year and unlocks the tools families and teams need to find each other. A portion of the mission supports softball communities across the country.</p>
+        </div>
+        <div class="price">
+          <strong>$4.99</strong>
+          <span>per year</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="container">
+        <div class="cta-box">
+          <h2>Ready to Take the Next Step?</h2>
+          <p>Start building your connection to the travel softball community today.</p>
+          <div class="button-row" style="justify-content:center">
+            <a class="btn btn-primary" href="login.html">Create a Player Profile</a>
+            <a class="btn btn-secondary" href="login.html">Post a Team Need</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <strong>Softball Ready</strong><br>
+        <span class="motto">Where Opportunity Meets Preparation.</span>
+      </div>
+      <div class="footer-links">
+        <a href="community-standards.html">Community Standards</a>
+        <a href="contact.html">Contact</a>
+        <a href="launch-center.html">Launch Center</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
