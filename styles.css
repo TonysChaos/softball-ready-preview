@@ -286,4 +286,4 @@ label:has(input[type="checkbox"]) > a{
     font-size:.95rem !important;
   }
 }
-body.community-page .hero {background: #ffffff !important;background-image: none !important;color: #102846 !important;min-height: auto !important;}
+body:has(.community-shell) .hero{background:#fff!important;background-image:none!important;color:#102846!important;min-height:auto!important;padding:52px 0 44px!important}
