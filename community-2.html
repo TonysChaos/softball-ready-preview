@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SoftballReady Community | Parents & Coaches</title>
+  <meta name="description" content="Browse travel softball discussions and join the SoftballReady.net community of parents and coaches.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    *{box-sizing:border-box}
+    html,body{max-width:100%;overflow-x:hidden}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#334155;background:#fff;line-height:1.6}
+    a{text-decoration:none;color:inherit}
+    .container{width:min(1180px,92%);margin:auto}
+    .header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #e8edf4}
+    .nav{min-height:76px;display:flex;align-items:center;gap:18px}
+    .brand{display:flex;align-items:center;gap:11px;margin-right:auto}
+    .logo{width:46px;height:46px;border-radius:13px;background:var(--navy,#102846);color:#fff;display:grid;place-items:center;font-weight:900;font-size:21px;letter-spacing:-2px}
+    .brand-copy{display:grid;line-height:1.08}.brand-copy strong{font-size:19px;color:var(--navy,#102846)}.brand-copy strong span{color:var(--pink,#ff5f96)}.brand-copy small{font-size:11px;color:#64748b;margin-top:4px}
+    .nav-links{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.nav-links a{font-size:14px;font-weight:800;color:var(--navy,#102846)}
+    .login{background:var(--pink,#ff5f96);color:#fff!important;padding:10px 14px;border-radius:10px}.menu{display:none;border:0;background:var(--navy,#102846);color:#fff;border-radius:9px;padding:8px 11px;font-size:18px}
+    .hero{background:#fff;color:var(--navy,#102846);padding:52px 0 44px;border-bottom:1px solid #e8edf4}
+    .hero h1{font-size:clamp(38px,7vw,66px);line-height:1.05;margin:0 0 16px}.hero p{font-size:20px;color:#334155;max-width:850px;margin:0}
+    .hero strong{color:var(--navy,#102846)}.pill{display:inline-flex;margin-bottom:14px;padding:7px 12px;border-radius:999px;background:#fff0f6;color:var(--pink,#ff5f96);font-size:13px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+    .community-shell{display:grid;grid-template-columns:260px minmax(0,1fr);gap:28px;padding:34px 0 70px}
+    .panel{background:#fff;border:1px solid #e8edf4;border-radius:18px;box-shadow:none}
+    .sidebar{padding:22px;height:max-content;position:sticky;top:96px}.sidebar h2{font-size:18px;color:var(--navy,#102846);margin:0 0 14px}
+    .category-list{display:grid;gap:7px}.category-btn{width:100%;text-align:left;border:0;background:transparent;padding:11px 10px;border-radius:10px;color:var(--navy,#102846);font-weight:800;cursor:pointer;font-size:15px}.category-btn:hover,.category-btn.active{background:#fff0f6;color:var(--pink,#ff5f96)}
+    .main{min-width:0}.toolbar{padding:20px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px}
+    .toolbar h2{margin:0;color:var(--navy,#102846);font-size:25px}.toolbar p{margin:3px 0 0;color:#64748b}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 17px;border-radius:10px;border:0;font-weight:900;cursor:pointer;text-decoration:none}.btn-pink{background:var(--pink,#ff5f96);color:#fff}.btn-blue{background:#4f86d9;color:#fff}.btn-outline{background:#fff;border:2px solid var(--navy,#102846);color:var(--navy,#102846)}
+    button:disabled{opacity:.55;cursor:not-allowed}
+    .topic-list{overflow:hidden}.topic-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;padding:20px 22px;border-bottom:1px solid #e8edf4;cursor:pointer;background:#fff}.topic-row:last-child{border-bottom:0}.topic-row:hover{background:#fff7fa}.topic-title{font-size:18px;font-weight:900;color:var(--navy,#102846);margin:0 0 6px}.topic-meta{font-size:13px;color:#64748b;display:flex;gap:10px;flex-wrap:wrap}.topic-count{text-align:center;min-width:72px;color:var(--navy,#102846);font-weight:900}.topic-count small{display:block;color:#64748b;font-weight:700}
+    .empty{padding:34px;text-align:center;color:#64748b}
+    .gate{padding:26px;margin-bottom:18px;border:2px solid #f6b6cf;background:#fff7fa;border-radius:18px}.gate h3{margin:0 0 8px;color:var(--navy,#102846)}.gate p{margin:0 0 16px}
+    .member-status{padding:12px 18px;background:#fff;border:1px solid #dbe5f0;color:var(--navy,#102846);border-radius:12px;font-weight:800;margin-bottom:18px}
+    .topic-view{padding:24px}.topic-view h2{color:var(--navy,#102846);margin:0 0 8px}.post{padding:18px 0;border-bottom:1px solid #e8edf4}.post:last-child{border-bottom:0}.post-head{font-size:13px;color:#64748b;margin-bottom:8px}.post-body{white-space:pre-wrap;color:#374151}.author{font-weight:900;color:var(--navy,#102846)}
+    .form-panel{padding:22px;margin-top:18px}.form-panel h3{margin:0 0 16px;color:var(--navy,#102846)}label{display:block;font-weight:800;color:var(--navy,#102846);margin:13px 0 6px}input,select,textarea{width:100%;font:inherit;border:1px solid #cfd6e2;border-radius:10px;padding:12px;background:#fff;min-height:46px}textarea{min-height:130px;resize:vertical}
+    .form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.notice{font-size:14px;color:#64748b;margin-top:10px}.error{color:#b42318;font-weight:800}.success{color:#147a45;font-weight:800}
+    .back-btn{border:0;background:transparent;color:var(--navy,#102846);font-weight:900;cursor:pointer;padding:0 0 16px;font-size:15px}
+    @media(max-width:900px){
+      .community-shell{grid-template-columns:minmax(0,1fr)}
+      .main,.panel,.sidebar,.toolbar,.topic-list,.topic-view{min-width:0;max-width:100%}
+      .sidebar{position:static;overflow:hidden}
+      .category-list{display:flex;flex-wrap:wrap;gap:8px;overflow:visible;padding-bottom:0}
+      .category-btn{white-space:normal;width:auto;max-width:100%;font-size:14px;padding:10px 12px}
+      .member-status,.gate{max-width:100%;overflow-wrap:anywhere;word-break:normal}
+      .toolbar{align-items:flex-start}
+      .toolbar>div{min-width:0;flex:1 1 220px}
+      .toolbar .btn{flex:0 0 auto}
+      .nav-links{display:none;position:absolute;top:76px;left:0;right:0;background:#fff;padding:18px 4%;border-bottom:1px solid #e8edf4;flex-direction:column;align-items:flex-start}
+      .nav-links.open{display:flex}
+      .menu{display:block}
+      .brand-copy small{display:none}
+    }
+    @media(max-width:560px){
+      .container{width:min(94%,1180px)}
+      .brand-copy strong{font-size:15px}
+      .logo{width:41px;height:41px}
+      .hero{padding:44px 0 38px}
+      .hero p{font-size:17px}
+      .community-shell{padding-top:20px;gap:16px}
+      .sidebar{padding:18px}
+      .category-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+      .category-btn{width:100%;text-align:center;font-size:13px;line-height:1.2;min-height:44px}
+      .member-status{padding:14px 16px;font-size:15px;line-height:1.45}
+      .toolbar{padding:17px;display:grid;grid-template-columns:1fr;gap:14px}
+      .toolbar h2{font-size:21px}
+      .toolbar .btn{width:100%}
+      .topic-row{grid-template-columns:minmax(0,1fr) 58px;padding:17px 16px;gap:10px}
+      .topic-title{font-size:16px;overflow-wrap:anywhere}
+      .topic-count{min-width:0}
+      .gate{padding:20px}
+      .gate .btn{width:100%}
+    }
+  </style>
+</head>
+<body>
+<header class="header">
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <div class="logo">SR</div>
+      <div class="brand-copy"><strong>SOFTBALL <span>READY</span></strong><small>THE NATIONAL TRAVEL SOFTBALL CONNECTION.</small></div>
+    </a>
+    <button class="menu" type="button" aria-label="Open navigation">☰</button>
+    <nav class="nav-links">
+      <a href="index.html">Home</a><a href="players.html">Players</a><a href="teams.html">Teams</a><a href="pickup-players.html">Pickup Players</a><a href="tryouts.html">Tryouts</a><a href="community.html">Community</a><a href="membership.html">Membership</a><a class="login" href="login.html" data-account-link>Log In</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="pill">Parents • Coaches • Travel Softball</div>
+    <h1>SoftballReady Community</h1>
+    <p>A place for parents and coaches to ask questions, share insight, and stay connected to travel softball year-round. <strong>Browse topic titles for free. SoftballReady.net™ membership unlocks the full conversations and participation.</strong></p>
+  </div>
+</section>
+
+<main class="container community-shell">
+  <aside class="panel sidebar">
+    <h2>Community Topics</h2>
+    <div class="category-list" data-categories></div>
+  </aside>
+
+  <section class="main">
+    <div class="gate" data-gate hidden>
+      <h3>Join the conversation</h3>
+      <p>You can browse Community topic titles for free. An active SoftballReady.net™ membership is required to open full discussions, start a topic, or reply.</p>
+      <a class="btn btn-pink" href="membership.html">Become a Member — $4.99/year</a>
+    </div>
+
+    <div class="member-status" data-member-status hidden></div>
+
+    <div class="panel toolbar">
+      <div><h2 data-list-heading>Recent Discussions</h2><p>Real softball questions. Real parents and coaches.</p></div>
+      <button class="btn btn-pink" type="button" data-new-topic>Start a Topic</button>
+    </div>
+
+    <div class="panel topic-list" data-topic-list>
+      <div class="empty">Loading Community topics…</div>
+    </div>
+
+    <section class="panel topic-view" data-topic-view hidden></section>
+
+    <form class="panel form-panel" data-topic-form hidden>
+      <h3>Start a New Topic</h3>
+      <label for="display-name">Display name</label>
+      <input id="display-name" maxlength="50" required placeholder="How you want your name shown">
+      <label for="category">Category</label>
+      <select id="category" required></select>
+      <label for="topic-title">Topic title</label>
+      <input id="topic-title" maxlength="140" required placeholder="What do you want to ask or discuss?">
+      <label for="topic-body">Your post</label>
+      <textarea id="topic-body" maxlength="5000" required placeholder="Share enough detail for other parents and coaches to help."></textarea>
+      <div class="form-actions"><button class="btn btn-pink" type="submit">Post Topic</button><button class="btn btn-outline" type="button" data-cancel-topic>Cancel</button></div>
+      <div class="notice" data-topic-form-status></div>
+    </form>
+  </section>
+</main>
+
+<script type="module" src="community-app.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
